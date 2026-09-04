@@ -345,9 +345,8 @@ export function LoginPage() {
         </p>
       </div>
 
-      {/* Dev Mode Bypass Button (when localhost) */}
-      {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
-        <button
+      {/* Dev Mode Bypass Button (all environments) */}
+      <button
           onClick={() => {
             devLogin()
             navigate(from, { replace: true })
@@ -367,7 +366,6 @@ export function LoginPage() {
           <Sparkles size={18} />
           Acceso Rápido Dev Local (Sin Supabase) →
         </button>
-      )}
 
       {/* Google OAuth */}
       <button
