@@ -353,6 +353,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 /* Utilities */
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 .cursor-blink { animation: blink 1s step-end infinite; }
+.mobile-menu-btn { display: none !important; }
 
 /* ── RESPONSIVE MEDIA QUERIES ────────────────────────────────── */
 @media (max-width: 960px) {
