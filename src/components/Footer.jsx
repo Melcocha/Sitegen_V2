@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="container">
 
         {/* Main grid */}
-        <div style={{
+        <div className="footer-grid" style={{
           display: 'grid',
           gridTemplateColumns: '2fr 1fr 1fr 1fr',
           gap: 48, padding: '72px 0 56px',
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{
+        <div className="footer-bottom-bar" style={{
           borderTop: '1px solid rgba(255,255,255,0.07)',
           padding: '24px 0',
           display: 'flex',

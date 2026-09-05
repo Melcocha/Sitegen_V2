@@ -122,11 +122,11 @@ export default function Features() {
         </div>
 
         {/* Bento grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
+        <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
           {FEATURES.map(f => (
             <div
               key={f.title}
-              className="card"
+              className="bento-card card"
               style={{
                 gridColumn: `span ${f.span}`,
                 padding: 28,

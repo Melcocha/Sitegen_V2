@@ -7,7 +7,7 @@ import { Eye, EyeOff, Sparkles, Globe2, Mail, ArrowLeft, Shield } from 'lucide-r
 // ─── Shared brand panel ─────────────────────────────────────────────────────
 function BrandPanel() {
   return (
-    <div style={{
+    <div className="auth-brand-panel" style={{
       flex: '0 0 45%',
       background: 'linear-gradient(135deg, #080F0C 0%, #0D1F18 50%, #091A12 100%)',
       display: 'flex',
@@ -87,17 +87,67 @@ function BrandPanel() {
 function AuthCard({ children }) {
   return (
     <ThemeProvider>
-      <div style={{
+      <div className="auth-card-wrapper" style={{
         minHeight: '100vh', display: 'flex',
         background: 'var(--bg)', fontFamily: 'var(--font)',
       }}>
         <BrandPanel />
-        <div style={{
-          flex: 1, display: 'flex',
+        <div className="auth-form-container" style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           padding: '48px 64px',
         }}>
           <div style={{ width: '100%', maxWidth: 420 }}>
+            {/* Mobile Logo Header */}
+            <div className="auth-mobile-logo" style={{ display: 'none', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, width: '100%' }}>
+              <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 34, height: 34, borderRadius: 9,
+                  background: 'linear-gradient(135deg, #00C896, #00A87A)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 900, fontSize: '1rem', color: '#080F0C',
+                }}>A</div>
+                <span style={{ color: 'var(--ink)', fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.02em' }}>
+                  SaaSWeb
+                </span>
+              </Link>
+            </div>
+
+            {/* Back button to return to main landing page */}
+            <div style={{ marginBottom: 24 }}>
+              <Link
+                to="/"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  textDecoration: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  color: 'var(--ink-3)',
+                  padding: '8px 16px',
+                  borderRadius: 'var(--radius-full)',
+                  background: 'var(--bg-2)',
+                  border: '1px solid var(--border)',
+                  transition: 'all 0.2s ease',
+                  boxShadow: 'var(--shadow-xs)'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = 'var(--brand-dark)'
+                  e.currentTarget.style.borderColor = 'var(--brand)'
+                  e.currentTarget.style.background = 'var(--brand-light)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = 'var(--ink-3)'
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+              >
+                <ArrowLeft size={16} />
+                Volver a la página principal
+              </Link>
+            </div>
+
             {children}
           </div>
         </div>

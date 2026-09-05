@@ -242,6 +242,7 @@ function StepCard({ step, i }) {
 
   return (
     <div
+      className="responsive-step-card"
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
@@ -260,7 +261,7 @@ function StepCard({ step, i }) {
       }}
     >
       {/* Illustration panel */}
-      <div style={{
+      <div className="responsive-step-illustration" style={{
         width: 220,
         flexShrink: 0,
         display: 'flex',
@@ -277,7 +278,7 @@ function StepCard({ step, i }) {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, padding: '48px 52px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div className="responsive-step-content" style={{ flex: 1, padding: '48px 52px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Badge row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{
@@ -406,14 +407,14 @@ export default function HowItWorks() {
         </div>
 
         {/* Bottom CTA bar */}
-        <div style={{
+        <div className="responsive-green-banner" style={{
           maxWidth: 860, margin: '48px auto 0',
           background: 'var(--brand)',
           borderRadius: 'var(--radius-xl)',
           padding: '24px 40px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="responsive-green-banner-content" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 'var(--radius-md)',
               background: 'rgba(8,15,12,0.15)',
@@ -434,6 +435,7 @@ export default function HowItWorks() {
           </div>
           <a
             href="#generator"
+            className="responsive-green-banner-btn"
             style={{
               padding: '12px 28px',
               background: '#080F0C', color: '#fff',

@@ -66,7 +66,7 @@ export default function Examples() {
         </div>
 
         {/* Grid — 2 columns */}
-        <div style={{
+        <div className="examples-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 32,

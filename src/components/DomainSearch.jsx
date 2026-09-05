@@ -78,7 +78,7 @@ export default function DomainSearch() {
           </div>
 
           {/* Search box */}
-          <div style={{
+          <div className="domain-search-bar" style={{
             display: 'flex', gap: 10, alignItems: 'center',
             background: 'var(--bg)',
             border: '1.5px solid var(--border-2)',

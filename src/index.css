@@ -353,3 +353,131 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 /* Utilities */
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 .cursor-blink { animation: blink 1s step-end infinite; }
+
+/* ── RESPONSIVE MEDIA QUERIES ────────────────────────────────── */
+@media (max-width: 960px) {
+  .container {
+    padding: 0 20px !important;
+  }
+  
+  /* Bento Grid in Features.jsx */
+  .bento-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .bento-card {
+    width: 100% !important;
+    grid-column: span 12 !important;
+  }
+
+  /* Examples.jsx 2-col grid */
+  .examples-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Pricing.jsx 3-col grid */
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* HowItWorks.jsx Step Card */
+  .responsive-step-card {
+    flex-direction: column !important;
+  }
+  .responsive-step-illustration {
+    width: 100% !important;
+    border-right: none !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 24px 16px !important;
+  }
+  .responsive-step-content {
+    padding: 28px 20px !important;
+  }
+
+  /* Green Banner in HowItWorks.jsx */
+  .responsive-green-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+    padding: 24px 20px !important;
+  }
+  .responsive-green-banner-content {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .responsive-green-banner-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  /* Navbar */
+  .nav-links-wrap {
+    display: none !important;
+  }
+  .nav-auth-links {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Auth Pages (Login & Register) */
+  .auth-card-wrapper {
+    flex-direction: column !important;
+  }
+  .auth-brand-panel {
+    display: none !important;
+  }
+  .auth-mobile-logo {
+    display: flex !important;
+  }
+  .auth-form-container {
+    padding: 32px 20px !important;
+    justify-content: flex-start !important;
+    padding-top: 48px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 16px !important;
+  }
+  .section {
+    padding: 44px 0 !important;
+  }
+  .t-display {
+    font-size: clamp(2rem, 8vw, 3rem) !important;
+  }
+  .t-headline {
+    font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  .footer-bottom-bar {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+  .domain-search-bar {
+    flex-direction: column !important;
+    padding: 12px !important;
+    align-items: stretch !important;
+  }
+  .domain-search-bar button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+

@@ -97,7 +97,7 @@ export default function Pricing({ onCheckout }) {
         </div>
 
         {/* Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, alignItems: 'start' }}>
+        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, alignItems: 'start' }}>
           {PLANS.map(plan => (
             <div
               key={plan.id}
