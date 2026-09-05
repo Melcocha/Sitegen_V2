@@ -33,6 +33,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
     ...(ov(k).textAlign ? { textAlign: ov(k).textAlign } : {}),
     ...(ov(k).width ? { width: ov(k).width } : {}),
     ...(ov(k).maxWidth ? { maxWidth: ov(k).maxWidth } : {}),
+    ...(ov(k).maxHeight ? { maxHeight: ov(k).maxHeight } : {}),
     ...(ov(k).height ? { height: ov(k).height } : {}),
     ...(ov(k).margin ? { margin: ov(k).margin } : {}),
     ...(ov(k).transform ? { transform: ov(k).transform } : {}),
@@ -41,8 +42,6 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
     ...(ov(k).filter ? { filter: ov(k).filter } : {}),
     ...(isActive(k) ? {
       position: 'relative',
-      outline: '3px dashed #6366F1',
-      outlineOffset: '4px',
     } : {}),
   })
 
@@ -289,10 +288,10 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <a
-            data-field="hero.ctaText"
-            data-ovkey="hero.ctaText"
-            href={data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'}
-            onClick={(e) => handleNavClick(e, data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit', 'hero.ctaText', 'Botón Navbar Visítanos', data.hero?.ctaText || data.navCtaText || 'Planifica tu Visita')}
+            data-field="nav.ctaText"
+            data-ovkey="nav.ctaText"
+            href={data.nav?.ctaLink || data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'}
+            onClick={(e) => handleNavClick(e, data.nav?.ctaLink || data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit', 'nav.ctaText', 'Botón Navbar — Texto y Estilo', data.nav?.ctaText || data.hero?.ctaText || data.navCtaText || 'Planifica tu Visita')}
             className="editable-element"
             style={{
               background: '#E11D48',
@@ -302,46 +301,175 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
               textDecoration: 'none',
               fontSize: '0.85rem',
               fontWeight: 800,
-              ...ost('hero.ctaText')
+              ...ost('nav.ctaText')
             }}
           >
-            {data.hero?.ctaText || data.navCtaText || 'Planifica tu Visita'}
+            {data.nav?.ctaText || data.hero?.ctaText || data.navCtaText || 'Planifica tu Visita'}
           </a>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.25)', color: '#FFFFFF', padding: '8px 18px', borderRadius: 999, cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700 }}
-          >
-            <span>Menu</span>
-            <span style={{ display: 'inline-flex', width: 28, height: 16, background: menuOpen ? '#E11D48' : 'rgba(255,255,255,0.3)', borderRadius: 999, position: 'relative', alignItems: 'center', padding: 2, transition: 'all 0.2s' }}>
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#FFFFFF', transform: menuOpen ? 'translateX(12px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
-            </span>
-          </button>
+          {/* Hamburger button wrapper — always opens menu; in edit mode a pencil badge appears on hover */}
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <button
+              data-field="nav.menuBtn"
+              data-ovkey="nav.menuBtn"
+              aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              onClick={() => setMenuOpen(!menuOpen)}
+              className={editMode ? 'editable-element' : ''}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0,
+                width: 44, height: 44,
+                background: menuOpen ? '#E11D48' : 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(10px)',
+                border: menuOpen ? '1.5px solid #E11D48' : '1.5px solid rgba(255,255,255,0.25)',
+                borderRadius: 12,
+                cursor: 'pointer',
+                transition: 'all 0.22s cubic-bezier(0.22,1,0.36,1)',
+                padding: 0,
+                ...ost('nav.menuBtn'),
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20" height="20"
+                fill="none"
+                stroke="#FFFFFF"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                style={{ transition: 'all 0.22s', pointerEvents: 'none' }}
+              >
+                {menuOpen ? (
+                  <>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="20" y2="17" />
+                  </>
+                )}
+              </svg>
+            </button>
+
+            {/* Edit badge — only visible in edit mode on hover */}
+            {editMode && (
+              <button
+                onClick={(e) => handleEdit(e, 'nav.menuBtn', 'Botón Menú Hamburguesa', 'style', '')}
+                title="Editar estilos del botón"
+                style={{
+                  position: 'absolute',
+                  top: -8, right: -8,
+                  width: 20, height: 20,
+                  borderRadius: '50%',
+                  background: '#6366F1',
+                  border: '2px solid #fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 20,
+                  padding: 0,
+                  boxShadow: '0 2px 8px rgba(99,102,241,0.5)',
+                }}
+              >
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="2.5">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {menuOpen && (
-          <div style={{ position: 'absolute', top: 90, right: '5%', zIndex: 100, background: 'rgba(10,12,18,0.96)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 20, padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16, boxShadow: '0 20px 50px rgba(0,0,0,0.8)', minWidth: 220 }}>
-            {((Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
-              { text: nav.item1 || 'Planifica tu Visita', href: '#wp-plan-visit' },
-              { text: nav.item2 || 'Próximos Pasos', href: '#wp-next-steps' },
-              { text: nav.item3 || 'Próximos Eventos', href: '#wp-eventos' },
-              { text: nav.item4 || 'Ubicación & Contacto', href: '#wp-contact' },
-            ]).map((item, idx) => {
-              const itemLabel = item.text || item.label || 'Link'
-              return (
-                <a
-                  key={idx}
-                  data-field={`navLinks.${idx}.text`}
-                  data-ovkey={`navLinks.${idx}.text`}
-                  href={item.href || '#wp-hero'}
-                  onClick={(e) => { setMenuOpen(false); handleNavClick(e, item.href || '#wp-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel) }}
-                  className="editable-element"
-                  style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '0.95rem', ...ost(`navLinks.${idx}.text`) }}
-                >
-                  {itemLabel}
-                </a>
-              )
-            })}
-          </div>
+          <>
+            {/* Backdrop overlay to close menu */}
+            <div
+              onClick={() => setMenuOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 98, cursor: 'default' }}
+            />
+            <div style={{
+              position: 'absolute', top: 64, right: 0, zIndex: 99,
+              background: 'rgba(8,10,16,0.97)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(255,255,255,0.10)',
+              borderRadius: 18,
+              padding: '8px 0',
+              display: 'flex', flexDirection: 'column',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.9)',
+              minWidth: 240,
+              animation: 'mgMenuIn 0.22s cubic-bezier(0.22,1,0.36,1)',
+            }}>
+              <style>{`
+                @keyframes mgMenuIn {
+                  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+                  to   { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .mg-nav-item {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 14px 24px;
+                  color: #FFFFFF;
+                  text-decoration: none;
+                  font-weight: 700;
+                  font-size: 0.95rem;
+                  border-radius: 0;
+                  transition: background 0.15s, color 0.15s;
+                  cursor: pointer;
+                }
+                .mg-nav-item:hover {
+                  background: rgba(225,29,72,0.15);
+                  color: #E11D48;
+                }
+                .mg-nav-item svg {
+                  opacity: 0;
+                  transition: opacity 0.15s, transform 0.15s;
+                  transform: translateX(-4px);
+                }
+                .mg-nav-item:hover svg {
+                  opacity: 1;
+                  transform: translateX(0);
+                }
+              `}</style>
+
+              {((Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
+                { text: nav.item1 || 'Planifica tu Visita', href: '#wp-plan-visit' },
+                { text: nav.item2 || 'Próximos Pasos', href: '#wp-next-steps' },
+                { text: nav.item3 || 'Próximos Eventos', href: '#wp-eventos' },
+                { text: nav.item4 || 'Ubicación & Contacto', href: '#wp-contact' },
+              ]).map((item, idx, arr) => {
+                const itemLabel = item.text || item.label || 'Link'
+                return (
+                  <div key={idx}>
+                    <a
+                      data-field={`navLinks.${idx}.text`}
+                      data-ovkey={`navLinks.${idx}.text`}
+                      href={editMode ? undefined : (item.href || '#wp-hero')}
+                      onClick={(e) => {
+                        if (editMode) {
+                          e.preventDefault()
+                          handleEdit(e, `navLinks.${idx}.text`, `Menú: ítem ${idx + 1}`, 'text', itemLabel)
+                        } else {
+                          setMenuOpen(false)
+                          handleNavClick(e, item.href || '#wp-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel)
+                        }
+                      }}
+                      className="mg-nav-item editable-element"
+                      style={ost(`navLinks.${idx}.text`)}
+                    >
+                      {itemLabel}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                      </svg>
+                    </a>
+                    {idx < arr.length - 1 && (
+                      <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 16px' }} />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </>
         )}
         </div>
 
@@ -502,50 +630,168 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 48 }}>
+          <style>{`
+            .mg-event-card {
+              background: #FFFFFF;
+              border-radius: 20px;
+              overflow: visible;
+              box-shadow: 0 4px 24px rgba(15, 23, 42, 0.07);
+              border: 1px solid #F1F5F9;
+              display: flex;
+              flex-direction: column;
+            }
+            .mg-event-img-wrap {
+              position: relative;
+              height: 230px;
+              overflow: hidden;
+              border-radius: 20px 20px 0 0;
+            }
+            .mg-event-img-wrap img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+            .mg-event-date-badge {
+              position: absolute;
+              top: 16px;
+              left: 16px;
+              background: #FFFFFF;
+              border-radius: 14px;
+              padding: 10px 14px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              line-height: 1;
+              box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+              min-width: 52px;
+            }
+            .mg-event-date-badge .day {
+              font-size: 1.5rem;
+              font-weight: 900;
+              color: #E11D48;
+              line-height: 1;
+            }
+            .mg-event-date-badge .month {
+              font-size: 0.65rem;
+              font-weight: 800;
+              text-transform: uppercase;
+              color: #64748B;
+              letter-spacing: 0.06em;
+              margin-top: 2px;
+            }
+            .mg-event-body {
+              padding: 24px 28px 28px;
+              display: flex;
+              flex-direction: column;
+              flex: 1;
+            }
+            .mg-event-time {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              font-size: 0.78rem;
+              font-weight: 700;
+              color: #94A3B8;
+              text-transform: uppercase;
+              letter-spacing: 0.07em;
+              margin-bottom: 14px;
+            }
+            .mg-event-cta {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              margin-top: auto;
+              padding-top: 20px;
+              color: #E11D48;
+              font-weight: 900;
+              font-size: 0.88rem;
+              text-decoration: none;
+              border-top: 1px solid #F1F5F9;
+              transition: gap 0.2s;
+            }
+            .mg-event-cta:hover {
+              gap: 10px;
+            }
+          `}</style>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
             {events.map((ev, idx) => (
-              <div key={idx} style={{ background: 'transparent', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
+              <div key={idx} className="mg-event-card">
+                {/* Image with date badge overlay */}
+                <div
+                  className="mg-event-img-wrap editable-element"
+                  data-field={`events.${idx}.image`}
+                  data-ovkey={`events.${idx}.image`}
+                  onClick={(e) => handleEdit(e, `events.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                  style={{ cursor: editMode ? 'pointer' : 'default', ...ost(`events.${idx}.image`) }}
+                >
+                  <img
+                    src={ev.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'}
+                    alt={ev.title}
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'
+                    }}
+                  />
+                  {/* Subtle dark overlay for contrast */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.28) 100%)', pointerEvents: 'none' }} />
+                  {/* Floating date badge */}
+                  <div className="mg-event-date-badge">
+                    <span
+                      className="day editable-element"
+                      data-field={`events.${idx}.dateDay`}
+                      data-ovkey={`events.${idx}.dateDay`}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `events.${idx}.dateDay`, `Día Evento ${idx + 1}`, 'text', ev.dateDay) }}
+                      style={ost(`events.${idx}.dateDay`)}
+                    >{ev.dateDay}</span>
+                    <span
+                      className="month editable-element"
+                      data-field={`events.${idx}.dateMonth`}
+                      data-ovkey={`events.${idx}.dateMonth`}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `events.${idx}.dateMonth`, `Mes Evento ${idx + 1}`, 'text', ev.dateMonth) }}
+                      style={ost(`events.${idx}.dateMonth`)}
+                    >{ev.dateMonth}</span>
+                  </div>
+                </div>
+
+                {/* Card body */}
+                <div className="mg-event-body">
                   <div
-                    data-field={`events.${idx}.image`}
-                    data-ovkey={`events.${idx}.image`}
-                    className="editable-element"
-                    onClick={(e) => handleEdit(e, `events.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
-                    style={{ position: 'relative', height: 220, overflow: 'hidden', marginBottom: 20, cursor: editMode ? 'pointer' : 'default', ...ost(`events.${idx}.image`) }}
+                    className="mg-event-time editable-element"
+                    data-field={`events.${idx}.time`}
+                    data-ovkey={`events.${idx}.time`}
+                    onClick={(e) => handleEdit(e, `events.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
+                    style={ost(`events.${idx}.time`)}
                   >
-                    <img
-                      src={ev.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'}
-                      alt={ev.title}
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'
-                      }}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, #F8FAFC 100%)', pointerEvents: 'none' }} />
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    {ev.time}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
-                    <div style={{ color: '#E11D48', fontSize: '1.8rem', fontWeight: 900, lineHeight: 1 }}>
-                      <span data-field={`events.${idx}.dateDay`} data-ovkey={`events.${idx}.dateDay`} className="editable-element" onClick={(e) => handleEdit(e, `events.${idx}.dateDay`, `Día Evento ${idx + 1}`, 'text', ev.dateDay)} style={ost(`events.${idx}.dateDay`)}>{ev.dateDay}</span>{' '}
-                      <span data-field={`events.${idx}.dateMonth`} data-ovkey={`events.${idx}.dateMonth`} className="editable-element" onClick={(e) => handleEdit(e, `events.${idx}.dateMonth`, `Mes Evento ${idx + 1}`, 'text', ev.dateMonth)} style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', ...ost(`events.${idx}.dateMonth`) }}>{ev.dateMonth}</span>
-                    </div>
-                    <div data-field={`events.${idx}.time`} data-ovkey={`events.${idx}.time`} className="editable-element" onClick={(e) => handleEdit(e, `events.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)} style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748B', ...ost(`events.${idx}.time`) }}>
-                      📍 {ev.time}
-                    </div>
-                  </div>
-                  <h3 data-field={`events.${idx}.title`} data-ovkey={`events.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `events.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)} style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0F172A', margin: '0 0 10px', lineHeight: 1.25, ...ost(`events.${idx}.title`) }}>
+                  <h3
+                    data-field={`events.${idx}.title`}
+                    data-ovkey={`events.${idx}.title`}
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, `events.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
+                    style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F172A', margin: '0 0 10px', lineHeight: 1.25, ...ost(`events.${idx}.title`) }}
+                  >
                     {ev.title}
                   </h3>
-                  <p data-field={`events.${idx}.desc`} data-ovkey={`events.${idx}.desc`} className="editable-element" onClick={(e) => handleEdit(e, `events.${idx}.desc`, `Descripción Evento ${idx + 1}`, 'textarea', ev.desc)} style={{ fontSize: '0.95rem', color: '#475569', lineHeight: 1.6, margin: '0 0 20px', ...ost(`events.${idx}.desc`) }}>
+                  <p
+                    data-field={`events.${idx}.desc`}
+                    data-ovkey={`events.${idx}.desc`}
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, `events.${idx}.desc`, `Descripción Evento ${idx + 1}`, 'textarea', ev.desc)}
+                    style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.65, margin: 0, ...ost(`events.${idx}.desc`) }}
+                  >
                     {ev.desc}
                   </p>
+                  <a
+                    href="#wp-contact"
+                    className="mg-event-cta"
+                    onClick={(e) => handleNavClick(e, '#wp-contact', `events.${idx}.title`, `Inscripción Evento ${idx + 1}`, ev.title)}
+                  >
+                    Inscribirme al Evento
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </a>
                 </div>
-                <a
-                  href="#wp-contact"
-                  onClick={(e) => handleNavClick(e, '#wp-contact', `events.${idx}.title`, `Inscripción Evento ${idx + 1}`, ev.title)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#E11D48', fontWeight: 900, fontSize: '0.9rem', textDecoration: 'none' }}
-                >
-                  Inscribirme al Evento →
-                </a>
               </div>
             ))}
           </div>

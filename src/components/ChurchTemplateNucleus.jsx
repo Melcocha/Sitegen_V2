@@ -31,6 +31,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
     ...(ov(k).textAlign ? { textAlign: ov(k).textAlign } : {}),
     ...(ov(k).width ? { width: ov(k).width } : {}),
     ...(ov(k).maxWidth ? { maxWidth: ov(k).maxWidth } : {}),
+    ...(ov(k).maxHeight ? { maxHeight: ov(k).maxHeight } : {}),
     ...(ov(k).height ? { height: ov(k).height } : {}),
     ...(ov(k).margin ? { margin: ov(k).margin } : {}),
     ...(ov(k).transform ? { transform: ov(k).transform } : {}),
@@ -39,8 +40,6 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
     ...(ov(k).filter ? { filter: ov(k).filter } : {}),
     ...(isActive(k) ? {
       position: 'relative',
-      outline: '3px dashed #6366F1',
-      outlineOffset: '4px',
     } : {}),
   })
 

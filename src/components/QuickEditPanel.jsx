@@ -288,6 +288,7 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
   const [curBlur, setCurBlur] = useState(0)
   const [curGrayscale, setCurGrayscale] = useState(0)
   const [curShadow, setCurShadow] = useState('none')
+  const [curMaxHeight, setCurMaxHeight] = useState('')
 
   const [pos, setPos] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -323,6 +324,7 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
     const st = (ovKey && allStyles[ovKey]) ? allStyles[ovKey] : {}
 
     setCurObjectFit(st.objectFit || 'cover')
+    setCurMaxHeight(st.maxHeight || '')
 
     let br = 0
     if (st.borderRadius) {
@@ -564,6 +566,33 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
   }
 
   // Image Style Handlers
+  const onMaxHeight = (val) => {
+    if (!val) {
+      setCurMaxHeight('')
+      if (ovKey) {
+        onUpdateBatch([
+          [`elementStyles.${ovKey}.maxHeight`, null],
+          [`elementStyles.${ovKey}.height`, null],
+          [`elementStyles.${ovKey}.maxWidth`, null],
+          [`elementStyles.${ovKey}.width`, null],
+        ])
+      }
+      return
+    }
+    const valNum = typeof val === 'number' ? val : (parseInt(val, 10) || 68)
+    const valStr = `${valNum}px`
+    const maxW = Math.max(320, valNum * 7)
+    setCurMaxHeight(valStr)
+    if (ovKey) {
+      onUpdateBatch([
+        [`elementStyles.${ovKey}.maxHeight`, valStr],
+        [`elementStyles.${ovKey}.height`, valStr],
+        [`elementStyles.${ovKey}.maxWidth`, `${maxW}px`],
+        [`elementStyles.${ovKey}.width`, 'auto'],
+      ])
+    }
+  }
+
   const onObjectFitChange = (val) => {
     setCurObjectFit(val)
     if (ovKey) onUpdate(`elementStyles.${ovKey}.objectFit`, val)
@@ -835,6 +864,37 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
                     )}
                     <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(15,23,42,0.85)', color: '#fff', fontSize: '0.64rem', padding: '3px 9px', borderRadius: 999, fontWeight: 800, backdropFilter: 'blur(4px)' }}>
                       {/\.(mp4|webm|mov)(\?|$)/i.test(value) ? '🎥 Video actual' : isLogoField ? '🏷️ Logo actual' : '🖼️ Imagen actual'}
+                    </div>
+                  </div>
+                )}
+
+                {/* LOGO SIZE CONTROLLER FOR LOGO FIELDS */}
+                {isLogoField && (
+                  <div style={{ marginBottom: 14, background: '#EEF2FF', border: '1.5px solid #C7D2FE', borderRadius: 10, padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#3730A3' }}>
+                        📐 Tamaño / Escala del Logo:
+                      </span>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 900, color: '#4338CA' }}>
+                        {parseInt(curMaxHeight, 10) || 68}px
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <input
+                        type="range"
+                        min={20}
+                        max={350}
+                        step={2}
+                        value={parseInt(curMaxHeight, 10) || 68}
+                        onChange={e => onMaxHeight(Number(e.target.value))}
+                        style={{ flex: 1, accentColor: '#4338CA', cursor: 'pointer' }}
+                      />
+                      <button
+                        onClick={() => onMaxHeight(null)}
+                        style={{ padding: '4px 8px', borderRadius: 6, border: '1.5px solid #CBD5E1', background: '#FFFFFF', fontSize: '0.7rem', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
+                      >
+                        Reset
+                      </button>
                     </div>
                   </div>
                 )}
@@ -1154,6 +1214,39 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
           <div>
             {type === 'image' ? (
               <div>
+                {/* 0. TAMAÑO Y ESCALA DE LOGO / IMAGEN */}
+                <div style={{ marginBottom: 16, background: '#F8FAFC', borderRadius: 12, padding: 12, border: '1px solid #E2E8F0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      {isLogoField ? '📐 Tamaño del Logo (Altura)' : '📐 Altura Máxima de Imagen'}
+                    </label>
+                    <span style={{ fontWeight: 800, fontSize: '0.8rem', color: '#6366F1' }}>
+                      {curMaxHeight || (isLogoField ? 'Normal (68px)' : 'Auto')}
+                    </span>
+                  </div>
+
+
+
+                  {/* Slider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <input
+                      type="range"
+                      min={20}
+                      max={350}
+                      step={5}
+                      value={parseInt(curMaxHeight, 10) || (isLogoField ? 68 : 120)}
+                      onChange={e => onMaxHeight(Number(e.target.value))}
+                      style={{ flex: 1, accentColor: '#6366F1' }}
+                    />
+                    <button
+                      onClick={() => onMaxHeight(null)}
+                      style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid #CBD5E1', background: '#FFFFFF', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
                 {/* 1. AJUSTE DE IMAGEN (OBJECT FIT) */}
                 <div style={{ marginBottom: 14 }}>
                   <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
@@ -1736,6 +1829,38 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
         {/* ── TAB 3: POSICIÓN Y TAMAÑO (LAYOUT & MOBILITY) ── */}
         {activeTab === 'layout' && (
           <div>
+            {/* TAMAÑO Y ESCALA DE LOGO / IMAGEN */}
+            {type === 'image' && (
+              <div style={{ marginBottom: 16, background: '#EEF2FF', border: '1.5px solid #C7D2FE', borderRadius: 12, padding: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#3730A3', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {isLogoField ? '📐 Tamaño del Logo (Hacer más grande / pequeño)' : '📐 Altura / Tamaño de Imagen'}
+                  </label>
+                  <span style={{ fontWeight: 900, fontSize: '0.85rem', color: '#4338CA' }}>
+                    {curMaxHeight ? (typeof curMaxHeight === 'number' ? `${curMaxHeight}px` : curMaxHeight) : (isLogoField ? '68px' : 'Auto')}
+                  </span>
+                </div>
+
+                {/* Slider */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <input
+                    type="range"
+                    min={20}
+                    max={400}
+                    step={2}
+                    value={parseInt(curMaxHeight, 10) || (isLogoField ? 68 : 120)}
+                    onChange={e => onMaxHeight(Number(e.target.value))}
+                    style={{ flex: 1, accentColor: '#4338CA', height: 6, cursor: 'pointer' }}
+                  />
+                  <button
+                    onClick={() => onMaxHeight(null)}
+                    style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #CBD5E1', background: '#FFFFFF', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', color: '#64748B' }}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            )}
             {/* POSICIÓN HORIZONTAL X */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>

@@ -1065,7 +1065,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
   const isDark = data.layoutVariant === 2 || p.toLowerCase() === '#0a0a0a' || p.toLowerCase() === '#000000';
   const lv = data.layoutVariant || 1;
-  const isChurch = data.industry?.toLowerCase().includes('iglesi') || data.industry?.toLowerCase().includes('church') || Boolean(data.planAVisit) || Boolean(data.ministries) || Boolean(data.sermons);
+  const CHURCH_VARIANTS = ['afiche', 'noche_adoracion', 'poster', 'mygateway', 'nucleus']
+  const isChurch = CHURCH_VARIANTS.includes(data.churchTemplateVariant)
+    || data.industry?.toLowerCase().includes('iglesi')
+    || data.industry?.toLowerCase().includes('church')
+    || Boolean(data.planAVisit)
+    || Boolean(data.ministries)
+    || Boolean(data.sermons);
 
   if (isChurch) {
     if (data.churchTemplateVariant === 'afiche' || data.churchTemplateVariant === 'noche_adoracion') {

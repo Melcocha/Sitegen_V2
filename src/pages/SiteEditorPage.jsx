@@ -732,11 +732,12 @@ export default function SiteEditorPage() {
 
         {/* RIGHT PANEL — Preview */}
         <div style={{
-          flex: 1, overflow: 'auto',
+          flex: 1, height: '100%', overflow: 'hidden',
           background: '#E5E7EB',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: '20px',
-          gap: 12,
+          padding: '16px',
+          gap: 10,
+          boxSizing: 'border-box'
         }}>
           {/* Active QuickEdit hint banner */}
           {quickEdit && (
@@ -766,7 +767,7 @@ export default function SiteEditorPage() {
           )}
 
           {/* Preview label */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.04em', textTransform: 'uppercase', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.04em', textTransform: 'uppercase', flexShrink: 0 }}>
             {currentDevice.icon} {currentDevice.label} — Vista previa en tiempo real
           </div>
 
@@ -774,11 +775,13 @@ export default function SiteEditorPage() {
           <div style={{
             width: device === 'desktop' ? '100%' : currentDevice.width,
             maxWidth: '100%',
+            flex: 1,
+            height: '100%',
+            minHeight: 0,
             background: '#fff',
             borderRadius: 12,
-            overflow: 'hidden',
+            overflow: 'auto',
             boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-            flexShrink: 0,
             position: 'relative',
           }}>
             <WebsitePreview
