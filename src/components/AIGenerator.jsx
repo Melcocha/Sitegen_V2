@@ -9,12 +9,7 @@ import WebsitePreview from './WebsitePreview'
 import WebsiteEditor from './WebsiteEditor'
 
 const PROMPT_EXAMPLES = [
-  { label: '⛪ Iglesia',        text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
-  { label: '🏡 Bienes Raíces',  text: 'Agencia inmobiliaria premium con catálogo de propiedades exclusivas, venta de casas y asesoría personalizada' },
-  { label: '🩺 Clínica & Salud', text: 'Clínica médica y odontológica especializada con tecnología de vanguardia y reserva de citas online' },
-  { label: '🍽️ Restaurante',   text: 'Restaurante gastronómico con menú especial, reservaciones en línea y experiencia familiar' },
-  { label: '⚖️ Abogados',      text: 'Bufete de abogados especializado en derecho corporativo, asesoría jurídica y contratos' },
-  { label: '💻 SaaS & Tech',    text: 'Empresa de desarrollo de software empresarial, transformación digital y servicios cloud' },
+  { label: '⛪ Iglesia', text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
 ]
 
 // ─── Loading steps animation ──────────────────────────────────────
@@ -204,9 +199,9 @@ function PreviewSection({ websiteData, setWebsiteData, prompt, onSaved }) {
       </div>
 
       {/* Editor + Preview */}
-      <div style={{ display: 'flex', gap: 20 }}>
+      <div className="ai-generator-preview-wrapper" style={{ display: 'flex', gap: 20 }}>
         {showEditor && <WebsiteEditor websiteData={websiteData} onChange={setWebsiteData} />}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0, width: '100%', overflow: 'hidden' }}>
           <WebsitePreview data={websiteData} />
         </div>
       </div>
@@ -218,7 +213,38 @@ function PreviewSection({ websiteData, setWebsiteData, prompt, onSaved }) {
           onRegister={handleRegister}
         />
       )}
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        .ai-generator-card {
+          padding: 28px 32px;
+        }
+        @media (max-width: 640px) {
+          .ai-generator-card {
+            padding: 20px 16px !important;
+          }
+          .ai-generator-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          .ai-generator-voice-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .ai-generator-preview-wrapper {
+            flex-direction: column !important;
+          }
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes voicePulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+          50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        }
+        @keyframes voicePing {
+          0% { transform: scale(0.9); opacity: 1; }
+          50% { transform: scale(1.3); opacity: 0.7; }
+          100% { transform: scale(0.9); opacity: 1; }
+        }
+      `}</style>
     </div>
   )
 }
@@ -292,26 +318,32 @@ export default function AIGenerator({ scrollRef }) {
       <div className="container">
         {/* Header */}
         <div style={{ maxWidth: 760, margin: '0 auto', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span className="badge badge-brand"><Sparkles size={11} strokeWidth={2.5} /> Motor IA — Paso 2</span>
-            <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>Prueba el generador ahora · sin registrarte</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+            <span className="badge badge-brand" style={{ whiteSpace: 'nowrap', flexShrink: 0, padding: '5px 12px', fontSize: '0.78rem' }}>
+              <Sparkles size={12} strokeWidth={2.5} /> Motor IA — Paso 2
+            </span>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 500, lineHeight: 1.4 }}>
+              Prueba el generador ahora · sin registrarte
+            </span>
           </div>
-          <h2 style={{ fontWeight: 800, fontSize: '1.375rem', letterSpacing: '-0.025em', color: 'var(--ink)', marginBottom: 4 }}>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', letterSpacing: '-0.03em', color: 'var(--ink)', marginBottom: 8, lineHeight: 1.25 }}>
             Describe tu negocio, ve el resultado en segundos
           </h2>
-          <p className="t-caption">Escribe en lenguaje natural o habla por tu micrófono en español.</p>
+          <p className="t-caption" style={{ fontSize: '0.875rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+            Escribe en lenguaje natural o habla por tu micrófono en español.
+          </p>
         </div>
 
         {/* Generator card */}
-        <div className="card" style={{ maxWidth: 760, margin: '0 auto', padding: '28px 32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+        <div className="card ai-generator-card" style={{ maxWidth: 760, margin: '0 auto' }}>
+          <div className="ai-generator-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 10 }}>
             <label htmlFor="business-prompt" style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--ink)' }}>¿Qué tipo de negocio tienes?</label>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {isVoiceSupported && (
                 <button
                   type="button"
-                  onClick={handleToggleVoice}
+                  className="ai-generator-voice-btn" onClick={handleToggleVoice}
                   title={isListening ? 'Detener dictado por voz' : 'Dictar por voz usando tu micrófono'}
                   style={{
                     display: 'inline-flex',
@@ -355,7 +387,7 @@ export default function AIGenerator({ scrollRef }) {
               value={prompt}
               onChange={handlePromptChange}
               onKeyDown={handleKeyDown}
-              placeholder='Ej: "Iglesia Cristiana Vida Nueva...", "Bufete de abogados especializado en derecho corporativo..." o presiona "Dictar por voz" 🎙️'
+              placeholder='Ej: "Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios..." o presiona "Dictar por voz" 🎙️'
               maxLength={500}
               rows={3}
               className="input"
@@ -419,14 +451,33 @@ export default function AIGenerator({ scrollRef }) {
             </div>
           )}
 
-          <div style={{ marginBottom: 18 }}>
-            <span className="t-label" style={{ marginRight: 10 }}>Ejemplos rápidos:</span>
+          <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <span className="t-label" style={{ color: 'var(--muted)', fontWeight: 700 }}>Ejemplo rápido:</span>
             {PROMPT_EXAMPLES.map(ex => (
-              <button key={ex.label} onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; setCharCount(ex.text.length); textareaRef.current?.focus() }}
-                style={{ marginRight: 6, marginBottom: 6, padding: '5px 12px', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-2)', background: 'var(--bg)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', color: 'var(--ink-3)', fontFamily: 'var(--font)', transition: 'all var(--dur)' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand)'; e.currentTarget.style.color = 'var(--brand)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.color = '' }}
-              >{ex.label}</button>
+              <button
+                key={ex.label}
+                type="button"
+                onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; setCharCount(ex.text.length); textareaRef.current?.focus() }}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1.5px solid var(--brand)',
+                  background: 'var(--brand-light)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  color: 'var(--brand-dark)',
+                  fontFamily: 'var(--font)',
+                  transition: 'all var(--dur)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand)'; e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--brand-light)'; e.currentTarget.style.color = 'var(--brand-dark)' }}
+              >
+                {ex.label}
+              </button>
             ))}
           </div>
 
@@ -459,6 +510,23 @@ export default function AIGenerator({ scrollRef }) {
         )}
       </div>
       <style>{`
+        .ai-generator-card {
+          padding: 28px 32px;
+        }
+        @media (max-width: 640px) {
+          .ai-generator-card {
+            padding: 20px 16px !important;
+          }
+          .ai-generator-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          .ai-generator-voice-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+        }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes voicePulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }

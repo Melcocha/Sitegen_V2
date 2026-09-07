@@ -167,23 +167,23 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
   const accentIndigo = data.accentColor || '#000000'
 
   return (
-    <div style={{ fontFamily: `'${activeFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, color: '#000000', background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+    <div className="poster-template-root" style={{ fontFamily: `'${activeFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, color: '#000000', background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       <style>{`
-        .editable-element {
+        .poster-template-root .editable-element {
           cursor: ${editMode ? 'pointer' : 'default'};
           transition: all 0.15s ease;
         }
-        .editable-element:hover {
+        .poster-template-root .editable-element:hover {
           ${editMode ? 'outline: 2px dashed #000000; outline-offset: 4px;' : ''}
         }
-        .poster-card {
+        .poster-template-root .poster-card {
           transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        .poster-card:hover {
+        .poster-template-root .poster-card:hover {
           transform: translateY(-2px);
         }
-        .poster-btn-primary {
+        .poster-template-root .poster-btn-primary {
           background: #000000;
           color: #FFFFFF;
           border-radius: 8px;
@@ -191,14 +191,161 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           display: inline-block;
           text-align: center;
         }
-        .poster-btn-primary:hover {
+        .poster-template-root .poster-btn-primary:hover {
           background: #222222;
           transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+          .poster-template-root header.poster-header div {
+            padding: 8px 12px !important;
+          }
+          .poster-template-root header.poster-header nav {
+            gap: 8px !important;
+          }
+          .poster-template-root header.poster-header nav a:not(:last-child) {
+            display: none !important;
+          }
+          .poster-template-root header.poster-header nav a:last-child {
+            padding: 6px 12px !important;
+            font-size: 0.7rem !important;
+          }
+
+          .poster-template-root #wp-hero {
+            min-height: 70vh !important;
+          }
+          .poster-template-root #wp-hero > div:nth-of-type(3) {
+            padding: 50px 16px 36px !important;
+          }
+          .poster-template-root #wp-hero h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.5rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            hyphens: auto !important;
+          }
+          .poster-template-root #wp-hero p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 24px !important;
+            padding: 0 4px !important;
+          }
+
+          .poster-template-root #wp-plan-visit > div {
+            grid-template-columns: 1fr !important;
+            min-height: auto !important;
+          }
+          .poster-template-root #wp-plan-visit > div > div:nth-child(1) {
+            min-height: 240px !important;
+            height: 240px !important;
+          }
+          .poster-template-root #wp-plan-visit > div > div:nth-child(2) {
+            padding: 32px 16px !important;
+          }
+          .poster-template-root #wp-plan-visit h2 {
+            font-size: clamp(1.7rem, 6.5vw, 2.4rem) !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+          }
+          .poster-template-root #wp-plan-visit p {
+            font-size: 0.95rem !important;
+            margin-bottom: 24px !important;
+          }
+          .poster-template-root #wp-plan-visit a.poster-btn-primary {
+            padding: 14px 24px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+
+          .poster-template-root #wp-columns {
+            padding: 40px 16px !important;
+          }
+          .poster-template-root #wp-columns > div {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+          .poster-template-root #wp-columns div[data-field="nucleusColumns.col1.image"],
+          .poster-template-root #wp-columns div[data-field="nucleusColumns.col2.image"] {
+            height: 220px !important;
+          }
+          .poster-template-root #wp-columns h3 {
+            font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+            word-break: break-word !important;
+          }
+          .poster-template-root #wp-columns p {
+            font-size: 0.95rem !important;
+            margin-bottom: 20px !important;
+          }
+
+          .poster-template-root #wp-next-steps-split > div {
+            grid-template-columns: 1fr !important;
+            min-height: auto !important;
+          }
+          .poster-template-root #wp-next-steps-split > div > div:nth-child(1) {
+            padding: 32px 16px !important;
+            order: 2;
+          }
+          .poster-template-root #wp-next-steps-split > div > div:nth-child(2) {
+            min-height: 240px !important;
+            height: 240px !important;
+            order: 1;
+          }
+          .poster-template-root #wp-next-steps-split h2 {
+            font-size: clamp(1.7rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .poster-template-root #wp-next-steps-split p {
+            font-size: 0.95rem !important;
+          }
+          .poster-template-root #wp-next-steps-split a.poster-btn-primary {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 14px 24px !important;
+          }
+
+          .poster-template-root #wp-mission {
+            padding: 44px 16px !important;
+          }
+          .poster-template-root #wp-mission h2 {
+            font-size: clamp(1.7rem, 6.5vw, 2.4rem) !important;
+            margin-bottom: 20px !important;
+            word-break: break-word !important;
+          }
+          .poster-template-root #wp-mission div {
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+            margin-bottom: 28px !important;
+          }
+          .poster-template-root #wp-mission a.poster-btn-primary {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 14px 24px !important;
+          }
+
+          .poster-template-root #wp-contact {
+            padding: 44px 16px 36px !important;
+          }
+          .poster-template-root #wp-contact > div:nth-child(1) {
+            grid-template-columns: 1fr !important;
+            gap: 36px !important;
+            margin-bottom: 32px !important;
+          }
+          .poster-template-root #wp-contact h2 {
+            font-size: 1.7rem !important;
+            word-break: break-word !important;
+          }
+          .poster-template-root #wp-contact > div:nth-child(2) {
+            flex-direction: column !important;
+            gap: 12px !important;
+            text-align: center !important;
+          }
         }
       `}</style>
 
       {/* ── 1. NAVBAR / HEADER BLANCA Y COMPACTA (MENOS ALTA) ── */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 100, background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', width: '100%', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+      <header className="poster-header" style={{ position: 'sticky', top: 0, zIndex: 100, background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', width: '100%', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '8px 5%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {logoImage ? (

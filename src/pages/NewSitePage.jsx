@@ -17,13 +17,7 @@ import {
 } from 'lucide-react'
 
 const EXAMPLES = [
-  { label: 'Iglesia',     text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
-  { label: 'Abogados',    text: 'Bufete de abogados especializado en derecho corporativo y familiar' },
-  { label: 'Restaurante', text: 'Restaurante de comida salvadoreña en Santa Ana con ambiente familiar y precios accesibles' },
-  { label: 'Dentista',    text: 'Clínica dental moderna en San Miguel con tecnología de última generación' },
-  { label: 'Gym',         text: 'Gimnasio y centro de fitness premium en Guatemala City' },
-  { label: 'Consultora',  text: 'Consultora de marketing digital para PYMES en Latinoamérica' },
-  { label: 'Inmobiliaria',text: 'Inmobiliaria con 10 años de experiencia en bienes raíces comerciales y residenciales' },
+  { label: 'Iglesia', text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
 ]
 
 // Extract first http/https URL from any text
@@ -157,11 +151,11 @@ export default function NewSitePage() {
     <div style={{ minHeight: '100vh', background: '#F9FAFB', fontFamily: "'Inter', sans-serif" }}>
 
       {/* Top bar */}
-      <header style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '0 32px', height: 56, display: 'flex', alignItems: 'center', gap: 16, position: 'sticky', top: 0, zIndex: 40 }}>
-        <Link to="/app/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB' }}>
+      <header className="new-site-header" style={{ background: '#ffffff', borderBottom: '1px solid #E5E7EB', height: 56, display: 'flex', alignItems: 'center', gap: 16, position: 'sticky', top: 0, zIndex: 40 }}>
+        <Link to="/app/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#ffffff' }}>
           <ArrowLeft size={14} /> Mis sitios
         </Link>
-        <div style={{ height: 18, width: 1, background: '#E5E7EB' }} />
+        <div className="topbar-divider" style={{ height: 18, width: 1, minWidth: 1, maxWidth: 1, background: '#E5E7EB', padding: 0, margin: 0, flexShrink: 0 }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#00C896,#00A87A)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sparkles size={14} color="#fff" />
@@ -170,7 +164,7 @@ export default function NewSitePage() {
         </div>
       </header>
 
-      <div style={{ maxWidth: siteJson ? '1560px' : '840px', width: '100%', margin: '0 auto', padding: siteJson ? '24px 20px 80px' : '48px 24px', transition: 'max-width 0.4s ease' }}>
+      <div className="new-site-container" style={{ maxWidth: siteJson ? '1560px' : '840px', width: '100%', margin: '0 auto', transition: 'max-width 0.4s ease' }}>
 
         {/* Plan limit warning */}
         {blocked && (
@@ -187,14 +181,14 @@ export default function NewSitePage() {
         )}
 
         {/* Generator card */}
-        <div style={{ maxWidth: 840, margin: '0 auto 32px', background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 20, padding: '36px 40px', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+        <div className="new-site-card" style={{ maxWidth: 840, margin: '0 auto 32px', background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
 
           {/* Header */}
-          <div style={{ marginBottom: 28, textAlign: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(0,200,150,0.08)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 999, fontSize: '0.75rem', fontWeight: 700, color: '#00A87A', marginBottom: 14 }}>
+          <div className="new-site-card-header" style={{ marginBottom: 28, textAlign: 'center' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(0,200,150,0.08)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 999, fontSize: '0.75rem', fontWeight: 700, color: '#00A87A', marginBottom: 14, whiteSpace: 'nowrap', flexShrink: 0 }}>
               <Zap size={12} /> Generación con IA — Listo en segundos
             </div>
-            <h1 style={{ fontSize: '1.625rem', fontWeight: 900, color: '#111827', letterSpacing: '-0.03em', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 'clamp(1.35rem, 5vw, 1.75rem)', fontWeight: 900, color: '#111827', letterSpacing: '-0.03em', marginBottom: 8, lineHeight: 1.25 }}>
               ¿Cuál es tu negocio?
             </h1>
             <p style={{ color: '#6B7280', fontSize: '0.9375rem', lineHeight: 1.6 }}>
@@ -204,14 +198,14 @@ export default function NewSitePage() {
 
           {/* Textarea */}
           <div style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+            <div className="new-site-label-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 10 }}>
               <label style={{ fontWeight: 700, fontSize: '0.875rem', color: '#374151' }}>Describe tu negocio</label>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {isVoiceSupported && (
                   <button
                     type="button"
-                    onClick={handleToggleVoice}
+                    className="new-site-voice-btn" onClick={handleToggleVoice}
                     title={isListening ? 'Detener dictado por voz' : 'Dictar por voz usando tu micrófono'}
                     style={{
                       display: 'inline-flex',
@@ -251,6 +245,7 @@ export default function NewSitePage() {
             <div style={{ position: 'relative' }}>
               <textarea
                 ref={textareaRef}
+                className="new-site-textarea"
                 value={prompt}
                 onChange={e => {
                   setPrompt(e.target.value)
@@ -258,9 +253,9 @@ export default function NewSitePage() {
                   setDetectedUrl(extractUrl(e.target.value))
                 }}
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }}
-                placeholder='Ej: "Iglesia Cristiana Vida Nueva...", "Clínica dental moderna..." o presiona "Dictar por voz" para hablar por tu micrófono 🎙️'
+                placeholder='Ej: "Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios..." o presiona "Dictar por voz" 🎙️'
                 maxLength={500}
-                rows={4}
+                rows={3}
                 style={{
                   width: '100%',
                   padding: '14px 16px',
@@ -340,14 +335,16 @@ export default function NewSitePage() {
           </div>
 
           {/* Examples */}
-          <div style={{ marginBottom: 24 }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#9CA3AF', marginRight: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ejemplos:</span>
+          <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ejemplo rápido:</span>
             {EXAMPLES.map(ex => (
               <button key={ex.label} onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; textareaRef.current?.focus() }}
-                style={{ marginRight: 6, marginBottom: 6, padding: '5px 12px', borderRadius: 999, border: '1px solid #E5E7EB', background: '#F9FAFB', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', color: '#374151', fontFamily: 'inherit', transition: 'all 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00C896'; e.currentTarget.style.color = '#00A87A'; e.currentTarget.style.background = 'rgba(0,200,150,0.05)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.background = '#F9FAFB' }}
-              >{ex.label}</button>
+                style={{ padding: '6px 14px', borderRadius: 999, border: '1.5px solid #00C896', background: 'rgba(0,200,150,0.08)', fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer', color: '#00A87A', fontFamily: 'inherit', transition: 'all 0.15s', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#00C896'; e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.08)'; e.currentTarget.style.color = '#00A87A' }}
+              >
+                <span>⛪</span> {ex.label}
+              </button>
             ))}
           </div>
 
@@ -362,7 +359,8 @@ export default function NewSitePage() {
           <button
             onClick={handleGenerate}
             disabled={!prompt.trim() || generating}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', background: (!prompt.trim() || generating) ? 'rgba(0,200,150,0.4)' : 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 12, color: '#fff', fontWeight: 800, fontSize: '1rem', cursor: (!prompt.trim() || generating) ? 'not-allowed' : 'pointer', fontFamily: 'inherit', boxShadow: prompt.trim() ? '0 4px 16px rgba(0,200,150,0.35)' : 'none', transition: 'all 0.2s' }}
+            className="new-site-gen-btn"
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 20px', background: (!prompt.trim() || generating) ? 'rgba(0,200,150,0.4)' : 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 12, color: '#fff', fontWeight: 800, fontSize: '0.95rem', cursor: (!prompt.trim() || generating) ? 'not-allowed' : 'pointer', fontFamily: 'inherit', boxShadow: prompt.trim() ? '0 4px 16px rgba(0,200,150,0.35)' : 'none', transition: 'all 0.2s', whiteSpace: 'normal', textAlign: 'center' }}
           >
             {generating
               ? <><RefreshCw size={17} style={{ animation: 'spin 1s linear infinite' }} /> Generando tu sitio web...</>
@@ -407,7 +405,7 @@ export default function NewSitePage() {
                   <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span>🎨</span> Elige la plantilla y estilo de tu iglesia (4 Opciones únicas):
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 8 }}>
+                  <div className="template-selector-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
                     <button
                       type="button"
                       onClick={() => setSiteJson(prev => ({
@@ -418,11 +416,11 @@ export default function NewSitePage() {
                         accentColor: '#C4A35A',
                       }))}
                       style={{
-                        padding: '10px 14px', borderRadius: 10, border: '1.5px solid',
-                        borderColor: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '#C4A35A' : '#E5E7EB',
-                        background: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '#080A10' : '#F9FAFB',
-                        color: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '#DFCA88' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
+                        padding: '12px 10px', borderRadius: 10,
+                        border: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '2px solid #00C896' : '1.5px solid #E5E7EB',
+                        background: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
+                        color: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '#00A87A' : '#374151',
+                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
                       }}
                     >
                       <span>👑</span> 1. Obsidian & Gold
@@ -438,11 +436,11 @@ export default function NewSitePage() {
                         accentColor: '#E11D48',
                       }))}
                       style={{
-                        padding: '10px 14px', borderRadius: 10, border: '1.5px solid',
-                        borderColor: siteJson.churchTemplateVariant === 'mygateway' ? '#E11D48' : '#E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'mygateway' ? '#0F172A' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'mygateway' ? '#FFFFFF' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
+                        padding: '12px 10px', borderRadius: 10,
+                        border: siteJson.churchTemplateVariant === 'mygateway' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
+                        background: siteJson.churchTemplateVariant === 'mygateway' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
+                        color: siteJson.churchTemplateVariant === 'mygateway' ? '#00A87A' : '#374151',
+                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
                       }}
                     >
                       <span>🌊</span> 2. Life Moderno
@@ -458,11 +456,11 @@ export default function NewSitePage() {
                         accentColor: '#10B981',
                       }))}
                       style={{
-                        padding: '10px 14px', borderRadius: 10, border: '1.5px solid',
-                        borderColor: siteJson.churchTemplateVariant === 'poster' ? '#4F46E5' : '#E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'poster' ? '#4F46E5' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'poster' ? '#FFFFFF' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
+                        padding: '12px 10px', borderRadius: 10,
+                        border: siteJson.churchTemplateVariant === 'poster' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
+                        background: siteJson.churchTemplateVariant === 'poster' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
+                        color: siteJson.churchTemplateVariant === 'poster' ? '#00A87A' : '#374151',
+                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
                       }}
                     >
                       <span>✨</span> 3. Experiencia Simbólica
@@ -478,11 +476,11 @@ export default function NewSitePage() {
                         accentColor: '#FACC15',
                       }))}
                       style={{
-                        padding: '10px 14px', borderRadius: 10, border: '1.5px solid',
-                        borderColor: siteJson.churchTemplateVariant === 'afiche' ? '#FACC15' : '#E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'afiche' ? '#090B10' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'afiche' ? '#FACC15' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s'
+                        padding: '12px 10px', borderRadius: 10,
+                        border: siteJson.churchTemplateVariant === 'afiche' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
+                        background: siteJson.churchTemplateVariant === 'afiche' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
+                        color: siteJson.churchTemplateVariant === 'afiche' ? '#00A87A' : '#374151',
+                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
                       }}
                     >
                       <span>🎨</span> 4. Afiche Cinemático
@@ -493,13 +491,89 @@ export default function NewSitePage() {
             </div>
 
             {/* Preview */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', border: '1.5px solid #E5E7EB' }}>
+            <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', border: '1.5px solid #E5E7EB', minWidth: 0, width: '100%' }}>
               <WebsitePreview data={siteJson} />
             </div>
           </div>
         )}
       </div>
       <style>{`
+        .new-site-header {
+          padding: 0 32px !important;
+          background-color: #ffffff !important;
+          border-bottom: 1px solid #E5E7EB !important;
+        }
+        .topbar-divider {
+          width: 1px !important;
+          min-width: 1px !important;
+          max-width: 1px !important;
+          height: 18px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          background-color: #E5E7EB !important;
+          flex-shrink: 0 !important;
+        }
+        .template-selector-grid {
+          display: grid !important;
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 8px !important;
+        }
+        .new-site-container {
+          padding: 48px 24px;
+        }
+        .new-site-card {
+          padding: 36px 40px;
+        }
+        @media (max-width: 640px) {
+          .new-site-header {
+            padding: 0 14px !important;
+          }
+          .new-site-container {
+            padding: 16px 10px !important;
+          }
+          .new-site-card {
+            padding: 20px 14px !important;
+            border-radius: 16px !important;
+            border: 1.5px solid #E5E7EB !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+            margin-bottom: 20px !important;
+          }
+          .new-site-card-header {
+            margin-bottom: 18px !important;
+          }
+          .new-site-card-header h1 {
+            font-size: 1.45rem !important;
+            margin-bottom: 6px !important;
+          }
+          .new-site-card-header p {
+            font-size: 0.875rem !important;
+            line-height: 1.5 !important;
+          }
+          .new-site-label-row {
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 8px !important;
+            margin-bottom: 8px !important;
+          }
+          .new-site-voice-btn {
+            width: auto !important;
+            padding: 4px 10px !important;
+            font-size: 0.75rem !important;
+          }
+          .new-site-textarea {
+            min-height: 160px !important;
+            padding: 16px !important;
+            font-size: 0.95rem !important;
+            border-radius: 14px !important;
+            line-height: 1.6 !important;
+          }
+          .new-site-gen-btn {
+            padding: 15px 18px !important;
+            font-size: 0.95rem !important;
+            border-radius: 12px !important;
+          }
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes voicePulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }

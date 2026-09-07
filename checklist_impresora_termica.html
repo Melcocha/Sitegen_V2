@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist de Configuración de Impresora Térmica - ERP ARIAS</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+    :root {
+      --color-hardware:   #d9e8fb;
+      --color-drivers:    #f4d5c9;
+      --color-erp:        #d4edda;
+      --color-pruebas:    #fff4c2;
+      --color-capacita:   #f0e6ff;
+      --header-bg:        #1e293b;
+      --header-text:      #ffffff;
+      --border:           #c8cdd3;
+      --text-main:        #1a1a2e;
+      --text-muted:       #6b7280;
+      --primary:          #2563eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", Arial, sans-serif; background: #f0f4f8; color: var(--text-main); padding: 24px; }
+    .page { max-width: 1100px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,.10); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%); padding: 32px 40px; display: flex; align-items: center; gap: 24px; }
+    .header-logo { width: 64px; height: 64px; background: rgba(255,255,255,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+    .header-text { color: #fff; }
+    .header-text h1 { font-size: 26px; font-weight: 700; }
+    .header-text p  { font-size: 14px; opacity: .85; margin-top: 4px; }
+    .meta-bar { background: #f8fafc; border-bottom: 1px solid var(--border); padding: 16px 40px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px 16px; }
+    .meta-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .meta-field input[type="text"],
+    .meta-field input[type="date"],
+    .meta-field input[type="datetime-local"],
+    .meta-field input[type="number"] {
+      margin-top: 6px;
+      width: 100%;
+      border: none;
+      border-bottom: 1.5px solid #93c5fd;
+      background: transparent;
+      font-size: 12px;
+      font-family: inherit;
+      color: var(--text-main);
+      outline: none;
+      padding: 2px 0;
+      height: 24px;
+      -webkit-appearance: none;
+      appearance: none;
+      box-shadow: none;
+    }
+    .meta-field input[type="text"]:focus,
+    .meta-field input[type="date"]:focus,
+    .meta-field input[type="datetime-local"]:focus,
+    .meta-field input[type="number"]:focus {
+      border-bottom-color: #2563eb;
+    }
+    .meta-field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      opacity: 0.5;
+      cursor: pointer;
+      filter: invert(30%) sepia(100%) hue-rotate(190deg);
+    }
+    .instructions { padding: 14px 40px; background: #eff6ff; border-bottom: 1px solid #bfdbfe; font-size: 12px; color: #1e40af; }
+    .instructions span { font-weight: 600; }
+    .progress-section { padding: 18px 40px 20px; }
+    .progress-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+    .progress-bar-bg { width: 100%; height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); width: 0%; border-radius: 99px; transition: width .4s ease; }
+    .progress-text { font-size: 12px; color: var(--text-muted); margin-top: 4px; text-align: right; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 40px 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #374151; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+    .table-wrap { padding: 0 40px 32px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr th { background: var(--header-bg); color: var(--header-text); padding: 10px 14px; text-align: left; font-weight: 600; border: 1px solid #334155; }
+    tbody tr td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: middle; }
+    td.check { text-align: center; width: 40px; }
+    td.check input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+    td.obs { min-width: 200px; width: 24%; }
+    td.obs .obs-line { border-bottom: 1px solid #9ca3af; height: 20px; width: 100%; display: block; }
+    td.fase { font-weight: 600; font-size: 12px; white-space: nowrap; }
+    td.categoria { font-size: 12px; color: #374151; white-space: nowrap; }
+    tr.clr-hardware  td { background: var(--color-hardware); }
+    tr.clr-drivers   td { background: var(--color-drivers); }
+    tr.clr-erp       td { background: var(--color-erp); }
+    tr.clr-pruebas   td { background: var(--color-pruebas); }
+    tr.clr-capacita  td { background: var(--color-capacita); }
+    tr.section-header td { background: var(--header-bg) !important; color: #fff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .7px; padding: 6px 14px; border-color: #334155; }
+    .footer { background: #f8fafc; border-top: 1px solid var(--border); padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
+    .footer-sigs { display: flex; gap: 60px; }
+    .sig-block { text-align: center; }
+    .sig-line { border-top: 1px solid #9ca3af; width: 160px; margin-bottom: 4px; }
+    .btn-print { position: fixed; bottom: 28px; right: 28px; background: linear-gradient(135deg,#2563eb,#06b6d4); color: #fff; border: none; -webkit-appearance: none; appearance: none; padding: 12px 22px; border-radius: 99px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px rgba(37,99,235,.4); display: flex; align-items: center; gap: 8px; z-index: 999; }
+
+    /* ===== PRINT / PDF STYLES ===== */
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 12mm 10mm 10mm 10mm;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      body {
+        background: #fff !important;
+        padding: 0 !important;
+        font-size: 11px !important;
+      }
+
+      .page {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .no-print,
+      .btn-print,
+      .progress-section,
+      .instructions {
+        display: none !important;
+      }
+
+      .header {
+        padding: 14px 20px !important;
+        gap: 12px !important;
+      }
+      .header-logo { width: 42px !important; height: 42px !important; font-size: 20px !important; }
+      .header-text h1 { font-size: 18px !important; }
+      .header-text p  { font-size: 11px !important; }
+
+      .meta-bar {
+        padding: 10px 20px !important;
+        grid-template-columns: repeat(6, 1fr) !important;
+        gap: 6px 12px !important;
+      }
+      .meta-field label {
+        font-size: 8px !important;
+        letter-spacing: .3px !important;
+      }
+      .meta-field input {
+        font-size: 11px !important;
+        height: 18px !important;
+        border-bottom: 1px solid #93c5fd !important;
+      }
+
+      .legend {
+        padding: 4px 20px 6px !important;
+        gap: 6px !important;
+      }
+      .legend-item { font-size: 9px !important; }
+      .legend-dot  { width: 9px !important; height: 9px !important; }
+
+      .table-wrap { padding: 0 20px 10px !important; }
+
+      table { font-size: 10px !important; }
+
+      thead tr th {
+        padding: 6px 8px !important;
+        font-size: 10px !important;
+        background: #1e293b !important;
+        color: #fff !important;
+      }
+
+      tbody tr td {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+      }
+
+      td.check { width: 22px !important; }
+      td.fase { width: 90px !important; }
+      td.categoria { width: 100px !important; }
+      td.obs { width: 22% !important; }
+
+      tr.clr-hardware  td { background: #d9e8fb !important; }
+      tr.clr-drivers   td { background: #f4d5c9 !important; }
+      tr.clr-erp       td { background: #d4edda !important; }
+      tr.clr-pruebas   td { background: #fff4c2 !important; }
+      tr.clr-capacita  td { background: #f0e6ff !important; }
+
+      tr.section-header td {
+        background: #1e293b !important;
+        color: #fff !important;
+        padding: 4px 8px !important;
+        font-size: 9px !important;
+      }
+
+      td.check input[type="checkbox"] {
+        width: 12px !important;
+        height: 12px !important;
+      }
+
+      .obs-line {
+        border-bottom: 1px solid #9ca3af !important;
+        height: 16px !important;
+        min-height: 16px !important;
+      }
+
+      .footer {
+        padding: 10px 20px !important;
+        font-size: 10px !important;
+      }
+      .sig-line { width: 130px !important; }
+
+      tr { page-break-inside: avoid; }
+      tr.section-header { page-break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-logo">&#128438;</div>
+    <div class="header-text">
+      <h1>Checklist de Configuración de Impresora Térmica</h1>
+      <p>Registro técnico de instalación, drivers, pruebas y entrega de equipo POS / Térmico</p>
+    </div>
+  </div>
+
+  <div class="meta-bar">
+    <div class="meta-field"><label for="f-cliente">Cliente / Empresa</label><input type="text" id="f-cliente" placeholder="Nombre de la empresa o cliente..."></div>
+    <div class="meta-field"><label for="f-tecnico">Técnico Responsable</label><input type="text" id="f-tecnico" placeholder="Nombre del técnico..."></div>
+    <div class="meta-field"><label for="f-fecha">Fecha y Hora</label><input type="datetime-local" id="f-fecha"></div>
+    <div class="meta-field"><label for="f-cantidad">Cant. Impresoras</label><input type="number" id="f-cantidad" placeholder="1" min="1" value="1"></div>
+    <div class="meta-field"><label for="f-modelo">Modelo / Marca</label><input type="text" id="f-modelo" placeholder="Ej: Epson TM-T20III / Xprinter 80mm"></div>
+    <div class="meta-field"><label for="f-conexion">Tipo Conexión</label><input type="text" id="f-conexion" placeholder="USB / LAN / Bluetooth / Serial"></div>
+  </div>
+
+  <div class="instructions"><span>Instrucciones:</span> Verifique y marque cada tarea al ser completada durante la instalación. Detalle especificaciones o novedades en Observaciones. Al finalizar, recabe la firma del cliente.</div>
+
+  <div class="progress-section">
+    <div class="progress-label">Progreso de Configuración e Instalación</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">0 / 0 tareas completadas (0%)</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#d9e8fb"></div> 1. Hardware y Cables</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f4d5c9"></div> 2. Drivers y Puertos</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d4edda"></div> 3. Configuración en ERP/POS</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fff4c2"></div> 4. Pruebas de Impresión</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f0e6ff"></div> 5. Capacitación y Entrega</div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="checkTable">
+      <thead>
+        <tr>
+          <th>&#10003;</th>
+          <th>Fase</th>
+          <th>Componente</th>
+          <th>Detalle de Instalación / Tarea</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- FASE 1 -->
+        <tr class="section-header"><td colspan="5">&#128260; FASE 1 - Inspección Física y Conexión Hardware</td></tr>
+        <tr class="clr-hardware"><td class="check"><input type="checkbox"></td><td class="fase">Hardware</td><td class="categoria">Inspección</td><td>Desempaque y verificación física de la impresora (fuente de poder, cable USB/Red y rollo de prueba)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-hardware"><td class="check"><input type="checkbox"></td><td class="fase">Hardware</td><td class="categoria">Alimentación</td><td>Conexión de fuente de poder a tomacorriente con protección de voltaje o regulador</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-hardware"><td class="check"><input type="checkbox"></td><td class="fase">Hardware</td><td class="categoria">Conectividad</td><td>Conexión de cable de interfaz de datos (USB / Ethernet RJ45 / Serial) a la computadora / red local</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-hardware"><td class="check"><input type="checkbox"></td><td class="fase">Hardware</td><td class="categoria">Consumible</td><td>Inserción correcta del rollo de papel térmico (80mm / 58mm) con el lado sensible hacia el cabezal</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-hardware"><td class="check"><input type="checkbox"></td><td class="fase">Hardware</td><td class="categoria">Self-Test</td><td>Prueba de autocomprobación física de la impresora (Self-Test sosteniendo botón Feed al encender)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+
+        <!-- FASE 2 -->
+        <tr class="section-header"><td colspan="5">&#128187; FASE 2 - Instalación de Drivers y Puertos del Sistema Operativo</td></tr>
+        <tr class="clr-drivers"><td class="check"><input type="checkbox"></td><td class="fase">Drivers</td><td class="categoria">Instalador</td><td>Descarga e instalación del controlador oficial (Driver POS / ESC-POS / Epson / Xprinter / Star)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-drivers"><td class="check"><input type="checkbox"></td><td class="fase">Drivers</td><td class="categoria">Puerto COM/USB/IP</td><td>Asignación y verificación del puerto de comunicación (USB Virtual Port / IP Estática configurada)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-drivers"><td class="check"><input type="checkbox"></td><td class="fase">Drivers</td><td class="categoria">Nombrado</td><td>Configurar nombre legible en impresoras de Windows (ej. "Impresora_Caja_1" o "Ticket_POS")</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-drivers"><td class="check"><input type="checkbox"></td><td class="fase">Drivers</td><td class="categoria">Propiedades</td><td>Ajuste del tamaño de papel predeterminado (80x297mm / 58x297mm) y velocidad de transmisión</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-drivers"><td class="check"><input type="checkbox"></td><td class="fase">Drivers</td><td class="categoria">Prueba SO</td><td>Impresión exitosa de "Página de prueba" desde las propiedades del sistema operativo</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+
+        <!-- FASE 3 -->
+        <tr class="section-header"><td colspan="5">&#9881;&#65039; FASE 3 - Configuración e Integración en ERP / Sistema POS</td></tr>
+        <tr class="clr-erp"><td class="check"><input type="checkbox"></td><td class="fase">ERP / POS</td><td class="categoria">Asignación Caja</td><td>Vinculación de la impresora en el módulo de Ventas / Cajas / Sucursales del sistema ERP ARIAS</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-erp"><td class="check"><input type="checkbox"></td><td class="fase">ERP / POS</td><td class="categoria">Formato Ticket</td><td>Configuración del formato de impresión térmica (Ticket 80mm / 58mm, tipo de letra y márgenes)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-erp"><td class="check"><input type="checkbox"></td><td class="fase">ERP / POS</td><td class="categoria">Encabezado/Pie</td><td>Personalización de logotipo, nombre comercial, NIT/NRC, dirección y mensaje final en el ticket</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-erp"><td class="check"><input type="checkbox"></td><td class="fase">ERP / POS</td><td class="categoria">Cajón Dinero</td><td>Conexión del cable RJ11 del cajón de dinero y envío del pulso de apertura (DK Port Open Signal)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-erp"><td class="check"><input type="checkbox"></td><td class="fase">ERP / POS</td><td class="categoria">Guillotina / Corte</td><td>Configuración del comando de corte automático de papel (Auto-Cutter Full / Partial Cut)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+
+        <!-- FASE 4 -->
+        <tr class="section-header"><td colspan="5">&#128448;&#65039; FASE 4 - Pruebas de Impresión Operativas y Calidad</td></tr>
+        <tr class="clr-pruebas"><td class="check"><input type="checkbox"></td><td class="fase">Pruebas</td><td class="categoria">Ticket Venta</td><td>Emisión e impresión de ticket / factura de venta de prueba desde el sistema POS</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-pruebas"><td class="check"><input type="checkbox"></td><td class="fase">Pruebas</td><td class="categoria">Cierre Caja</td><td>Impresión de reporte de cierre de caja (Corte X / Corte Z)</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-pruebas"><td class="check"><input type="checkbox"></td><td class="fase">Pruebas</td><td class="categoria">Apertura Cajón</td><td>Verificación de apertura automática del cajón de dinero al finalizar el cobro</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-pruebas"><td class="check"><input type="checkbox"></td><td class="fase">Pruebas</td><td class="categoria">Legibilidad QR/Barra</td><td>Verificación de nitidez y escaneo de códigos de barra (Code128) y códigos QR en el ticket</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-pruebas"><td class="check"><input type="checkbox"></td><td class="fase">Pruebas</td><td class="categoria">Corte Limpio</td><td>Verificación de corte mecánico de papel sin atascos ni bordes irregulares</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+
+        <!-- FASE 5 -->
+        <tr class="section-header"><td colspan="5">&#127891; FASE 5 - Capacitación del Cliente y Entrega de Conformidad</td></tr>
+        <tr class="clr-capacita"><td class="check"><input type="checkbox"></td><td class="fase">Entrega</td><td class="categoria">Papel Térmico</td><td>Instrucción al cliente sobre reemplazo de rollos de papel y detección del hilo rojo de fin de papel</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-capacita"><td class="check"><input type="checkbox"></td><td class="fase">Entrega</td><td class="categoria">Mantenimiento</td><td>Explicación sobre limpieza básica de cabezal térmico con alcohol isopropílico y prevención de humedad</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-capacita"><td class="check"><input type="checkbox"></td><td class="fase">Entrega</td><td class="categoria">Resolución Atascos</td><td>Demostración de destrabe de guillotina/cuchilla en caso de atascos accidentales</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-capacita"><td class="check"><input type="checkbox"></td><td class="fase">Entrega</td><td class="categoria">Resguardo Drivers</td><td>Entrega de archivo o enlace de respaldo de controladores y manual de usuario al cliente</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+        <tr class="clr-capacita"><td class="check"><input type="checkbox"></td><td class="fase">Entrega</td><td class="categoria">Conformidad</td><td>Firma y recepción a conformidad por parte del cliente o encargado de caja</td><td class="obs"><span class="obs-line" contenteditable="true" style="outline:none; display:block; min-height:20px; cursor:text;"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div>ERP ARIAS &nbsp;|&nbsp; Checklist Técnico de Impresora Térmica &nbsp;|&nbsp; Generado: <span id="docDate"></span></div>
+    <div class="footer-sigs">
+      <div class="sig-block"><div class="sig-line"></div><div>Firma del Técnico Instalador</div></div>
+      <div class="sig-block"><div class="sig-line"></div><div>Firma del Cliente / Encargado</div></div>
+    </div>
+  </div>
+</div>
+
+<button class="btn-print no-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+
+<script>
+  document.getElementById("docDate").textContent = new Date().toLocaleDateString("es-SV", {year:"numeric",month:"long",day:"numeric"});
+  function updateProgress() {
+    var boxes = document.querySelectorAll("#checkTable input[type=checkbox]");
+    var checked = 0; 
+    for(var i = 0; i < boxes.length; i++){
+      if(boxes[i].checked) checked++;
+    }
+    var total = boxes.length; 
+    var pct = total ? Math.round(checked / total * 100) : 0;
+    document.getElementById("progressBar").style.width = pct + "%";
+    document.getElementById("progressText").textContent = checked + " / " + total + " tareas completadas (" + pct + "%)";
+  }
+  var cbs = document.querySelectorAll("#checkTable input[type=checkbox]");
+  for(var i = 0; i < cbs.length; i++){
+    cbs[i].addEventListener("change", updateProgress);
+  }
+  updateProgress();
+</script>
+</body>
+</html>

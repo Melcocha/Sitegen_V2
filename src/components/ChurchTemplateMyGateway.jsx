@@ -162,13 +162,13 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
   const accentCyan = data.accentColor || '#00D8F6'
 
   return (
-    <div style={{ fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
+    <div className="mygateway-template-root" style={{ fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
-        .northside-hero-h1 {
+        .mygateway-template-root .northside-hero-h1 {
           font-family: '${activeFont}', system-ui, sans-serif;
           font-weight: 900;
           letter-spacing: -0.04em;
@@ -176,58 +176,89 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
           color: #FFFFFF;
           text-shadow: 0 4px 30px rgba(0,0,0,0.7);
         }
-        .northside-btn-vibrant {
+        .mygateway-template-root .northside-btn-vibrant {
           background: ${accentCyan};
           color: #0F172A;
           font-weight: 900;
           transition: all 0.2s ease;
           box-shadow: 0 6px 20px ${accentCyan}55;
         }
-        .northside-btn-vibrant:hover {
+        .mygateway-template-root .northside-btn-vibrant:hover {
           background: #BE123C;
           transform: translateY(-2px);
           box-shadow: 0 10px 25px rgba(225, 29, 72, 0.55);
         }
-        .northside-btn-vibrant-outline {
+        .mygateway-template-root .northside-btn-vibrant-outline {
           border: 2px solid #E11D48;
           color: #E11D48;
           background: transparent;
           font-weight: 800;
           transition: all 0.2s ease;
         }
-        .northside-btn-vibrant-outline:hover {
+        .mygateway-template-root .northside-btn-vibrant-outline:hover {
           background: #E11D48;
           color: #FFFFFF;
           transform: translateY(-2px);
         }
-        .northside-btn-white {
+        .mygateway-template-root .northside-btn-white {
           background: #FFFFFF;
           color: #000000;
           font-weight: 800;
           transition: all 0.2s ease;
         }
-        .northside-btn-white:hover {
+        .mygateway-template-root .northside-btn-white:hover {
           background: #F3F4F6;
           transform: translateY(-2px);
         }
-        .northside-btn-white-outline {
+        .mygateway-template-root .northside-btn-white-outline {
           border: 1.5px solid #FFFFFF;
           color: #FFFFFF;
           background: transparent;
           font-weight: 800;
           transition: all 0.2s ease;
         }
-        .northside-btn-white-outline:hover {
+        .mygateway-template-root .northside-btn-white-outline:hover {
           background: #FFFFFF;
           color: #000000;
           transform: translateY(-2px);
         }
-        .editable-element {
+        .mygateway-template-root .editable-element {
           cursor: ${editMode ? 'pointer' : 'default'};
           transition: outline 0.15s ease;
         }
-        .editable-element:hover {
+        .mygateway-template-root .editable-element:hover {
           ${editMode ? 'outline: 2px dashed #E11D48; outline-offset: 4px;' : ''}
+        }
+
+        @media (max-width: 768px) {
+          .mygateway-template-root img[data-field="logoImage"] {
+            max-width: 180px !important;
+            max-height: 44px !important;
+          }
+          .mygateway-template-root section {
+            padding: 40px 16px !important;
+          }
+          .mygateway-template-root .northside-hero-h1, 
+          .mygateway-template-root h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.5rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .mygateway-template-root h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .mygateway-template-root p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+          }
+          .mygateway-template-root section div[style*="display: grid"], 
+          .mygateway-template-root section div[style*="display:grid"] {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
         }
       `}</style>
 

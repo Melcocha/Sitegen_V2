@@ -183,7 +183,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
   const accentYellow = data.accentColor || '#FACC15'
 
   return (
-    <div style={{
+    <div className="afiche-template-root" style={{
       fontFamily: `'${activeFont}', 'Syne', 'Plus Jakarta Sans', sans-serif`,
       color: '#FFFFFF',
       background: primaryBg,
@@ -196,20 +196,20 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Italiana&family=Playfair+Display:ital,wght@1,700;1,900&family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-        .afiche-script-font {
+        .afiche-template-root .afiche-script-font {
           font-family: 'Playfair Display', 'Italiana', serif;
           font-style: italic;
           font-weight: 900;
         }
 
-        .afiche-title-font {
+        .afiche-template-root .afiche-title-font {
           font-family: 'Bebas Neue', 'Syne', sans-serif;
           letter-spacing: 0.04em;
           line-height: 0.95;
           text-transform: uppercase;
         }
 
-        .afiche-glow-btn {
+        .afiche-template-root .afiche-glow-btn {
           background: #FACC15;
           color: #090B10;
           font-family: 'Syne', sans-serif;
@@ -219,13 +219,13 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           transition: all 0.25s ease;
           box-shadow: 0 0 25px rgba(250, 204, 21, 0.35);
         }
-        .afiche-glow-btn:hover {
+        .afiche-template-root .afiche-glow-btn:hover {
           transform: translateY(-2px);
           box-shadow: 0 0 35px rgba(250, 204, 21, 0.55);
           background: #FFE066;
         }
 
-        .afiche-oval-badge {
+        .afiche-template-root .afiche-oval-badge {
           border: 1.5px solid #FACC15;
           border-radius: 999px;
           padding: 6px 18px;
@@ -236,25 +236,63 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           backdrop-filter: blur(8px);
         }
 
-        .afiche-photo-banner {
+        .afiche-template-root .afiche-photo-banner {
           position: relative;
           overflow: hidden;
           transition: transform 0.4s ease;
         }
-        .afiche-photo-banner:hover img {
+        .afiche-template-root .afiche-photo-banner:hover img {
           transform: scale(1.04);
         }
-        .editable-element {
+        .afiche-template-root .editable-element {
           cursor: ${editMode ? 'pointer' : 'default'};
           transition: outline 0.15s ease;
         }
-        .editable-element:hover {
+        .afiche-template-root .editable-element:hover {
           ${editMode ? 'outline: 2px dashed #FACC15; outline-offset: 4px;' : ''}
+        }
+
+        @media (max-width: 768px) {
+          .afiche-template-root header.afiche-header {
+            padding: 12px 16px !important;
+          }
+          .afiche-template-root header.afiche-header nav {
+            gap: 8px !important;
+          }
+          .afiche-template-root header.afiche-header nav a:not(:last-child) {
+            display: none !important;
+          }
+          .afiche-template-root header.afiche-header nav a:last-child {
+            padding: 6px 12px !important;
+            font-size: 0.7rem !important;
+          }
+
+          .afiche-template-root section {
+            padding: 40px 16px !important;
+          }
+          .afiche-template-root h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.5rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+          }
+          .afiche-template-root h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .afiche-template-root p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+          }
+          .afiche-template-root section div[style*="display: grid"], .afiche-template-root section div[style*="display:grid"] {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
         }
       `}</style>
 
       {/* NAVBAR CINEMÁTICO OSCURO */}
-      <header style={{
+      <header className="afiche-header" style={{
         position: 'absolute',
         top: 0,
         left: 0,

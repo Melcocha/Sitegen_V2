@@ -152,20 +152,20 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
   const primaryBg = data.primaryColor || '#07080D'
 
   return (
-    <div style={{ position: 'relative', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
+    <div className="nucleus-template-root" style={{ position: 'relative', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap');
         
-        .afiche3-hero-h1 {
+        .nucleus-template-root .afiche3-hero-h1 {
           font-family: '${activeFont}', Georgia, serif;
           font-weight: 900;
           letter-spacing: -0.02em;
           line-height: 1.05;
           color: #FFFFFF;
         }
-        .afiche3-btn-gold {
+        .nucleus-template-root .afiche3-btn-gold {
           background: ${accentGold};
           color: ${primaryBg};
           font-weight: 900;
@@ -174,30 +174,276 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           transition: all 0.25s ease;
           box-shadow: 0 10px 30px ${accentGold}55;
         }
-        .afiche3-btn-gold:hover {
+        .nucleus-template-root .afiche3-btn-gold:hover {
           filter: brightness(1.15);
           transform: translateY(-2px);
         }
-        .afiche3-btn-outline-gold {
-          background: rgba(7, 8, 13, 0.6);
-          border: 1.5px solid ${accentGold};
+        .nucleus-template-root .afiche3-btn-outline-gold {
+          border: 2px solid ${accentGold};
           color: ${accentGold};
-          font-weight: 900;
+          background: transparent;
+          font-weight: 800;
           letter-spacing: 0.12em;
           text-transform: uppercase;
-          backdrop-filter: blur(8px);
           transition: all 0.25s ease;
         }
-        .afiche3-btn-outline-gold:hover {
+        .nucleus-template-root .afiche3-btn-outline-gold:hover {
           background: rgba(196, 163, 90, 0.15);
           transform: translateY(-2px);
         }
-        .editable-element {
+        .nucleus-template-root .editable-element {
           cursor: ${editMode ? 'pointer' : 'default'};
           transition: outline 0.15s ease;
         }
-        .editable-element:hover {
+        .nucleus-template-root .editable-element:hover {
           ${editMode ? 'outline: 2px dashed #C4A35A; outline-offset: 4px;' : ''}
+        }
+
+        @media (max-width: 768px) {
+          .nucleus-template-root #wp-announcement {
+            padding: 8px 12px !important;
+            font-size: 0.75rem !important;
+            gap: 6px !important;
+          }
+          .nucleus-template-root #wp-announcement span {
+            font-size: 0.75rem !important;
+          }
+
+          .nucleus-template-root header.nucleus-header {
+            top: 0 !important;
+            position: relative !important;
+            background: #07080D !important;
+          }
+          .nucleus-template-root header.nucleus-header > div {
+            padding: 12px 16px !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+          }
+          .nucleus-template-root header.nucleus-header img[data-field="logoImage"] {
+            max-height: 44px !important;
+            max-width: 180px !important;
+          }
+          .nucleus-template-root header.nucleus-header nav {
+            gap: 6px !important;
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+          .nucleus-template-root header.nucleus-header nav a:not(:last-child) {
+            display: none !important;
+          }
+          .nucleus-template-root header.nucleus-header nav a:last-child {
+            padding: 8px 16px !important;
+            font-size: 0.75rem !important;
+            margin-left: auto !important;
+          }
+
+          .nucleus-template-root #wp-hero {
+            min-height: auto !important;
+            padding: 0 !important;
+          }
+          .nucleus-template-root #wp-hero > div:nth-of-type(2) {
+            padding: 36px 16px 40px !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .nucleus-template-root .afiche3-hero-h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.4rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .nucleus-template-root #wp-hero p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 24px !important;
+          }
+          .nucleus-template-root #wp-hero div[style*="display: flex"] {
+            flex-direction: column !important;
+            width: 100% !important;
+          }
+          .nucleus-template-root #wp-hero a {
+            width: 100% !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+            padding: 14px 20px !important;
+          }
+
+          .nucleus-template-root #wp-vision {
+            padding: 44px 16px !important;
+            box-sizing: border-box !important;
+          }
+          .nucleus-template-root #wp-vision > div {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+            width: 100% !important;
+          }
+          .nucleus-template-root #wp-vision h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            line-height: 1.2 !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-vision p {
+            font-size: 0.95rem !important;
+          }
+          .nucleus-template-root #wp-vision > div > div:nth-child(2) {
+            padding-left: 12px !important;
+          }
+          .nucleus-template-root #wp-vision div[data-field="visionImage"] {
+            height: 220px !important;
+          }
+
+          .nucleus-template-root #wp-panoramas div[data-field*="panoramas"] {
+            height: 240px !important;
+          }
+          .nucleus-template-root #wp-panoramas div[style*="padding: 0 8%"] {
+            padding: 0 16px !important;
+          }
+          .nucleus-template-root #wp-panoramas h3 {
+            font-size: clamp(1.5rem, 6.5vw, 2rem) !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-panoramas p {
+            font-size: 0.9rem !important;
+          }
+
+          .nucleus-template-root #wp-sermons {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-sermons h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-sermons > div > div:nth-child(2) {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
+          .nucleus-template-root #wp-sermons div[data-field*="sermons"] {
+            height: 200px !important;
+          }
+
+          .nucleus-template-root #wp-plan-visit {
+            grid-template-columns: 1fr !important;
+          }
+          .nucleus-template-root #wp-plan-visit > div:nth-child(1) {
+            min-height: 220px !important;
+            height: 220px !important;
+          }
+          .nucleus-template-root #wp-plan-visit > div:nth-child(2) {
+            padding: 36px 16px !important;
+          }
+          .nucleus-template-root #wp-plan-visit h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-plan-visit a {
+            width: 100% !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+          }
+
+          .nucleus-template-root #wp-welcome {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-welcome h2 {
+            font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-welcome p {
+            font-size: 0.95rem !important;
+          }
+
+          .nucleus-template-root #wp-values {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-values > div > div:nth-child(2) {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+
+          .nucleus-template-root #wp-ministries {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-ministries > div > div:nth-child(2) {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .nucleus-template-root #wp-ministries div[data-field*="ministries"] {
+            height: 180px !important;
+          }
+
+          .nucleus-template-root #wp-next-steps {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-next-steps > div > div:nth-child(2) {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+
+          .nucleus-template-root #wp-donations {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-donations > div {
+            padding: 32px 16px !important;
+          }
+          .nucleus-template-root #wp-donations h2 {
+            font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+            word-break: break-word !important;
+          }
+          .nucleus-template-root #wp-donations a {
+            width: 100% !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+          }
+
+          .nucleus-template-root #wp-prayer {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-prayer > div > div {
+            padding: 24px 16px !important;
+          }
+          .nucleus-template-root #wp-prayer h2 {
+            font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+            word-break: break-word !important;
+          }
+
+          .nucleus-template-root #wp-about {
+            padding: 44px 16px !important;
+          }
+          .nucleus-template-root #wp-about > div {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
+          .nucleus-template-root #wp-about div[data-field="aboutImage"] {
+            height: 220px !important;
+          }
+
+          .nucleus-template-root #wp-widget {
+            bottom: 12px !important;
+            right: 12px !important;
+            left: 12px !important;
+            max-width: none !important;
+            padding: 14px 18px !important;
+          }
+
+          .nucleus-template-root #wp-contact {
+            padding: 44px 16px 36px !important;
+          }
+          .nucleus-template-root #wp-contact > div:nth-child(1) {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
+
+          .nucleus-template-root h1, 
+          .nucleus-template-root h2, 
+          .nucleus-template-root h3, 
+          .nucleus-template-root h4 {
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .nucleus-template-root img {
+            max-width: 100% !important;
+          }
         }
       `}</style>
 
@@ -216,7 +462,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
       )}
 
       {/* ── 1. TOPBAR EDITORIAL CON MENÚ Y LOGO CAMBIABLE ── */}
-      <header style={{ position: 'absolute', top: data.announcementBar?.visible !== false ? 40 : 0, left: 0, right: 0, zIndex: 100, background: 'linear-gradient(180deg, rgba(7,8,13,0.85) 0%, transparent 100%)' }}>
+      <header className="nucleus-header" style={{ position: 'absolute', top: data.announcementBar?.visible !== false ? 40 : 0, left: 0, right: 0, zIndex: 100, background: 'linear-gradient(180deg, rgba(7,8,13,0.85) 0%, transparent 100%)' }}>
         <div style={{ maxWidth: 1320, margin: '0 auto', padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {logoImage ? (

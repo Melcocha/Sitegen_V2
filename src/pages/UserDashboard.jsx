@@ -18,7 +18,7 @@ import {
   Mail, MapPin, BarChart2, Shield, Zap, ChevronRight, AlertCircle,
   Upload, CheckCircle2, Clock, Save, X, User, Layers, Receipt,
   TrendingUp, Calendar, RefreshCcw, Download, Send, FileText, Search,
-  XCircle, Loader2, ArrowRight, Lock, LayoutDashboard
+  XCircle, Loader2, ArrowRight, Lock, LayoutDashboard, Menu
 } from 'lucide-react'
 
 // ─── Constants ───────────────────────────────────────────────────
@@ -251,7 +251,7 @@ function DomainTab({ sites }) {
         <p style={{ color: '#6B7280', fontSize: '0.9375rem' }}>Dale a tu sitio una dirección propia. Busca disponibilidad y regístralo en segundos.</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 28 }}>
+      <div className="dash-domain-features" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 28 }}>
         {[
           { icon: '🏆', title: 'Credibilidad', desc: 'Un dominio propio transmite confianza y profesionalismo.' },
           { icon: '🔍', title: 'SEO Premium',  desc: 'Los dominios propios posicionan mejor en Google.' },
@@ -267,7 +267,7 @@ function DomainTab({ sites }) {
 
       <div style={{ background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 16, padding: 24, marginBottom: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
         <label style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#374151', marginBottom: 10, display: 'block' }}>Buscar disponibilidad</label>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="dash-domain-search" style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 12, padding: '10px 16px', transition: 'border-color 0.15s' }}
             onFocusCapture={e => e.currentTarget.style.borderColor = '#00C896'}
             onBlurCapture={e  => e.currentTarget.style.borderColor = '#E5E7EB'}>
@@ -309,7 +309,7 @@ function DomainTab({ sites }) {
             </span>
           </div>
           {results.results?.map((item, i) => (
-            <div key={item.domain} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 22px', borderBottom: i < results.results.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+            <div key={item.domain} className="dash-domain-result-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 22px', borderBottom: i < results.results.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {item.available ? <CheckCircle2 size={16} color="#10B981"/> : <XCircle size={16} color="#EF4444"/>}
                 <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827' }}>{item.domain}</span>
@@ -363,7 +363,7 @@ function DomainTab({ sites }) {
   )
 }
 
-function Sidebar({ active, onNav, profile }) {
+function Sidebar({ active, onNav, profile, mobileOpen, onCloseMobile }) {
   const logoUrl    = profile?.logo_url || ''
   const company    = profile?.company_name || 'Mi Empresa'
   const initials   = company[0]?.toUpperCase() || 'M'
@@ -372,43 +372,47 @@ function Sidebar({ active, onNav, profile }) {
   const brandLight = `${brand}18`
   const brandMid   = `${brand}30`
 
-  return (
-    <aside style={{
-      width: 230, minHeight: '100vh', background: '#fff',
-      borderRight: '1px solid #E5E7EB',
-      display: 'flex', flexDirection: 'column',
-      position: 'sticky', top: 0, height: '100vh',
-    }}>
-
+  const renderContent = (isMobile = false) => (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* ── Brand zone – the client's identity ── */}
-      <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid #F3F4F6' }}>
-        {/* Powered by (tiny) */}
-        <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#D1D5DB', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
-          powered by SaaSWeb
-        </div>
+      <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1 }}>
+          {/* Powered by (tiny) */}
+          <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#D1D5DB', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>
+            powered by SaaSWeb
+          </div>
 
-        {/* Logo – full-width horizontal banner, works for any logo proportion */}
-        {logoUrl ? (
-          <div style={{ width: '100%', height: 60, borderRadius: 12, background: '#fff', border: `1.5px solid ${brandMid}`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '8px 12px' }}>
-            <img src={logoUrl} alt={company}
-              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }} />
-          </div>
-        ) : (
-          <div style={{ width: '100%', height: 60, borderRadius: 12, background: `linear-gradient(135deg, ${brand}, ${brand}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '2rem', color: '#fff', boxShadow: `0 4px 14px ${brand}50` }}>
-            {initials}
-          </div>
+          {/* Logo – full-width horizontal banner */}
+          {logoUrl ? (
+            <div style={{ width: '100%', height: 52, borderRadius: 12, background: '#fff', border: `1.5px solid ${brandMid}`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '6px 10px' }}>
+              <img src={logoUrl} alt={company}
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }} />
+            </div>
+          ) : (
+            <div style={{ width: '100%', height: 52, borderRadius: 12, background: `linear-gradient(135deg, ${brand}, ${brand}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.75rem', color: '#fff', boxShadow: `0 4px 14px ${brand}50` }}>
+              {initials}
+            </div>
+          )}
+        </div>
+        {isMobile && onCloseMobile && (
+          <button onClick={onCloseMobile} style={{ background: '#F3F4F6', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6B7280', marginLeft: 10 }}>
+            <X size={18} />
+          </button>
         )}
       </div>
 
       {/* ── Nav items ── */}
-      <nav style={{ flex: 1, padding: '10px 10px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 4, overflowY: 'auto' }}>
         {NAV_ITEMS.map(item => (
           <button
             key={item.id}
-            onClick={() => onNav(item.id)}
+            onClick={() => {
+              onNav(item.id)
+              if (isMobile && onCloseMobile) onCloseMobile()
+            }}
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              padding: '9px 12px', borderRadius: 9,
+              padding: '10px 12px', borderRadius: 9,
               border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
               fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
               background: active === item.id ? brandLight : 'transparent',
@@ -448,7 +452,40 @@ function Sidebar({ active, onNav, profile }) {
           </div>
         </div>
       </div>
-    </aside>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Desktop Fixed Sidebar */}
+      <aside className="dash-desktop-sidebar" style={{
+        width: 230, minHeight: '100vh', background: '#fff',
+        borderRight: '1px solid #E5E7EB',
+        display: 'flex', flexDirection: 'column',
+        position: 'sticky', top: 0, height: '100vh', flexShrink: 0
+      }}>
+        {renderContent(false)}
+      </aside>
+
+      {/* Mobile Sidebar Drawer */}
+      {mobileOpen && (
+        <div className="dash-mobile-drawer" style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex' }}>
+          {/* Backdrop */}
+          <div
+            onClick={onCloseMobile}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(4px)', animation: 'fadeIn 0.2s ease' }}
+          />
+          {/* Drawer content panel */}
+          <div style={{
+            position: 'relative', width: 280, maxWidth: '85vw', height: '100%', background: '#fff',
+            display: 'flex', flexDirection: 'column', boxShadow: '8px 0 24px rgba(0,0,0,0.15)',
+            zIndex: 10000, animation: 'slideRight 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}>
+            {renderContent(true)}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -696,7 +733,7 @@ function SitesTab({ user, sites, loading, plan, onDelete, onNew, profile, onUpgr
     <div>
       {/* Personalized Welcome Banner */}
       {company && (
-        <div style={{ marginBottom: 28, padding: '18px 24px', background: `linear-gradient(135deg, ${brand}12, ${brand}06)`, border: `1px solid ${brand}25`, borderRadius: 16, display: 'flex', alignItems: 'center', gap: 16, overflow: 'hidden', position: 'relative' }}>
+        <div className="dash-welcome-banner" style={{ marginBottom: 28, padding: '18px 24px', background: `linear-gradient(135deg, ${brand}12, ${brand}06)`, border: `1px solid ${brand}25`, borderRadius: 16, display: 'flex', alignItems: 'center', gap: 16, overflow: 'hidden', position: 'relative' }}>
           <div style={{ position: 'absolute', right: -30, top: -30, width: 120, height: 120, borderRadius: '50%', background: `${brand}10` }} />
           {logoUrl ? (
             <img src={logoUrl} alt={company} style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'contain', background: '#fff', padding: 4, border: `2px solid ${brand}30`, flexShrink: 0 }} />
@@ -715,7 +752,7 @@ function SitesTab({ user, sites, loading, plan, onDelete, onNew, profile, onUpgr
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div className="dash-header-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
           <h1 style={{ fontWeight: 800, fontSize: '1.625rem', letterSpacing: '-0.035em', color: '#111827', marginBottom: 4 }}>Mis Sitios Web</h1>
           <p style={{ color: '#6B7280', fontSize: '0.9375rem' }}>
@@ -741,14 +778,14 @@ function SitesTab({ user, sites, loading, plan, onDelete, onNew, profile, onUpgr
 
       {/* Stats bar — only if sites exist */}
       {sites.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+        <div className="dash-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
           {[
             { label: 'Sitios totales', value: sites.length, max: siteLimit === Infinity ? null : siteLimit, color: '#6366F1', icon: <Globe size={16} /> },
             { label: 'Publicados', value: sites.filter(s => s.status === 'published').length, color: '#10B981', icon: <Zap size={16} /> },
             { label: 'SSL activos', value: sites.filter(s => s.status === 'published').length, color: '#06B6D4', icon: <Shield size={16} /> },
             { label: 'Visitas totales', value: sites.reduce((a, s) => a + (s.visits_total || 0), 0), color: '#F59E0B', icon: <BarChart2 size={16} /> },
           ].map(stat => (
-            <div key={stat.label} style={{ background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 14, padding: '16px 18px' }}>
+            <div key={stat.label} className="dash-stat-card" style={{ background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 14, padding: '16px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 9, background: `${stat.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: stat.color }}>{stat.icon}</div>
                 {stat.max && <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9CA3AF' }}>/ {stat.max}</span>}
@@ -786,7 +823,7 @@ function SitesTab({ user, sites, loading, plan, onDelete, onNew, profile, onUpgr
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 20 }}>
+        <div className="dash-sites-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 20 }}>
           {sites.map(site => (
             <SiteCard
               key={site.id}
@@ -813,7 +850,7 @@ function SitesTab({ user, sites, loading, plan, onDelete, onNew, profile, onUpgr
 
       {/* Upgrade banner */}
       {sites.length > 0 && (!plan || plan.plan === 'free') && (
-        <div style={{ marginTop: 32, padding: '22px 28px', background: 'linear-gradient(135deg, #0D1F18, #080F0C)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
+        <div className="dash-upgrade-banner" style={{ marginTop: 32, padding: '22px 28px', background: 'linear-gradient(135deg, #0D1F18, #080F0C)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
           <div>
             <h3 style={{ color: '#fff', fontWeight: 800, fontSize: '1rem', marginBottom: 4 }}>Dominio propio + sitios ilimitados</h3>
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.875rem' }}>Desde $6/mes — cancela cuando quieras</p>
@@ -956,7 +993,7 @@ function ProfileTab({ user, profile, onUpdate }) {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div className="dash-profile-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
           <h1 style={{ fontWeight: 800, fontSize: '1.625rem', letterSpacing: '-0.035em', color: '#111827', marginBottom: 4 }}>Perfil de Empresa</h1>
           <p style={{ color: '#6B7280', fontSize: '0.9375rem' }}>Esta información se usará en tus sitios web generados con IA</p>
@@ -970,7 +1007,7 @@ function ProfileTab({ user, profile, onUpdate }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="dash-profile-grid" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* ── Logo Card ── */}
         <div style={{ background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 16, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
@@ -1057,7 +1094,7 @@ function ProfileTab({ user, profile, onUpdate }) {
             <h3 style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
               <User size={16} color="#9CA3AF" /> Información personal
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div className="dash-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <ProfileField label="Nombre completo" icon={<User size={13}/>} value={form.full_name} onChange={set('full_name')} placeholder="Jorge Arias" />
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8125rem', fontWeight: 700, color: '#374151', marginBottom: 6 }}>
@@ -1090,7 +1127,7 @@ function ProfileTab({ user, profile, onUpdate }) {
             <h3 style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
               <Phone size={16} color="#9CA3AF" /> Contacto
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div className="dash-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <ProfileField label="Teléfono" icon={<Phone size={13}/>} value={form.phone} onChange={set('phone')} placeholder="+1 (555) 000-0000" />
               <ProfileField label="Sitio web" icon={<Globe size={13}/>} value={form.website} onChange={set('website')} placeholder="https://tuempresa.com" />
               <div style={{ gridColumn: '1 / -1' }}>
@@ -1419,7 +1456,8 @@ function BillingTab({ user, plan, profile, onUpgrade, onCancel }) {
               </div>
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 580, borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#F9FAFB' }}>
                   {['N° Factura', 'Fecha', 'Plan', 'Período', 'Monto', 'Estado', 'PDF'].map(h => (
@@ -1512,6 +1550,7 @@ function BillingTab({ user, plan, profile, onUpgrade, onCancel }) {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
@@ -1553,6 +1592,7 @@ function SiteStatsModal({ site, onClose, onOpenDomain }) {
       onClick={onClose}
     >
       <div
+        className="dash-modal-content"
         style={{
           background: '#fff', borderRadius: 20, maxWidth: 640, width: '100%',
           maxHeight: '90vh', overflowY: 'auto', padding: '28px 32px',
@@ -1590,7 +1630,7 @@ function SiteStatsModal({ site, onClose, onOpenDomain }) {
         </div>
 
         {/* 4 Metric Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="dash-modal-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginBottom: 24 }}>
           <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 4 }}>Visitas Totales</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -1646,7 +1686,7 @@ function SiteStatsModal({ site, onClose, onOpenDomain }) {
         </div>
 
         {/* Device breakdown & Location */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+        <div className="dash-modal-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
           <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ fontWeight: 700, fontSize: '0.8125rem', color: '#374151', marginBottom: 10 }}>📱 Dispositivos</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.78rem' }}>
@@ -1731,6 +1771,7 @@ export default function UserDashboard() {
   const [checkoutCycle, setCheckoutCycle]   = useState('monthly')
   const [showSuccess, setShowSuccess]       = useState(false)
   const [statsSite, setStatsSite]           = useState(null)
+  const [mobileOpen, setMobileOpen]         = useState(false)
 
   useEffect(() => {
     if (profile) setCurrentProfile(profile)
@@ -1800,22 +1841,175 @@ export default function UserDashboard() {
     <ThemeProvider>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB', fontFamily: 'var(--font)' }}>
 
+        {/* Dynamic Responsive Styles */}
+        <style>{`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideRight {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+          }
+          @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+
+          @media (max-width: 768px) {
+            .dash-desktop-sidebar {
+              display: none !important;
+            }
+            .dash-mobile-header-btn {
+              display: flex !important;
+            }
+            .dash-topbar {
+              padding: 0 16px !important;
+              height: 56px !important;
+            }
+            .dash-main-content {
+              padding: 16px 14px !important;
+            }
+            .dash-welcome-banner {
+              padding: 14px 16px !important;
+              margin-bottom: 20px !important;
+              flex-direction: row !important;
+              align-items: center !important;
+            }
+            .dash-header-actions {
+              flex-direction: column !important;
+              align-items: stretch !important;
+              gap: 12px !important;
+              margin-bottom: 20px !important;
+            }
+            .dash-header-actions button {
+              width: 100% !important;
+              justify-content: center !important;
+            }
+            .dash-stats-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 10px !important;
+              margin-bottom: 24px !important;
+            }
+            .dash-stat-card {
+              padding: 12px 14px !important;
+            }
+            .dash-sites-grid {
+              grid-template-columns: 1fr !important;
+              gap: 16px !important;
+            }
+            .dash-upgrade-banner {
+              flex-direction: column !important;
+              align-items: stretch !important;
+              padding: 18px 20px !important;
+              gap: 14px !important;
+            }
+            .dash-upgrade-banner button {
+              width: 100% !important;
+              justify-content: center !important;
+            }
+            .dash-profile-grid {
+              grid-template-columns: 1fr !important;
+              gap: 18px !important;
+            }
+            .dash-profile-header {
+              flex-direction: column !important;
+              align-items: stretch !important;
+              gap: 12px !important;
+              margin-bottom: 20px !important;
+            }
+            .dash-profile-header button {
+              width: 100% !important;
+              justify-content: center !important;
+            }
+            .dash-form-2col {
+              grid-template-columns: 1fr !important;
+              gap: 12px !important;
+            }
+            .dash-domain-features {
+              grid-template-columns: 1fr !important;
+              gap: 10px !important;
+            }
+            .dash-domain-search {
+              flex-direction: column !important;
+            }
+            .dash-domain-search button {
+              width: 100% !important;
+            }
+            .dash-domain-result-row {
+              flex-direction: column !important;
+              align-items: flex-start !important;
+              gap: 10px !important;
+            }
+            .dash-domain-result-row > div:last-child {
+              width: 100% !important;
+              justify-content: space-between !important;
+            }
+            .dash-modal-content {
+              padding: 20px 16px !important;
+              width: 95% !important;
+              max-height: 88vh !important;
+            }
+            .dash-modal-stats-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 10px !important;
+            }
+            .dash-modal-2col {
+              grid-template-columns: 1fr !important;
+            }
+          }
+
+          @media (max-width: 520px) {
+            .dash-user-name, .dash-user-logout {
+              display: none !important;
+            }
+          }
+
+          @media (min-width: 769px) {
+            .dash-mobile-header-btn {
+              display: none !important;
+            }
+            .dash-mobile-drawer {
+              display: none !important;
+            }
+          }
+        `}</style>
+
         {/* Sidebar */}
-        <Sidebar active={activeTab} onNav={setActiveTab} profile={currentProfile} />
+        <Sidebar active={activeTab} onNav={setActiveTab} profile={currentProfile} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
 
         {/* Main */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
           {/* Top Bar */}
-          <header style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '0 32px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 40 }}>
-            {/* Breadcrumb */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.875rem', color: '#6B7280' }}>
-              <span style={{ fontWeight: 700, color: '#111827' }}>
-                {activeTab === 'profile'
-                  ? (currentProfile?.company_name || 'Mi Empresa')
-                  : { sites: 'Mis Sitios', domain: 'Dominio', billing: 'Plan y Pagos', settings: 'Configuración' }[activeTab]
-                }
-              </span>
+          <header className="dash-topbar" style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '0 32px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 40 }}>
+            {/* Breadcrumb / Mobile hamburger button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <button
+                onClick={() => setMobileOpen(true)}
+                className="dash-mobile-header-btn"
+                title="Abrir menú"
+                style={{
+                  display: 'none',
+                  background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 9,
+                  width: 36, height: 36, alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#111827'
+                }}
+              >
+                <Menu size={20} />
+              </button>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.875rem', color: '#6B7280' }}>
+                <span style={{ fontWeight: 700, color: '#111827' }}>
+                  {activeTab === 'profile'
+                    ? (currentProfile?.company_name || 'Mi Empresa')
+                    : { sites: 'Mis Sitios', domain: 'Dominio', billing: 'Plan y Pagos', settings: 'Configuración' }[activeTab]
+                  }
+                </span>
+              </div>
             </div>
 
             {/* Right side */}
@@ -1833,23 +2027,27 @@ export default function UserDashboard() {
               )}
 
               {/* Avatar + menu */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', cursor: 'pointer' }}>
+              <div
+                onClick={() => setActiveTab('profile')}
+                title="Ir a mi perfil"
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 10, border: '1.5px solid #E5E7EB', cursor: 'pointer', background: '#fff' }}
+              >
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #00C896, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.75rem', color: '#fff' }}>
                   {(currentProfile?.full_name || user?.email || 'U')[0].toUpperCase()}
                 </div>
-                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
+                <span className="dash-user-name" style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
                   {currentProfile?.full_name || user?.email?.split('@')[0]}
                 </span>
               </div>
 
-              <button onClick={handleSignOut} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'none', cursor: 'pointer', color: '#9CA3AF', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600 }}>
-                <LogOut size={14} /> Salir
+              <button onClick={handleSignOut} title="Cerrar sesión" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', border: '1px solid #E5E7EB', borderRadius: 8, background: 'none', cursor: 'pointer', color: '#9CA3AF', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600 }}>
+                <LogOut size={14} /> <span className="dash-user-logout">Salir</span>
               </button>
             </div>
           </header>
 
           {/* Content */}
-          <main style={{ flex: 1, padding: '36px 40px' }}>
+          <main className="dash-main-content" style={{ flex: 1, padding: '36px 40px' }}>
             {activeTab === 'sites' && (
               <SitesTab
                 user={user}
