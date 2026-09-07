@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import { Sparkles, Calendar, Clock, MapPin, Play, Heart, ChevronRight, Phone, Volume2, ArrowUpRight } from 'lucide-react'
 import TemplateDragHandles from './TemplateDragHandles'
 
-export default function ChurchTemplateAfiche({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch }) {
+export default function ChurchTemplateAfiche({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+  const isMobileDevice = device === 'mobile'
+  const isTabletDevice = device === 'tablet'
+  const rootClassName = `afiche-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
+
   const [activeGallery, setActiveGallery] = useState(0)
 
   const businessName = data.businessName || 'Iglesia Noche de Adoración'
@@ -183,7 +187,8 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
   const accentYellow = data.accentColor || '#FACC15'
 
   return (
-    <div className="afiche-template-root" style={{
+    <div className={rootClassName} style={{
+      containerType: 'inline-size',
       fontFamily: `'${activeFont}', 'Syne', 'Plus Jakarta Sans', sans-serif`,
       color: '#FFFFFF',
       background: primaryBg,
@@ -196,6 +201,9 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Italiana&family=Playfair+Display:ital,wght@1,700;1,900&family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+        .afiche-template-root {
+          container-type: inline-size;
+        }
         .afiche-template-root .afiche-script-font {
           font-family: 'Playfair Display', 'Italiana', serif;
           font-style: italic;
@@ -252,6 +260,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           ${editMode ? 'outline: 2px dashed #FACC15; outline-offset: 4px;' : ''}
         }
 
+        @container (max-width: 768px) {
+          .afiche-template-root header.afiche-header {
+            padding: 12px 16px !important;
+          }
+          .afiche-template-root header.afiche-header nav {
+            gap: 8px !important;
+          }
+          .afiche-template-root header.afiche-header nav a[data-field^="navLinks"] {
+            display: none !important;
+          }
+          .afiche-template-root header.afiche-header nav a:not([data-field^="navLinks"]) {
+            padding: 6px 12px !important;
+            font-size: 0.7rem !important;
+          }
+
+          .afiche-template-root section {
+            padding: 40px 16px !important;
+          }
+          .afiche-template-root h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.5rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+          }
+          .afiche-template-root h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .afiche-template-root p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+          }
+          .afiche-template-root section div[style*="display: grid"], .afiche-template-root section div[style*="display:grid"] {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+        }
+
         @media (max-width: 768px) {
           .afiche-template-root header.afiche-header {
             padding: 12px 16px !important;
@@ -259,10 +305,10 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           .afiche-template-root header.afiche-header nav {
             gap: 8px !important;
           }
-          .afiche-template-root header.afiche-header nav a:not(:last-child) {
+          .afiche-template-root header.afiche-header nav a[data-field^="navLinks"] {
             display: none !important;
           }
-          .afiche-template-root header.afiche-header nav a:last-child {
+          .afiche-template-root header.afiche-header nav a:not([data-field^="navLinks"]) {
             padding: 6px 12px !important;
             font-size: 0.7rem !important;
           }

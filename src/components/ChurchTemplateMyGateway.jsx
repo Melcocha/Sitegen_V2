@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 import TemplateDragHandles from './TemplateDragHandles'
 
-export default function ChurchTemplateMyGateway({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch }) {
+export default function ChurchTemplateMyGateway({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+  const isMobileDevice = device === 'mobile'
+  const isTabletDevice = device === 'tablet'
+  const rootClassName = `mygateway-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
+
   const [menuOpen, setMenuOpen] = useState(false)
 
   const businessName = data.businessName || 'Calvary Chapel Northside'
@@ -162,12 +166,15 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
   const accentCyan = data.accentColor || '#00D8F6'
 
   return (
-    <div className="mygateway-template-root" style={{ fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
+    <div className={rootClassName} style={{ containerType: 'inline-size', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         
+        .mygateway-template-root {
+          container-type: inline-size;
+        }
         .mygateway-template-root .northside-hero-h1 {
           font-family: '${activeFont}', system-ui, sans-serif;
           font-weight: 900;
@@ -228,6 +235,37 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         }
         .mygateway-template-root .editable-element:hover {
           ${editMode ? 'outline: 2px dashed #E11D48; outline-offset: 4px;' : ''}
+        }
+
+        @container (max-width: 768px) {
+          .mygateway-template-root img[data-field="logoImage"] {
+            max-width: 180px !important;
+            max-height: 44px !important;
+          }
+          .mygateway-template-root section {
+            padding: 40px 16px !important;
+          }
+          .mygateway-template-root .northside-hero-h1, 
+          .mygateway-template-root h1 {
+            font-size: clamp(1.6rem, 7.5vw, 2.5rem) !important;
+            line-height: 1.15 !important;
+            margin-bottom: 16px !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .mygateway-template-root h2 {
+            font-size: clamp(1.6rem, 6.5vw, 2.4rem) !important;
+            word-break: break-word !important;
+          }
+          .mygateway-template-root p {
+            font-size: 0.95rem !important;
+            line-height: 1.5 !important;
+          }
+          .mygateway-template-root section div[style*="display: grid"], 
+          .mygateway-template-root section div[style*="display:grid"] {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
         }
 
         @media (max-width: 768px) {

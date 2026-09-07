@@ -1,7 +1,11 @@
 import React from 'react'
 import TemplateDragHandles from './TemplateDragHandles'
 
-export default function ChurchTemplateNucleus({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch }) {
+export default function ChurchTemplateNucleus({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+  const isMobileDevice = device === 'mobile'
+  const isTabletDevice = device === 'tablet'
+  const rootClassName = `nucleus-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
+
   const businessName = data.businessName || 'Gateway Church'
   const logoImage = data.logoImage || ''
   const accentGold = data.accentColor || '#C4A35A'
@@ -152,12 +156,15 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
   const primaryBg = data.primaryColor || '#07080D'
 
   return (
-    <div className="nucleus-template-root" style={{ position: 'relative', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
+    <div className={rootClassName} style={{ containerType: 'inline-size', position: 'relative', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap');
         
+        .nucleus-template-root {
+          container-type: inline-size;
+        }
         .nucleus-template-root .afiche3-hero-h1 {
           font-family: '${activeFont}', Georgia, serif;
           font-weight: 900;
@@ -199,6 +206,45 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           ${editMode ? 'outline: 2px dashed #C4A35A; outline-offset: 4px;' : ''}
         }
 
+        @container (max-width: 768px) {
+          .nucleus-template-root #wp-announcement {
+            padding: 8px 12px !important;
+            font-size: 0.75rem !important;
+            gap: 6px !important;
+          }
+          .nucleus-template-root #wp-announcement span {
+            font-size: 0.75rem !important;
+          }
+
+          .nucleus-template-root header.nucleus-header {
+            top: 0 !important;
+            position: relative !important;
+            background: #07080D !important;
+          }
+          .nucleus-template-root header.nucleus-header > div {
+            padding: 12px 16px !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+          }
+          .nucleus-template-root header.nucleus-header img[data-field="logoImage"] {
+            max-height: 44px !important;
+            max-width: 180px !important;
+          }
+          .nucleus-template-root header.nucleus-header nav {
+            gap: 6px !important;
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+          .nucleus-template-root header.nucleus-header nav a[data-field^="navLinks"] {
+            display: none !important;
+          }
+          .nucleus-template-root header.nucleus-header nav a:not([data-field^="navLinks"]) {
+            padding: 8px 16px !important;
+            font-size: 0.75rem !important;
+            margin-left: auto !important;
+          }
+        }
+
         @media (max-width: 768px) {
           .nucleus-template-root #wp-announcement {
             padding: 8px 12px !important;
@@ -228,10 +274,10 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             width: 100% !important;
             justify-content: space-between !important;
           }
-          .nucleus-template-root header.nucleus-header nav a:not(:last-child) {
+          .nucleus-template-root header.nucleus-header nav a[data-field^="navLinks"] {
             display: none !important;
           }
-          .nucleus-template-root header.nucleus-header nav a:last-child {
+          .nucleus-template-root header.nucleus-header nav a:not([data-field^="navLinks"]) {
             padding: 8px 16px !important;
             font-size: 0.75rem !important;
             margin-left: auto !important;

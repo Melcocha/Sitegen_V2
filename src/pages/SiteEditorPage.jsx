@@ -150,6 +150,7 @@ export default function SiteEditorPage() {
   const [isDirty,    setIsDirty]    = useState(false)
   const [quickEdit,  setQuickEdit]  = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [activeMobileTab, setActiveMobileTab] = useState('editor') // 'editor' | 'preview'
   const [saveToast,  setSaveToast]  = useState(false) // floating toast confirmation
   const [showTemplates, setShowTemplates] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('Todas')
@@ -459,19 +460,23 @@ export default function SiteEditorPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#F9FAFB', fontFamily: "'Inter', sans-serif" }}>
 
       {/* ── TOP BAR ── */}
-      <header style={{
+      <header className="site-editor-header" style={{
         height: 56, background: '#fff', borderBottom: '1px solid #E5E7EB',
         display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12,
         position: 'sticky', top: 0, zIndex: 100, flexShrink: 0,
       }}>
         {/* Back */}
         <Link to="/app/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 10px', borderRadius: 8, border: '1px solid #E5E7EB', whiteSpace: 'nowrap' }}>
-          <ArrowLeft size={14} /> Panel
+          <ArrowLeft size={14} /> <span className="site-editor-desktop-label">Panel</span>
         </Link>
 
         {/* Sidebar toggle — like Figma/Webflow, always visible in toolbar */}
         <button
-          onClick={() => setSidebarOpen(o => !o)}
+          className="site-editor-desktop-only"
+          onClick={() => {
+            setSidebarOpen(o => !o)
+            if (activeMobileTab === 'preview') setActiveMobileTab('editor')
+          }}
           title={sidebarOpen ? 'Ocultar panel de edición' : 'Mostrar panel de edición'}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -490,7 +495,7 @@ export default function SiteEditorPage() {
 
         {/* Site name + status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-          <div style={{ height: 18, width: 1, background: '#E5E7EB' }} />
+          <div style={{ height: 18, width: 1, background: '#E5E7EB' }} className="site-editor-desktop-only" />
           <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {siteJson.businessName || site.name}
           </span>
@@ -498,8 +503,8 @@ export default function SiteEditorPage() {
             {statusStyle.label}
           </span>
           {saveState === 'error' ? (
-            <span title="El guardado local falló — probablemente el navegador se quedó sin espacio (foto/video muy pesado)" style={{ fontSize: '0.72rem', color: '#DC2626', fontWeight: 700, flexShrink: 0, cursor: 'help' }}>
-              ⚠ Error al guardar
+            <span title="El guardado local falló" style={{ fontSize: '0.72rem', color: '#DC2626', fontWeight: 700, flexShrink: 0, cursor: 'help' }}>
+              ⚠ Error
             </span>
           ) : isDirty && (
             <span style={{ fontSize: '0.72rem', color: '#F59E0B', fontWeight: 600, flexShrink: 0 }}>
@@ -509,7 +514,7 @@ export default function SiteEditorPage() {
         </div>
 
         {/* Undo / Redo buttons */}
-        <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 9, padding: 3, gap: 2 }}>
+        <div className="site-editor-desktop-only" style={{ display: 'flex', background: '#F3F4F6', borderRadius: 9, padding: 3, gap: 2 }}>
           <button
             onClick={handleUndo}
             disabled={historyIdx <= 0}
@@ -544,10 +549,10 @@ export default function SiteEditorPage() {
           </button>
         </div>
 
-        <div style={{ height: 18, width: 1, background: '#E5E7EB' }} />
+        <div style={{ height: 18, width: 1, background: '#E5E7EB' }} className="site-editor-desktop-only" />
 
         {/* Device switcher */}
-        <div style={{ display: 'flex', background: '#F3F4F6', borderRadius: 9, padding: 3, gap: 2 }}>
+        <div className="site-editor-desktop-only" style={{ display: 'flex', background: '#F3F4F6', borderRadius: 9, padding: 3, gap: 2 }}>
           {DEVICES.map(d => (
             <button
               key={d.id}
@@ -567,11 +572,12 @@ export default function SiteEditorPage() {
           ))}
         </div>
 
-        <div style={{ height: 18, width: 1, background: '#E5E7EB' }} />
+        <div style={{ height: 18, width: 1, background: '#E5E7EB' }} className="site-editor-desktop-only" />
 
         {/* Version history button */}
         <button
           onClick={() => setShowVersions(v => !v)}
+          className="site-editor-desktop-only"
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: showVersions ? '#F3F4F6' : '#fff', cursor: 'pointer', color: '#6B7280', fontSize: '0.8rem', fontWeight: 600 }}
         >
           <Clock size={14} /> Historial
@@ -579,7 +585,7 @@ export default function SiteEditorPage() {
 
         {/* Live URL */}
         {site.status === 'published' && site.vercel_url && (
-          <a href={site.vercel_url} target="_blank" rel="noopener noreferrer"
+          <a href={site.vercel_url} target="_blank" rel="noopener noreferrer" className="site-editor-desktop-only"
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.08)', color: '#10B981', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
             <ExternalLink size={13} /> Ver sitio
           </a>
@@ -589,28 +595,16 @@ export default function SiteEditorPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          onMouseEnter={e => {
-            if (!saving) {
-              e.currentTarget.style.background = '#10B981'
-              e.currentTarget.style.color = '#fff'
-              e.currentTarget.style.borderColor = '#10B981'
-            }
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = saveState === 'saved' ? '#10B981' : (isDirty ? '#F0FDF4' : '#F3F4F6')
-            e.currentTarget.style.color = saveState === 'saved' ? '#fff' : (isDirty ? '#10B981' : '#9CA3AF')
-            e.currentTarget.style.borderColor = isDirty ? 'rgba(16,185,129,0.3)' : '#E5E7EB'
-          }}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '7px 16px', borderRadius: 8, border: 'none', cursor: saving ? 'default' : 'pointer',
+            padding: '7px 14px', borderRadius: 8, border: 'none', cursor: saving ? 'default' : 'pointer',
             background: saveState === 'saved' ? '#10B981' : (isDirty ? '#F0FDF4' : '#F3F4F6'),
             color: saveState === 'saved' ? '#fff' : (isDirty ? '#10B981' : '#9CA3AF'),
-            fontWeight: 700, fontSize: '0.8125rem', transition: 'all 0.2s',
+            fontWeight: 700, fontSize: '0.8125rem', transition: 'all 0.2s', flexShrink: 0,
             border: `1px solid ${isDirty ? 'rgba(16,185,129,0.3)' : '#E5E7EB'}`,
           }}
         >
-          {saveState === 'saved' ? <><CheckCircle2 size={14} /> Guardado</> : <><Save size={14} /> {saving ? 'Guardando...' : 'Guardar'}</>}
+          {saveState === 'saved' ? <><CheckCircle2 size={14} /> <span className="site-editor-desktop-label">Guardado</span></> : <><Save size={14} /> <span>{saving ? '...' : 'Guardar'}</span></>}
         </button>
 
         {/* Publish button */}
@@ -619,35 +613,56 @@ export default function SiteEditorPage() {
           disabled={publishing}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '7px 18px', borderRadius: 8, border: 'none', cursor: publishing ? 'wait' : 'pointer',
+            padding: '7px 16px', borderRadius: 8, border: 'none', cursor: publishing ? 'wait' : 'pointer',
             background: publishing ? 'rgba(0,200,150,0.5)' : 'linear-gradient(135deg, #00C896, #00A87A)',
-            color: '#fff', fontWeight: 700, fontSize: '0.875rem',
+            color: '#fff', fontWeight: 700, fontSize: '0.875rem', flexShrink: 0,
             boxShadow: '0 2px 8px rgba(0,200,150,0.35)',
             transition: 'all 0.2s',
           }}
         >
           {publishing
-            ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Publicando...</>
-            : <><Zap size={14} /> Publicar</>
+            ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> <span className="site-editor-desktop-label">Publicando...</span></>
+            : <><Zap size={14} /> <span>Publicar</span></>
           }
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </button>
       </header>
 
+      {/* ── MOBILE TAB SWITCHER BAR ── */}
+      <div className="site-editor-mobile-tabbar">
+        <button
+          type="button"
+          onClick={() => { setActiveMobileTab('editor'); setSidebarOpen(true); }}
+          className={`site-editor-mobile-tab ${activeMobileTab === 'editor' ? 'active' : ''}`}
+        >
+          📝 Contenido
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('preview')}
+          className={`site-editor-mobile-tab ${activeMobileTab === 'preview' ? 'active' : ''}`}
+        >
+          👁️ Vista Previa
+        </button>
+      </div>
+
       {/* ── EDITOR + PREVIEW BODY ── */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
 
         {/* LEFT PANEL — collapsible sidebar */}
-        <div style={{
-          width: sidebarOpen ? 300 : 0,
-          flexShrink: 0,
-          background: '#fff',
-          borderRight: sidebarOpen ? '1px solid #E5E7EB' : 'none',
-          overflowY: sidebarOpen ? 'auto' : 'hidden',
-          display: 'flex', flexDirection: 'column',
-          transition: 'width .22s cubic-bezier(.4,0,.2,1)',
-          position: 'relative',
-        }}>
+        <div
+          className={`site-editor-sidebar ${activeMobileTab === 'editor' ? 'mobile-active' : 'mobile-hidden'}`}
+          style={{
+            width: sidebarOpen ? 300 : 0,
+            flexShrink: 0,
+            background: '#fff',
+            borderRight: sidebarOpen ? '1px solid #E5E7EB' : 'none',
+            overflowY: sidebarOpen ? 'auto' : 'hidden',
+            display: 'flex', flexDirection: 'column',
+            transition: 'width .22s cubic-bezier(.4,0,.2,1)',
+            position: 'relative',
+          }}
+        >
           {sidebarOpen && (
             <>
               {/* Panel header */}
@@ -729,16 +744,18 @@ export default function SiteEditorPage() {
             </>
           )}
         </div>
-
         {/* RIGHT PANEL — Preview */}
-        <div style={{
-          flex: 1, height: '100%', overflow: 'hidden',
-          background: '#E5E7EB',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: '16px',
-          gap: 10,
-          boxSizing: 'border-box'
-        }}>
+        <div
+          className={`site-editor-preview ${activeMobileTab === 'preview' ? 'mobile-active' : 'mobile-hidden'}`}
+          style={{
+            flex: 1, height: '100%', overflow: 'hidden',
+            background: '#E5E7EB',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: '16px',
+            gap: 10,
+            boxSizing: 'border-box'
+          }}
+        >
           {/* Active QuickEdit hint banner */}
           {quickEdit && (
             <div style={{
@@ -787,6 +804,7 @@ export default function SiteEditorPage() {
             <WebsitePreview
               data={siteJson}
               editMode={true}
+              device={device}
               activeField={quickEdit?.field}
               onElementClick={(target) => setQuickEdit(target)}
               onSectionChange={handleQuickUpdate}
@@ -996,6 +1014,76 @@ export default function SiteEditorPage() {
           </div>
         )}
       </div>
+      <style>{`
+        .site-editor-mobile-tabbar {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .site-editor-header {
+            padding: 0 10px !important;
+            gap: 6px !important;
+            height: 52px !important;
+          }
+          .site-editor-desktop-only {
+            display: none !important;
+          }
+          .site-editor-desktop-label {
+            display: none !important;
+          }
+          .site-editor-mobile-tabbar {
+            display: flex !important;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 6px 10px;
+            gap: 8px;
+            position: relative;
+            z-index: 90;
+          }
+          .site-editor-mobile-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1.5px solid #E5E7EB;
+            background: #F9FAFB;
+            color: #4B5563;
+            font-weight: 700;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+          }
+          .site-editor-mobile-tab.active {
+            background: #00C896 !important;
+            color: #FFFFFF !important;
+            border-color: #00A87A !important;
+            box-shadow: 0 2px 8px rgba(0, 200, 150, 0.25);
+          }
+          .site-editor-sidebar {
+            width: 100% !important;
+            border-right: none !important;
+          }
+          .site-editor-sidebar.mobile-hidden {
+            display: none !important;
+          }
+          .site-editor-sidebar.mobile-active {
+            display: flex !important;
+            width: 100% !important;
+            flex: 1 !important;
+          }
+          .site-editor-preview {
+            width: 100% !important;
+          }
+          .site-editor-preview.mobile-hidden {
+            display: none !important;
+          }
+          .site-editor-preview.mobile-active {
+            display: flex !important;
+            width: 100% !important;
+            flex: 1 !important;
+            padding: 8px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

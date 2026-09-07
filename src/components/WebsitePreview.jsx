@@ -1007,7 +1007,7 @@ function EditableEl({ children, label, onClick, editMode }) {
 }
 
 
-export default function WebsitePreview({ data, editMode=false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch }) {
+export default function WebsitePreview({ data, editMode=false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
   const previewWrapRef = useRef(null)
   const [testPage, setTestPage] = useState(0)
   const [activeVideoModal, setActiveVideoModal] = useState(null)
@@ -1075,16 +1075,16 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
   if (isChurch) {
     if (data.churchTemplateVariant === 'afiche' || data.churchTemplateVariant === 'noche_adoracion') {
-      return <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} />
+      return <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     }
     if (data.churchTemplateVariant === 'poster') {
-      return <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} />
+      return <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     }
     if (data.churchTemplateVariant === 'mygateway') {
-      return <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} />
+      return <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     }
     // Default or 'nucleus' (Option 1 now):
-    return <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} />
+    return <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
   }
 
   const heroV = data.variants?.hero || (lv === 2 ? 2 : lv === 3 ? 3 : lv === 4 ? 4 : 1);
@@ -1159,6 +1159,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                 onElementClick={onElementClick}
                 onQuickUpdate={onQuickUpdate}
                 onQuickUpdateBatch={onQuickUpdateBatch}
+                device={device}
               />
             ) : data.churchTemplateVariant === 'nucleus' ? (
               <ChurchTemplateNucleus
@@ -1168,6 +1169,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                 onElementClick={onElementClick}
                 onQuickUpdate={onQuickUpdate}
                 onQuickUpdateBatch={onQuickUpdateBatch}
+                device={device}
               />
             ) : data.churchTemplateVariant === 'poster' ? (
               <ChurchTemplatePoster
@@ -1177,6 +1179,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                 onElementClick={onElementClick}
                 onQuickUpdate={onQuickUpdate}
                 onQuickUpdateBatch={onQuickUpdateBatch}
+                device={device}
               />
             ) : (
               <ChurchTemplateMyGateway
@@ -1186,6 +1189,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                 onElementClick={onElementClick}
                 onQuickUpdate={onQuickUpdate}
                 onQuickUpdateBatch={onQuickUpdateBatch}
+                device={device}
               />
             )
           ) : (

@@ -671,6 +671,7 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
         left: pos.left,
         zIndex: 99999,
         width: type === 'image' ? 380 : 340,
+        maxWidth: 'calc(100vw - 20px)',
         background: '#FFFFFF',
         borderRadius: 18,
         boxShadow: '0 20px 60px rgba(15, 23, 42, 0.25), 0 4px 16px rgba(0,0,0,0.08)',
