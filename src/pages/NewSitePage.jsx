@@ -110,10 +110,13 @@ export default function NewSitePage() {
       const url = detectedUrl || extractUrl(prompt)
       const data = await generateWebsiteJSON(prompt, url)
       setSiteJson(data)
-      setTimeout(() => previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150)
-    } catch {
-      setError('Error al generar. Intenta de nuevo.')
-    } finally {
+      setGenerating(false)
+      setTimeout(() => {
+        previewRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }, 150)
+    } catch (e) {
+      console.error('[Generate Error]', e)
+      setError('Error al generar el sitio: ' + e.message)
       setGenerating(false)
     }
   }
@@ -124,14 +127,15 @@ export default function NewSitePage() {
     setError('')
     try {
       const plan = profile?.current_plan || 'free'
-      const { allowed, current, limit } = await checkSiteLimit(user.id, plan)
+      const userId = user?.id || 'saasweb_dev_user'
+      const { allowed, current, limit } = await checkSiteLimit(userId, plan)
       if (!allowed) {
         setError(`Tu plan ${plan.toUpperCase()} permite ${limit === 0 ? 'guardar 0 sitios (solo preview)' : `${limit} sitios — ya tienes ${current}`}. Mejora tu plan.`)
         setSaving(false)
         return
       }
       const site = await saveSite({
-        userId:   user.id,
+        userId,
         name:     siteJson.businessName || 'Mi Sitio',
         prompt,
         siteJson,
@@ -399,8 +403,8 @@ export default function NewSitePage() {
                 </div>
               </div>
 
-              {/* Row 2: Dedicated Template Selector for Churches */}
-              {(siteJson.industry?.toLowerCase().includes('iglesi') || siteJson.industry?.toLowerCase().includes('church') || Boolean(siteJson.planAVisit) || Boolean(siteJson.ministries)) && (
+              {/* Row 2: Dedicated Template Selector (4 Opciones únicas) */}
+              {siteJson && (
                 <div>
                   <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span>🎨</span> Elige la plantilla y estilo de tu iglesia (4 Opciones únicas):

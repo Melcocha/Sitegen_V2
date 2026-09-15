@@ -278,6 +278,7 @@ export async function markPublished(siteId, { subdomain, publishedUrl, thumbnail
     local[idx].status = 'published'
     local[idx].subdomain = subdomain
     local[idx].published_url = publishedUrl
+    local[idx].vercel_url = publishedUrl   // also set vercel_url so dashboard "Ver Sitio" works
     saveLocalSites(local)
   }
 

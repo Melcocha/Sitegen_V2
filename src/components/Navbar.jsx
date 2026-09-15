@@ -151,14 +151,18 @@ export default function Navbar() {
                 <div className="nav-auth-links" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Link
                     to="/login"
+                    id="nav-login-btn"
                     className="nav-login-link"
                     style={{
-                      padding: '7px 12px', borderRadius: 'var(--radius-sm)',
-                      textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600,
-                      color: 'var(--muted)', whiteSpace: 'nowrap',
+                      padding: '8px 18px', borderRadius: 'var(--radius-full)',
+                      textDecoration: 'none', fontSize: '0.875rem', fontWeight: 700,
+                      color: 'var(--brand-dark)', whiteSpace: 'nowrap',
+                      border: '1.5px solid var(--brand)',
+                      background: 'var(--brand-light)',
+                      transition: 'all 0.2s ease',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.color = 'var(--ink)'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'var(--muted)'}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand)'; e.currentTarget.style.color = '#fff' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--brand-light)'; e.currentTarget.style.color = 'var(--brand-dark)' }}
                   >
                     Iniciar sesión
                   </Link>

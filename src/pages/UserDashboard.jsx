@@ -588,19 +588,40 @@ function SiteCard({ site, onDelete, onOpenStats, onOpenDomain }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <h3 style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#111827', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{site.name}</h3>
-            <p style={{ fontSize: '0.775rem', color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {site.subdomain ? `${site.subdomain}.saasweb.app` : 'Sin publicar'}
-            </p>
+            {site.status === 'published' ? (
+              <a
+                href={`/site/${site.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.775rem', color: '#00A87A', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                title="Abrir sitio publicado"
+              >
+                {site.subdomain ? `${site.subdomain}.saasweb.app` : 'Sin publicar'}
+                <ExternalLink size={12} />
+              </a>
+            ) : (
+              <p style={{ fontSize: '0.775rem', color: '#9CA3AF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {site.subdomain ? `${site.subdomain}.saasweb.app` : 'Sin publicar'}
+              </p>
+            )}
           </div>
-          {site.published_url && (
-            <a href={site.published_url} target="_blank" rel="noopener noreferrer" style={{ color: '#9CA3AF', display: 'flex', marginLeft: 8, flexShrink: 0 }}>
+          {site.status === 'published' && (
+            <a
+              href={`/site/${site.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Abrir sitio publicado"
+              style={{ color: '#00A87A', background: 'rgba(0,200,150,0.1)', padding: '6px 8px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600, marginLeft: 8, flexShrink: 0, transition: 'all 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.2)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.1)' }}
+            >
               <ExternalLink size={14} />
             </a>
           )}
         </div>
 
-        {/* Mini stats */}
-        <div style={{ display: 'flex', gap: 12, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #F3F4F6' }}>
+        {/* Mini stats — 3 equal columns */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #F3F4F6' }}>
           {[
             { val: site.visits_total || 0, label: 'visitas' },
             { val: site.status === 'published' ? '99.9%' : '—', label: 'uptime' },
@@ -613,107 +634,109 @@ function SiteCard({ site, onDelete, onOpenStats, onOpenDomain }) {
           ))}
         </div>
 
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: 8, minHeight: 38, alignItems: 'center' }}>
-          {showConfirm ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', background: '#FEF2F2', padding: '6px 10px', borderRadius: 9, border: '1px solid #FCA5A5' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#991B1B' }}>¿Eliminar?</span>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  type="button"
-                  id={`btn-cancel-${site.id}`}
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowConfirm(false) }}
-                  style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid #D1D5DB', background: '#FFFFFF', color: '#374151', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  id={`btn-confirm-${site.id}`}
-                  onClick={handleConfirmDelete}
-                  disabled={deleting}
-                  style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#DC2626', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer', boxShadow: '0 2px 4px rgba(220,38,38,0.3)' }}
-                >
-                  {deleting ? 'Borrando...' : 'Sí, Borrar'}
-                </button>
-              </div>
+        {/* Actions — 4 Modern Buttons Layout */}
+        {showConfirm ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, background: '#FEF2F2', padding: '12px 14px', borderRadius: 12, border: '1px solid #FCA5A5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#991B1B', fontWeight: 700, fontSize: '0.82rem' }}>
+              <AlertCircle size={15} style={{ flexShrink: 0, color: '#DC2626' }} />
+              <span>¿Confirmar eliminación del sitio?</span>
             </div>
-          ) : (
-            <>
-              <Link
-                to={`/app/editor/${site.id}`}
-                id={`btn-edit-${site.id}`}
-                title="Editar contenido y diseño del sitio"
-                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px', background: 'rgba(0,200,150,0.08)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 9, textDecoration: 'none', color: '#00A87A', fontWeight: 700, fontSize: '0.8rem', transition: 'all 0.15s ease' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.15)'; e.currentTarget.style.borderColor = '#00C896' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.08)'; e.currentTarget.style.borderColor = 'rgba(0,200,150,0.2)' }}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                type="button"
+                id={`btn-cancel-${site.id}`}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowConfirm(false) }}
+                style={{ height: 34, borderRadius: 8, border: '1px solid #D1D5DB', background: '#fff', color: '#374151', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F3F4F6' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fff' }}
               >
-                <Edit3 size={13} /> Editar
-              </Link>
-              {site.status === 'published' && site.vercel_url && (
-                <a href={site.vercel_url} target="_blank" rel="noopener noreferrer" title="Ver sitio en vivo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 12px', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 9, textDecoration: 'none', color: '#10B981', fontWeight: 700, fontSize: '0.8rem', background: 'rgba(16,185,129,0.06)' }}>
-                  <ExternalLink size={13} />
-                </a>
-              )}
-              {/* Stats button */}
+                Cancelar
+              </button>
+              <button
+                type="button"
+                id={`btn-confirm-${site.id}`}
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                style={{ height: 34, borderRadius: 8, border: 'none', background: '#DC2626', color: '#fff', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#B91C1C' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#DC2626' }}
+              >
+                <Trash2 size={13} />
+                {deleting ? 'Eliminando...' : 'Sí, Eliminar'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Primary Action — Editar (Full width) */}
+            <Link
+              to={`/app/editor/${site.id}`}
+              id={`btn-edit-${site.id}`}
+              title="Editar contenido y diseño del sitio"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                height: 38,
+                borderRadius: 10,
+                textDecoration: 'none',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.84rem',
+                background: 'linear-gradient(135deg, #00C896, #00A87A)',
+                border: 'none',
+                boxShadow: '0 3px 10px rgba(0,200,150,0.25)',
+                width: '100%',
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 5px 14px rgba(0,200,150,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,200,150,0.25)'; e.currentTarget.style.transform = 'translateY(0)' }}
+            >
+              <Edit3 size={15} /> Editar Sitio
+            </Link>
+
+            {/* Secondary Actions — 3 equal buttons grid (Stats, Dominio, Borrar) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
               <button
                 type="button"
                 id={`btn-stats-${site.id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onOpenStats?.(site)
-                }}
-                title="Ver estadísticas y tráfico del sitio"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 12px', border: '1px solid #E5E7EB', borderRadius: 9, background: '#F9FAFB', color: '#6B7280', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenStats?.(site) }}
+                title="Estadísticas"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, height: 34, border: '1px solid #E5E7EB', borderRadius: 8, background: '#F9FAFB', color: '#4B5563', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', width: '100%' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#00C896'; e.currentTarget.style.color = '#00A87A'; e.currentTarget.style.background = 'rgba(0,200,150,0.06)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#6B7280'; e.currentTarget.style.background = '#F9FAFB' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#4B5563'; e.currentTarget.style.background = '#F9FAFB' }}
               >
-                <BarChart2 size={13} />
+                <BarChart2 size={13} /> Stats
               </button>
-              {/* Domain CTA */}
+
               <button
                 type="button"
                 id={`btn-domain-${site.id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onOpenDomain?.(site)
-                }}
-                title="Conectar o configurar dominio propio"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 12px', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 9, color: '#6366F1', fontWeight: 700, fontSize: '0.8rem', background: 'rgba(99,102,241,0.06)', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s ease' }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenDomain?.(site) }}
+                title="Configurar dominio"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, height: 34, border: '1px solid rgba(99,102,241,0.25)', borderRadius: 8, color: '#6366F1', background: 'rgba(99,102,241,0.06)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', width: '100%' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.background = 'rgba(99,102,241,0.14)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'; e.currentTarget.style.background = 'rgba(99,102,241,0.06)' }}
               >
-                <Globe size={13}/>
+                <Globe size={13} /> Dominio
               </button>
-              {/* Delete button */}
+
               <button
                 type="button"
                 id={`btn-delete-${site.id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setShowConfirm(true)
-                }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowConfirm(true) }}
                 disabled={deleting}
                 title="Eliminar sitio"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: '8px 12px', border: '1px solid #FEE2E2', borderRadius: 9,
-                  cursor: 'pointer',
-                  color: '#EF4444', background: '#FEF2F2',
-                  transition: 'all 0.15s ease',
-                  flexShrink: 0
-                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, height: 34, border: '1px solid #FEE2E2', borderRadius: 8, color: '#EF4444', background: '#FEF2F2', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s', width: '100%' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.borderColor = '#FCA5A5' }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#FEF2F2'; e.currentTarget.style.borderColor = '#FEE2E2' }}
               >
-                <Trash2 size={13} style={{ pointerEvents: 'none' }} />
+                <Trash2 size={13} /> Borrar
               </button>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

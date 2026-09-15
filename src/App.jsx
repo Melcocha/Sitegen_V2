@@ -25,6 +25,7 @@ import UserDashboard from './pages/UserDashboard'
 import AdminDashboard, { AdminRoute } from './pages/AdminDashboard'
 import SiteEditorPage from './pages/SiteEditorPage'
 import NewSitePage from './pages/NewSitePage'
+import PublicSitePage from './pages/PublicSitePage'
 
 import './index.css'
 
@@ -151,6 +152,7 @@ function AppContent() {
           <Route path="/" element={<LandingPage onCheckout={handleCheckout} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/site/:siteId" element={<PublicSitePage />} />
 
           {/* Protected app routes */}
           <Route path="/app/dashboard" element={

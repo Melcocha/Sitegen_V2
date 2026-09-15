@@ -550,39 +550,53 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             )}
           </div>
 
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-            {((Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
+          {(() => {
+            const headerCtaText = data.hero?.ctaText || data.navCtaText || 'PLANIFICA TU VISITA'
+            const headerCtaLink = data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'
+            const rawNavs = (Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
               { text: nav.item1 || 'Planifica tu Visita', href: '#wp-plan-visit' },
               { text: nav.item2 || 'Sobre Nosotros', href: '#wp-welcome' },
               { text: nav.item3 || 'Ministerios', href: '#wp-columns' },
               { text: nav.item4 || 'Próximos Pasos', href: '#wp-next-steps-split' },
-            ]).map((item, idx) => {
-              const itemLabel = item.text || item.label || 'Link'
-              return (
+            ]
+            const ctaClean = headerCtaText.trim().toLowerCase()
+            const filteredNavs = rawNavs.filter(item => {
+              const t = (item.text || item.label || '').trim().toLowerCase()
+              return t !== ctaClean
+            })
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0 }}>
+                <nav style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'nowrap' }}>
+                  {filteredNavs.map((item, idx) => {
+                    const itemLabel = item.text || item.label || 'Link'
+                    return (
+                      <a
+                        key={idx}
+                        data-field={`navLinks.${idx}.text`}
+                        data-ovkey={`navLinks.${idx}.text`}
+                        href={item.href || '#wp-hero'}
+                        onClick={(e) => handleNavClick(e, item.href || '#wp-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel)}
+                        style={{ color: '#334155', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 700, letterSpacing: '-0.01em', transition: 'color 0.15s', whiteSpace: 'nowrap', ...ost(`navLinks.${idx}.text`) }}
+                        className="editable-element"
+                      >
+                        {itemLabel}
+                      </a>
+                    )
+                  })}
+                </nav>
                 <a
-                  key={idx}
-                  data-field={`navLinks.${idx}.text`}
-                  data-ovkey={`navLinks.${idx}.text`}
-                  href={item.href || '#wp-hero'}
-                  onClick={(e) => handleNavClick(e, item.href || '#wp-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel)}
-                  style={{ color: '#334155', textDecoration: 'none', fontSize: '0.82rem', fontWeight: 700, letterSpacing: '-0.01em', transition: 'color 0.15s', ...ost(`navLinks.${idx}.text`) }}
+                  data-field="hero.ctaText"
+                  data-ovkey="hero.ctaText"
+                  href={headerCtaLink}
+                  onClick={(e) => handleNavClick(e, headerCtaLink, 'hero.ctaText', 'Botón Navbar Visítanos', headerCtaText)}
+                  style={{ padding: '8px 20px', background: '#0F172A', color: '#FFFFFF', borderRadius: 8, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0, ...ost('hero.ctaText') }}
                   className="editable-element"
                 >
-                  {itemLabel}
+                  {headerCtaText}
                 </a>
-              )
-            })}
-            <a
-              data-field="hero.ctaText"
-              data-ovkey="hero.ctaText"
-              href={data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'}
-              onClick={(e) => handleNavClick(e, data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit', 'hero.ctaText', 'Botón Navbar Visítanos', data.hero?.ctaText || data.navCtaText || 'PLANIFICA TU VISITA')}
-              style={{ padding: '8px 20px', background: '#0F172A', color: '#FFFFFF', borderRadius: 8, textDecoration: 'none', fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'all 0.2s', ...ost('hero.ctaText') }}
-              className="editable-element"
-            >
-              {data.hero?.ctaText || data.navCtaText || 'PLANIFICA TU VISITA'}
-            </a>
-          </nav>
+              </div>
+            )
+          })()}
         </div>
       </header>
 

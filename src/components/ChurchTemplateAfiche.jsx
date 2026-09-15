@@ -417,47 +417,62 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           )}
         </div>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-          {((Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
+        {(() => {
+          const headerCtaText = data.hero?.ctaText || data.navCtaText || planAVisit.ctaText || 'Planifica tu Visita'
+          const headerCtaLink = data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'
+          const rawNavs = (Array.isArray(data.navLinks) && data.navLinks.length > 0) ? data.navLinks : [
             { text: nav.item1 || 'INICIO', href: '#wp-afiche-hero' },
             { text: nav.item2 || 'EXPERIENCIA', href: '#wp-afiche-gallery' },
             { text: nav.item3 || 'MINISTERIOS', href: '#wp-ministerios' },
             { text: nav.item4 || 'HORARIOS', href: '#wp-plan-visit' },
             { text: nav.item5 || 'CONTACTO', href: '#wp-contact' },
-          ]).map((item, idx) => {
-            const itemLabel = item.text || item.label || 'Link'
-            return (
+          ]
+          const ctaClean = headerCtaText.trim().toLowerCase()
+          const filteredNavs = rawNavs.filter(item => {
+            const t = (item.text || item.label || '').trim().toLowerCase()
+            return t !== ctaClean
+          })
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0 }}>
+              <nav style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'nowrap' }}>
+                {filteredNavs.map((item, idx) => {
+                  const itemLabel = item.text || item.label || 'Link'
+                  return (
+                    <a
+                      key={idx}
+                      data-field={`navLinks.${idx}.text`}
+                      data-ovkey={`navLinks.${idx}.text`}
+                      href={item.href || '#wp-afiche-hero'}
+                      onClick={(e) => handleNavClick(e, item.href || '#wp-afiche-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel)}
+                      style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap', ...ost(`navLinks.${idx}.text`) }}
+                      className="editable-element"
+                    >
+                      {itemLabel}
+                    </a>
+                  )
+                })}
+              </nav>
               <a
-                key={idx}
-                data-field={`navLinks.${idx}.text`}
-                data-ovkey={`navLinks.${idx}.text`}
-                href={item.href || '#wp-afiche-hero'}
-                onClick={(e) => handleNavClick(e, item.href || '#wp-afiche-hero', `navLinks.${idx}.text`, `Menú: ${itemLabel}`, itemLabel)}
-                style={{ color: '#FFFFFF', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em', ...ost(`navLinks.${idx}.text`) }}
-                className="editable-element"
+                data-field="hero.ctaText"
+                data-ovkey="hero.ctaText"
+                href={headerCtaLink}
+                className="afiche-glow-btn editable-element"
+                onClick={(e) => handleNavClick(e, headerCtaLink, 'hero.ctaText', 'Botón Navbar Visítanos', headerCtaText)}
+                style={{
+                  padding: '10px 22px',
+                  borderRadius: 999,
+                  fontSize: '0.75rem',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  ...ost('hero.ctaText')
+                }}
               >
-                {itemLabel}
+                {headerCtaText}
               </a>
-            )
-          })}
-        </nav>
-
-        <a
-          data-field="hero.ctaText"
-          data-ovkey="hero.ctaText"
-          href={data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit'}
-          className="afiche-glow-btn editable-element"
-          onClick={(e) => handleNavClick(e, data.hero?.ctaLink || data.navCtaLink || '#wp-plan-visit', 'hero.ctaText', 'Botón Navbar Visítanos', data.hero?.ctaText || data.navCtaText || planAVisit.ctaText || 'Planifica tu Visita')}
-          style={{
-            padding: '10px 22px',
-            borderRadius: 999,
-            fontSize: '0.75rem',
-            textDecoration: 'none',
-            ...ost('hero.ctaText')
-          }}
-        >
-          {data.hero?.ctaText || data.navCtaText || planAVisit.ctaText || 'Planifica tu Visita'}
-        </a>
+            </div>
+          )
+        })()}
       </header>
 
       {/* HERO AFICHE COMPLETO PANTALLA TOTALMENTE CINEMÁTICO OSCURO CON FOTO DE FONDO */}

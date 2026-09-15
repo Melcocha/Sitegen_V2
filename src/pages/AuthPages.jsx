@@ -395,7 +395,7 @@ export function LoginPage() {
         </p>
       </div>
 
-      {/* Dev Mode Bypass Button (all environments) */}
+      {/* Guest / Demo login button */}
       <button
           onClick={() => {
             devLogin()
@@ -404,17 +404,18 @@ export function LoginPage() {
           style={{
             width: '100%', display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: 10,
-            padding: '13px 20px', borderRadius: 12,
+            padding: '14px 20px', borderRadius: 12,
             border: '1.5px solid #00C896',
             background: 'linear-gradient(135deg, #00C896, #00A87A)', cursor: 'pointer',
-            fontFamily: 'var(--font)', fontWeight: 800, fontSize: '0.9375rem',
+            fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1rem',
             color: '#fff', marginBottom: 16,
-            boxShadow: '0 4px 14px rgba(0,200,150,0.3)',
+            boxShadow: '0 4px 18px rgba(0,200,150,0.35)',
             transition: 'all 0.2s ease',
           }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(0,200,150,0.45)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,200,150,0.35)' }}
         >
-          <Sparkles size={18} />
-          Acceso Rápido Dev Local (Sin Supabase) →
+          👤 Entrar como Invitado →
         </button>
 
       {/* Google OAuth */}

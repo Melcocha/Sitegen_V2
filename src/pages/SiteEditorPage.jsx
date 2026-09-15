@@ -13,12 +13,13 @@ import { supabase } from '../lib/supabase'
 import WebsiteEditor from '../components/WebsiteEditor'
 import QuickEditPanel from '../components/QuickEditPanel'
 import { publishSite } from '../lib/publishService'
-import { getSite, updateSiteContent, migrateLocalSiteToRemote } from '../lib/websiteService'
+import { getSite, updateSiteContent, migrateLocalSiteToRemote, markPublished } from '../lib/websiteService'
 import WebsitePreview from '../components/WebsitePreview'
+import { checkDomainAvailability } from '../lib/domainChecker'
 import {
   ArrowLeft, Save, Globe, Eye, EyeOff, Smartphone, Monitor,
   Tablet, CheckCircle2, AlertCircle, Zap, Clock, RotateCcw,
-  ExternalLink, Layers, ChevronDown, Sparkles, Undo2, Redo2
+  ExternalLink, Layers, ChevronDown, Sparkles, Undo2, Redo2, Search
 } from 'lucide-react'
 import { PRESET_TEMPLATES } from '../data/templates'
 
@@ -155,6 +156,27 @@ export default function SiteEditorPage() {
   const [showTemplates, setShowTemplates] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('Todas')
   const [confirmingTemplate, setConfirmingTemplate] = useState(null)
+  const [showPublishModal, setShowPublishModal] = useState(false)
+  const [customSubdomain, setCustomSubdomain]   = useState('')
+  const [copiedLink, setCopiedLink]             = useState(false)
+  const [domainSearchQuery, setDomainSearchQuery] = useState('')
+  const [searchingDomain, setSearchingDomain]   = useState(false)
+  const [domainResults, setDomainResults]       = useState(null)
+  const [selectedDomain, setSelectedDomain]     = useState('')
+
+  const handleSearchDomain = async (queryToSearch) => {
+    const term = (queryToSearch || domainSearchQuery || customSubdomain || 'mi-sitio').trim()
+    if (!term) return
+    setSearchingDomain(true)
+    try {
+      const res = await checkDomainAvailability(term)
+      setDomainResults(res.results || [])
+    } catch {
+      setDomainResults([])
+    } finally {
+      setSearchingDomain(false)
+    }
+  }
 
   // Auto-save timer
   const autoSaveRef = useRef(null)
@@ -260,6 +282,10 @@ export default function SiteEditorPage() {
         setSiteJson(initialJson)
         setHistory([JSON.parse(JSON.stringify(initialJson))])
         setHistoryIdx(0)
+        const sub = data.subdomain || initialJson.subdomain || (initialJson.businessName || data.name || 'mi-sitio')
+          .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+        setCustomSubdomain(sub)
         setLoading(false)
       })
       .catch(() => {
@@ -382,23 +408,34 @@ export default function SiteEditorPage() {
     setTimeout(() => setSaveState('idle'), 3000)
   }
 
-  // ── Publish — calls Edge Function → uploads HTML to Supabase Storage ──
+  // ── Publish — handles local-only sites without Supabase Edge Functions ──
   const handlePublish = async () => {
     if (publishing) return
     setPublishing(true)
     try {
-      // Local-only drafts don't exist in Supabase yet — the Edge Function
-      // and website_versions table can't see them, so migrate first.
-      let activeSiteId = siteId
+      // ── LOCAL MODE: simulate publish without Supabase ──
       if (siteId.startsWith('site-local-')) {
-        const remote = await migrateLocalSiteToRemote({ ...site, site_json: siteJson }, user.id)
-        activeSiteId = remote.id
-        setSite(remote)
-        navigate(`/app/editor/${remote.id}`, { replace: true })
-      } else {
         // Save latest JSON first
-        await supabase.from('websites').update({ site_json: siteJson, name: siteJson.businessName || site?.name }).eq('id', siteId)
+        await updateSiteContent(siteId, siteJson)
+
+        // Build local public URL (works without Vercel or Edge Functions)
+        const subdomain = customSubdomain || siteId
+        const publicUrl = `${window.location.origin}/site/${siteId}`
+
+        // Persist publish status using websiteService (correct localStorage key)
+        await markPublished(siteId, { subdomain, publishedUrl: publicUrl })
+
+        setSite(prev => ({ ...prev, status: 'published', vercel_url: publicUrl, subdomain }))
+        setIsDirty(false)
+        setSaveState('saved')
+        setTimeout(() => setSaveState('idle'), 4000)
+        return
       }
+
+      // ── REMOTE MODE: use Supabase + Edge Function ──
+      let activeSiteId = siteId
+      // Save latest JSON first
+      await supabase.from('websites').update({ site_json: siteJson, name: siteJson.businessName || site?.name }).eq('id', siteId)
 
       // Save version snapshot
       await supabase.from('website_versions').insert({
@@ -607,9 +644,9 @@ export default function SiteEditorPage() {
           {saveState === 'saved' ? <><CheckCircle2 size={14} /> <span className="site-editor-desktop-label">Guardado</span></> : <><Save size={14} /> <span>{saving ? '...' : 'Guardar'}</span></>}
         </button>
 
-        {/* Publish button */}
+        {/* Publish & Domain button */}
         <button
-          onClick={handlePublish}
+          onClick={() => setShowPublishModal(true)}
           disabled={publishing}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
@@ -622,7 +659,7 @@ export default function SiteEditorPage() {
         >
           {publishing
             ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> <span className="site-editor-desktop-label">Publicando...</span></>
-            : <><Zap size={14} /> <span>Publicar</span></>
+            : <><Globe size={14} /> <span>Dominio & Publicar</span></>
           }
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </button>
@@ -1084,6 +1121,173 @@ export default function SiteEditorPage() {
           }
         }
       `}</style>
+
+      {/* ── MODAL: ELEGIR DOMINIO & PUBLICAR ── */}
+      {showPublishModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#FFFFFF', borderRadius: 20, width: '100%', maxWidth: 720, padding: '28px 36px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', border: '1px solid #E2E8F0', position: 'relative' }}>
+            <button onClick={() => setShowPublishModal(false)} style={{ position: 'absolute', top: 18, right: 18, background: 'none', border: 'none', fontSize: '1.2rem', color: '#94A3B8', cursor: 'pointer', padding: 4 }}>✕</button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
+                <Globe size={22} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>Dominio & Publicación</h3>
+                <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 500 }}>Configura la dirección web de tu sitio</span>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: '#F1F5F9', margin: '16px 0 20px' }} />
+
+            {/* Subdomain Input */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Subdominio Gratuito
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#F8FAFC', border: '1.5px solid #CBD5E1', borderRadius: 10, overflow: 'hidden', padding: '0 14px' }}>
+                <input
+                  type="text"
+                  value={customSubdomain}
+                  onChange={(e) => {
+                    const slug = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                    setCustomSubdomain(slug)
+                    setDomainSearchQuery(slug)
+                    setSiteJson(prev => ({ ...prev, subdomain: slug }))
+                    setIsDirty(true)
+                  }}
+                  placeholder="iglesiadebo"
+                  style={{ flex: 1, border: 'none', background: 'transparent', padding: '12px 0', fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', outline: 'none' }}
+                />
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748B' }}>.saasweb.app</span>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: 8 }}>
+                🌐 Dirección web gratuita: <strong style={{ color: '#0284C7' }}>https://{customSubdomain || 'tu-sitio'}.saasweb.app</strong>
+              </div>
+            </div>
+
+            {/* Interactive Custom Domain Search (Demo) */}
+            <div style={{ background: '#F8FAFC', borderRadius: 14, padding: '18px 20px', marginBottom: 24, border: '1.5px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0F172A', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Sparkles size={16} color="#F59E0B" /> Buscar Dominio Personalizado (.com, .org, .sv)
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Search size={16} style={{ position: 'absolute', left: 12, color: '#94A3B8' }} />
+                  <input
+                    type="text"
+                    value={domainSearchQuery || customSubdomain}
+                    onChange={(e) => setDomainSearchQuery(e.target.value)}
+                    placeholder="Ej: iglesiadebo.com"
+                    style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: 8, border: '1px solid #CBD5E1', fontSize: '0.875rem', outline: 'none', fontWeight: 600 }}
+                  />
+                </div>
+                <button
+                  onClick={() => handleSearchDomain(domainSearchQuery || customSubdomain)}
+                  disabled={searchingDomain}
+                  style={{ padding: '10px 16px', borderRadius: 8, border: 'none', background: '#0F172A', color: '#FFF', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  {searchingDomain ? 'Buscando...' : '🔍 Buscar'}
+                </button>
+              </div>
+
+              {/* Domain Search Results */}
+              {domainResults && domainResults.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12, maxH: 180, overflowY: 'auto' }}>
+                  {domainResults.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setSelectedDomain(item.domain)
+                        setCustomSubdomain(item.domain.split('.')[0])
+                        setSiteJson(prev => ({ ...prev, subdomain: item.domain.split('.')[0], customDomain: item.domain }))
+                        setIsDirty(true)
+                      }}
+                      style={{
+                        padding: '10px 14px', borderRadius: 8,
+                        background: selectedDomain === item.domain ? '#EEF2FF' : '#FFFFFF',
+                        border: selectedDomain === item.domain ? '2px solid #6366F1' : '1px solid #E2E8F0',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        cursor: 'pointer', transition: 'all 0.15s'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>{item.domain}</span>
+                        {item.available ? (
+                          <span style={{ fontSize: '0.7rem', fontWeight: 800, background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: 999 }}>
+                            🟢 Disponible ({item.price})
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '0.7rem', fontWeight: 800, background: '#FEE2E2', color: '#B91C1C', padding: '2px 8px', borderRadius: 999 }}>
+                            🔴 Ocupado
+                          </span>
+                        )}
+                      </div>
+                      <button style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: selectedDomain === item.domain ? '#4F46E5' : '#F1F5F9', color: selectedDomain === item.domain ? '#FFF' : '#334155', fontSize: '0.72rem', fontWeight: 800 }}>
+                        {selectedDomain === item.domain ? '✓ Seleccionado' : 'Seleccionar'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+              <button onClick={() => setShowPublishModal(false)} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid #CBD5E1', background: '#FFF', color: '#475569', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>
+                Cerrar
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={publishing}
+                style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #00C896, #00A87A)', color: '#FFF', fontWeight: 800, fontSize: '0.9rem', cursor: publishing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(0,200,150,0.35)' }}
+              >
+                {publishing ? 'Publicando...' : site.status === 'published' ? '✓ Sitio Publicado (Actualizar)' : '🚀 Publicar Sitio Ahora'}
+              </button>
+            </div>
+
+            {/* Published Success view */}
+            {site.status === 'published' && site.vercel_url && (
+              <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #E2E8F0', textAlign: 'center' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(16,185,129,0.12)', color: '#10B981', padding: '6px 14px', borderRadius: 999, fontWeight: 800, fontSize: '0.82rem', marginBottom: 12 }}>
+                  <CheckCircle2 size={16} /> ¡Tu sitio web está publicado y activo!
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <a href={site.vercel_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '1rem', fontWeight: 800, color: '#00A87A', textDecoration: 'underline', wordBreak: 'break-all' }}>
+                    {site.vercel_url}
+                  </a>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(site.vercel_url)
+                      setCopiedLink(true)
+                      setTimeout(() => setCopiedLink(false), 2000)
+                    }}
+                    style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#F8FAFC', color: '#334155', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+                  >
+                    {copiedLink ? '✓ Enlace Copiado' : '📋 Copiar Enlace'}
+                  </button>
+                  <a
+                    href={site.vercel_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ padding: '9px 18px', borderRadius: 8, background: '#00C896', color: '#FFF', textDecoration: 'none', fontWeight: 700, fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <ExternalLink size={14} /> Abrir Sitio Web
+                  </a>
+                  <button
+                    onClick={() => navigate('/app/dashboard')}
+                    style={{ padding: '9px 18px', borderRadius: 8, background: '#0F172A', color: '#FFF', border: 'none', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+                  >
+                    📊 Ir al Dashboard
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
