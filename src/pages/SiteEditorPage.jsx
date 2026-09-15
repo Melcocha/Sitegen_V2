@@ -19,7 +19,7 @@ import { checkDomainAvailability } from '../lib/domainChecker'
 import {
   ArrowLeft, Save, Globe, Eye, EyeOff, Smartphone, Monitor,
   Tablet, CheckCircle2, AlertCircle, Zap, Clock, RotateCcw,
-  ExternalLink, Layers, ChevronDown, Sparkles, Undo2, Redo2, Search
+  ExternalLink, Layers, ChevronDown, Sparkles, Undo2, Redo2, Search, X
 } from 'lucide-react'
 import { PRESET_TEMPLATES } from '../data/templates'
 
@@ -154,9 +154,10 @@ export default function SiteEditorPage() {
   const [activeMobileTab, setActiveMobileTab] = useState('editor') // 'editor' | 'preview'
   const [saveToast,  setSaveToast]  = useState(false) // floating toast confirmation
   const [showTemplates, setShowTemplates] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState('Todas')
-  const [confirmingTemplate, setConfirmingTemplate] = useState(null)
   const [showPublishModal, setShowPublishModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [isPublishingLoading, setIsPublishingLoading] = useState(false)
+  const [publishProgressStep, setPublishProgressStep] = useState(0)
   const [customSubdomain, setCustomSubdomain]   = useState('')
   const [copiedLink, setCopiedLink]             = useState(false)
   const [domainSearchQuery, setDomainSearchQuery] = useState('')
@@ -459,6 +460,23 @@ export default function SiteEditorPage() {
     } finally {
       setPublishing(false)
     }
+  }
+
+  // ── Animated Publish Flow: Domain Modal -> Loading Steps -> Success Modal ──
+  const handleStartPublish = async () => {
+    setShowPublishModal(false)
+    setIsPublishingLoading(true)
+    setPublishProgressStep(0)
+
+    setTimeout(() => setPublishProgressStep(1), 700)
+    setTimeout(() => setPublishProgressStep(2), 1400)
+    setTimeout(() => setPublishProgressStep(3), 2100)
+
+    setTimeout(async () => {
+      await handlePublish()
+      setIsPublishingLoading(false)
+      setShowSuccessModal(true)
+    }, 2600)
   }
 
   // ── Restore version ──────────────────
@@ -1126,7 +1144,9 @@ export default function SiteEditorPage() {
       {showPublishModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: '#FFFFFF', borderRadius: 20, width: '100%', maxWidth: 720, padding: '28px 36px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', border: '1px solid #E2E8F0', position: 'relative' }}>
-            <button onClick={() => setShowPublishModal(false)} style={{ position: 'absolute', top: 18, right: 18, background: 'none', border: 'none', fontSize: '1.2rem', color: '#94A3B8', cursor: 'pointer', padding: 4 }}>✕</button>
+            <button onClick={() => setShowPublishModal(false)} style={{ position: 'absolute', top: 18, right: 18, background: '#F1F5F9', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', cursor: 'pointer' }}>
+              <X size={18} />
+            </button>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <div style={{ width: 40, height: 40, borderRadius: 12, background: '#ECFDF5', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
@@ -1235,56 +1255,134 @@ export default function SiteEditorPage() {
             {/* Action Buttons */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
               <button onClick={() => setShowPublishModal(false)} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid #CBD5E1', background: '#FFF', color: '#475569', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>
-                Cerrar
+                Cancelar
               </button>
               <button
-                onClick={handlePublish}
-                disabled={publishing}
-                style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #00C896, #00A87A)', color: '#FFF', fontWeight: 800, fontSize: '0.9rem', cursor: publishing ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(0,200,150,0.35)' }}
+                onClick={handleStartPublish}
+                disabled={publishing || isPublishingLoading}
+                style={{ padding: '11px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #00C896, #00A87A)', color: '#FFF', fontWeight: 800, fontSize: '0.9rem', cursor: (publishing || isPublishingLoading) ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(0,200,150,0.35)' }}
               >
-                {publishing ? 'Publicando...' : site.status === 'published' ? '✓ Sitio Publicado (Actualizar)' : '🚀 Publicar Sitio Ahora'}
+                <Sparkles size={16} /> 🚀 Publicar Sitio Ahora
               </button>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Published Success view */}
-            {site.status === 'published' && site.vercel_url && (
-              <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #E2E8F0', textAlign: 'center' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(16,185,129,0.12)', color: '#10B981', padding: '6px 14px', borderRadius: 999, fontWeight: 800, fontSize: '0.82rem', marginBottom: 12 }}>
-                  <CheckCircle2 size={16} /> ¡Tu sitio web está publicado y activo!
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <a href={site.vercel_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '1rem', fontWeight: 800, color: '#00A87A', textDecoration: 'underline', wordBreak: 'break-all' }}>
-                    {site.vercel_url}
-                  </a>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(site.vercel_url)
-                      setCopiedLink(true)
-                      setTimeout(() => setCopiedLink(false), 2000)
-                    }}
-                    style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #CBD5E1', background: '#F8FAFC', color: '#334155', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
-                  >
-                    {copiedLink ? '✓ Enlace Copiado' : '📋 Copiar Enlace'}
-                  </button>
-                  <a
-                    href={site.vercel_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ padding: '9px 18px', borderRadius: 8, background: '#00C896', color: '#FFF', textDecoration: 'none', fontWeight: 700, fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                  >
-                    <ExternalLink size={14} /> Abrir Sitio Web
-                  </a>
-                  <button
-                    onClick={() => navigate('/app/dashboard')}
-                    style={{ padding: '9px 18px', borderRadius: 8, background: '#0F172A', color: '#FFF', border: 'none', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
-                  >
-                    📊 Ir al Dashboard
-                  </button>
-                </div>
+      {/* ── MODAL DE PROCESO DE PUBLICACIÓN (TIEMPO DE ESPERA) ── */}
+      {isPublishingLoading && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#FFFFFF', borderRadius: 24, width: 440, maxWidth: '92vw', padding: '36px 30px', boxShadow: '0 25px 50px rgba(0,0,0,0.3)', textAlign: 'center', border: '1px solid #E2E8F0' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(0,200,150,0.12)', border: '3px solid #00C896', borderTopColor: 'transparent', margin: '0 auto 20px', animation: 'spin 0.9s linear infinite' }} />
+
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginBottom: 6, letterSpacing: '-0.02em' }}>
+              Publicando tu sitio web...
+            </h3>
+            <p style={{ fontSize: '0.84rem', color: '#64748B', marginBottom: 20 }}>
+              Por favor espera unos segundos mientras preparamos tu sitio en línea.
+            </p>
+
+            {/* Progress Bar */}
+            <div style={{ height: 6, background: '#E2E8F0', borderRadius: 999, overflow: 'hidden', marginBottom: 14 }}>
+              <div
+                style={{
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #00C896, #00A87A)',
+                  borderRadius: 999,
+                  width: publishProgressStep === 0 ? '25%' : publishProgressStep === 1 ? '55%' : publishProgressStep === 2 ? '85%' : '100%',
+                  transition: 'width 0.6s ease'
+                }}
+              />
+            </div>
+
+            {/* Step label */}
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00A87A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              <Sparkles size={14} />
+              <span>
+                {publishProgressStep === 0 && 'Configurando subdominio y certificados SSL...'}
+                {publishProgressStep === 1 && 'Compilando componentes y optimizando diseño...'}
+                {publishProgressStep === 2 && 'Sincronizando con la red CDN global...'}
+                {publishProgressStep === 3 && '¡Sitio publicado con éxito!'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL DEDICADA DE ÉXITO DE PUBLICACIÓN ── */}
+      {showSuccessModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#FFFFFF', borderRadius: 24, width: 520, maxWidth: '95vw', padding: '36px 32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid #E2E8F0', textAlign: 'center', position: 'relative' }}>
+            <button onClick={() => setShowSuccessModal(false)} style={{ position: 'absolute', top: 18, right: 18, border: 'none', background: '#F1F5F9', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', cursor: 'pointer' }}>
+              <X size={18} />
+            </button>
+
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #10B981, #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 10px 25px rgba(16,185,129,0.35)' }}>
+              <CheckCircle2 size={36} color="#FFF" />
+            </div>
+
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0F172A', marginBottom: 6, letterSpacing: '-0.02em' }}>
+              ¡Tu Sitio Web está Publicado!
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: 24, lineHeight: 1.5 }}>
+              Tu página ya se encuentra en línea y lista para recibir visitantes.
+            </p>
+
+            {/* Link Box */}
+            <div style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 14, padding: '16px 20px', marginBottom: 24, textAlign: 'left' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                Dirección Web En Línea
               </div>
-            )}
+              <a
+                href={site?.vercel_url || `${window.location.origin}/site/${siteId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '1rem', fontWeight: 800, color: '#00A87A', textDecoration: 'underline', wordBreak: 'break-all', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                {site?.vercel_url || `${window.location.origin}/site/${siteId}`}
+                <ExternalLink size={15} />
+              </a>
+            </div>
+
+            {/* Action Buttons Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+              <a
+                href={site?.vercel_url || `${window.location.origin}/site/${siteId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #00C896, #00A87A)', color: '#FFF', textDecoration: 'none', fontWeight: 800, fontSize: '0.86rem', boxShadow: '0 4px 14px rgba(0,200,150,0.3)' }}
+              >
+                <ExternalLink size={15} /> Ver Sitio en Vivo
+              </a>
+
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false)
+                  navigate('/app/dashboard')
+                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, height: 44, borderRadius: 12, background: '#0F172A', color: '#FFF', border: 'none', fontWeight: 800, fontSize: '0.86rem', cursor: 'pointer' }}
+              >
+                📊 Ir al Dashboard
+              </button>
+
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(site?.vercel_url || `${window.location.origin}/site/${siteId}`)
+                  setCopiedLink(true)
+                  setTimeout(() => setCopiedLink(false), 2000)
+                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, height: 40, borderRadius: 10, border: '1px solid #CBD5E1', background: '#F8FAFC', color: '#334155', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                {copiedLink ? '✓ Enlace Copiado' : '📋 Copiar Enlace'}
+              </button>
+
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, height: 40, borderRadius: 10, border: '1px solid #CBD5E1', background: '#FFF', color: '#64748B', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+              >
+                ✏️ Seguir Editando
+              </button>
+            </div>
           </div>
         </div>
       )}
