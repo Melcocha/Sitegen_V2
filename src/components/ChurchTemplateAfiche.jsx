@@ -1086,6 +1086,61 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         </div>
       </section>
       )}
+      {/* ── EVENTOS ── */}
+      {data.sectionsVisibility?.events !== false && (
+      <section id="wp-events" style={{ padding: '100px 6%', background: 'linear-gradient(135deg, #090B10 0%, #0D0F18 100%)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 52, flexWrap: 'wrap', gap: 20 }}>
+            <div>
+              <div className="afiche-script-font" style={{ color: accentColor, fontSize: '1.6rem', marginBottom: -4 }}>Agenda</div>
+              <h2
+                data-field="events.title" data-ovkey="events.title"
+                className="afiche-title-font editable-element"
+                onClick={(e) => handleEdit(e, 'events.title', 'Título Sección Eventos', 'text', data.events?.title || 'PRÓXIMOS EVENTOS')}
+                style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: '#FFFFFF', margin: 0, ...ost('events.title') }}
+              >
+                {data.events?.title || 'PRÓXIMOS EVENTOS'}
+              </h2>
+            </div>
+            <a href={data.events?.allLink || '#wp-plan-visit'} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: accentColor, fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
+              Ver agenda completa →
+            </a>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+            {(data.events?.items || [
+              { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.' },
+              { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.' },
+              { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.' },
+            ]).map((ev, idx) => (
+              <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(250,204,21,0.1)`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.35)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.1)'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+                  <img src={ev.image} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 35%, rgba(9,11,16,0.95) 100%)' }} />
+                  <div style={{ position: 'absolute', top: 16, left: 16, background: accentColor, color: '#06070A', padding: '8px 12px', borderRadius: 8, textAlign: 'center', minWidth: 48, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1 }}>{ev.day}</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.12em' }}>{ev.month}</div>
+                  </div>
+                </div>
+                <div style={{ padding: '20px 22px 24px' }}>
+                  <h3 className="afiche-title-font" style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px' }}>{ev.title}</h3>
+                  <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', gap: 16, marginBottom: 12 }}>
+                    <span style={{ fontSize: '0.78rem', color: accentColor, fontWeight: 700 }}>⏰ {ev.time}</span>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>📍 {ev.location}</span>
+                  </div>
+                  <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 18px' }}>{ev.description}</p>
+                  <a href={ev.link || '#wp-plan-visit'} className="afiche-glow-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 22px', borderRadius: 999, background: accentColor, color: '#06070A', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    Inscribirme →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
 
       {/* ── DONACIONES ── */}
       {data.sectionsVisibility?.donation !== false && (
@@ -1157,6 +1212,59 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             {data.floatingWidget.ctaText || 'Planifica tu Visita'}
           </a>
         </div>
+      )}
+
+      {/* DONACIONES */}
+      {data.sectionsVisibility?.donation !== false && (
+      <section id="wp-donations" style={{
+        padding: '100px 6%',
+        background: 'linear-gradient(135deg, #090B10 0%, #0D0F18 100%)'
+      }}>
+        <div style={{
+          maxWidth: 860, margin: '0 auto', textAlign: 'center',
+          background: 'rgba(250,204,21,0.05)',
+          border: '1px solid rgba(250,204,21,0.15)',
+          borderRadius: 28, padding: '60px 40px',
+        }}>
+          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.75rem', fontWeight: 800, color: accentColor, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16 }}>GENEROSIDAD</div>
+          <h2
+            data-field="donation.title" data-ovkey="donation.title"
+            className="afiche-title-font editable-element"
+            onClick={(e) => handleEdit(e, 'donation.title', 'Título Donaciones', 'text', data.donation?.title || 'Tu Generosidad Transforma Vidas')}
+            style={{ fontSize: 'clamp(2.2rem, 4.5vw, 4rem)', color: '#FFFFFF', margin: '0 0 20px', lineHeight: 1.05, ...ost('donation.title') }}
+          >
+            {data.donation?.title || 'Tu Generosidad Transforma Vidas'}
+          </h2>
+          <p
+            data-field="donation.subtitle" data-ovkey="donation.subtitle"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.subtitle', 'Descripción Donaciones', 'textarea', data.donation?.subtitle || 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá.')}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.05rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, margin: '0 0 40px', maxWidth: 580, marginLeft: 'auto', marginRight: 'auto', ...ost('donation.subtitle') }}
+          >
+            {data.donation?.subtitle || 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá.'}
+          </p>
+          <a
+            data-field="donation.ctaText" data-ovkey="donation.ctaText"
+            href={data.donation?.ctaLink || '#wp-contact'}
+            className="afiche-glow-btn editable-element"
+            onClick={(e) => handleEdit(e, 'donation.ctaText', 'Botón Donaciones', 'text', data.donation?.ctaText || 'Ofrendar en Línea')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              padding: '16px 40px', borderRadius: 999,
+              background: accentColor,
+              color: '#06070A', fontWeight: 900, fontSize: '0.9rem',
+              textDecoration: 'none',
+              boxShadow: `0 8px 32px rgba(250,204,21,0.25)`,
+              transition: 'all 0.2s ease',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              ...ost('donation.ctaText')
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            {data.donation?.ctaText || 'Ofrendar en Línea'}
+          </a>
+        </div>
+      </section>
       )}
 
       {/* FOOTER */}

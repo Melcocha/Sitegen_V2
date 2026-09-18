@@ -8,30 +8,30 @@
    ══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Brand — Electric Emerald (tech-eco signature) */
-  --brand:        #00C896;
-  --brand-dark:   #009E77;
-  --brand-light:  #E6FBF5;
-  --brand-glow:   rgba(0, 200, 150, 0.18);
+  /* Brand — Pure Black and White High Contrast */
+  --brand:        #FFFFFF;
+  --brand-dark:   #E5E5E5;
+  --brand-light:  rgba(255,255,255,0.06);
+  --brand-glow:   rgba(255,255,255,0.18);
 
   /* Neutrals */
-  --ink:          #080F0C;
-  --ink-2:        #1A2421;
-  --ink-3:        #3D5049;
-  --muted:        #7A9089;
-  --subtle:       #B8CEC8;
+  --ink:          #FFFFFF;
+  --ink-2:        #E5E5E5;
+  --ink-3:        #B0B0B0;
+  --muted:        #9CA3AF;
+  --subtle:       #4B5563;
 
   /* Backgrounds */
-  --bg:           #FFFFFF;
-  --bg-2:         #F4FBF8;
-  --bg-3:         #EAF5F0;
+  --bg:           #000000;
+  --bg-2:         #0B0B0E;
+  --bg-3:         #121216;
 
   /* Borders */
-  --border:       #DFF0EA;
-  --border-2:     #C8E4DB;
+  --border:       rgba(255,255,255,0.10);
+  --border-2:     rgba(255,255,255,0.18);
 
   /* Semantic */
-  --success:      #00C896;
+  --success:      #10B981;
   --warning:      #F59E0B;
   --danger:       #EF4444;
 
@@ -48,35 +48,38 @@
   --radius-full:  9999px;
 
   /* Shadows */
-  --shadow-xs:    0 1px 2px rgba(8,15,12,0.04);
-  --shadow-sm:    0 2px 8px rgba(8,15,12,0.06);
-  --shadow-md:    0 8px 24px rgba(8,15,12,0.08);
-  --shadow-lg:    0 20px 48px rgba(8,15,12,0.10);
-  --shadow-brand: 0 8px 32px rgba(0,200,150,0.25);
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.5);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.6);
+  --shadow-md:    0 8px 24px rgba(0,0,0,0.7);
+  --shadow-lg:    0 20px 48px rgba(0,0,0,0.85);
+  --shadow-brand: 0 8px 32px rgba(255,255,255,0.15);
 
   /* Transitions */
   --ease:         cubic-bezier(0.16, 1, 0.3, 1);
   --dur:          0.22s;
 }
 
-/* Dark mode */
+/* Dark mode matches :root */
 .dark {
-  --brand-light:  rgba(0,200,150,0.08);
-  --brand-glow:   rgba(0,200,150,0.12);
-  --ink:          #F0FAF6;
-  --ink-2:        #C8E4DB;
-  --ink-3:        #8FB5A8;
-  --muted:        #5A8070;
-  --subtle:       #2D4840;
-  --bg:           #060D0A;
-  --bg-2:         #0D1A15;
-  --bg-3:         #132018;
-  --border:       #1C2E27;
-  --border-2:     #243D33;
-  --shadow-xs:    0 1px 2px rgba(0,0,0,0.3);
-  --shadow-sm:    0 2px 8px rgba(0,0,0,0.4);
-  --shadow-md:    0 8px 24px rgba(0,0,0,0.5);
-  --shadow-lg:    0 20px 48px rgba(0,0,0,0.6);
+  --brand:        #FFFFFF;
+  --brand-dark:   #E5E5E5;
+  --brand-light:  rgba(255,255,255,0.06);
+  --brand-glow:   rgba(255,255,255,0.18);
+  --ink:          #FFFFFF;
+  --ink-2:        #E5E5E5;
+  --ink-3:        #B0B0B0;
+  --muted:        #9CA3AF;
+  --subtle:       #4B5563;
+  --bg:           #000000;
+  --bg-2:         #0B0B0E;
+  --bg-3:         #121216;
+  --border:       rgba(255,255,255,0.10);
+  --border-2:     rgba(255,255,255,0.18);
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.5);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.6);
+  --shadow-md:    0 8px 24px rgba(0,0,0,0.7);
+  --shadow-lg:    0 20px 48px rgba(0,0,0,0.85);
+  --shadow-brand: 0 8px 32px rgba(255,255,255,0.15);
 }
 
 /* ── RESET ─────────────────────────────────────────────────── */
@@ -137,13 +140,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 /* ── NAV ────────────────────────────────────────────────────── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(255,255,255,0.88);
+  background: rgba(0,0,0,0.85);
   backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border);
   transition: background var(--dur), border-color var(--dur);
 }
 .dark .nav {
-  background: rgba(6,13,10,0.9);
+  background: rgba(0,0,0,0.9);
 }
 
 /* ── BUTTONS ────────────────────────────────────────────────── */
@@ -151,31 +154,32 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
   display: inline-flex; align-items: center; gap: 7px;
   padding: 11px 22px;
   border-radius: var(--radius-full);
-  font-family: var(--font); font-size: 0.875rem; font-weight: 600;
+  font-family: var(--font); font-size: 0.875rem; font-weight: 700;
   cursor: pointer; border: none; outline: none;
   text-decoration: none; white-space: nowrap;
   transition: all var(--dur) var(--ease);
   line-height: 1;
 }
 .btn-primary {
-  background: var(--brand);
-  color: var(--ink);
-  box-shadow: var(--shadow-brand);
+  background: #FFFFFF;
+  color: #000000;
+  box-shadow: 0 4px 16px rgba(255,255,255,0.18);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,200,150,0.35); background: var(--brand-dark); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,255,255,0.3); background: #E5E5E5; }
 .btn-primary:active { transform: translateY(0); }
 
 .btn-ghost {
-  background: transparent; color: var(--ink-3);
-  border: 1px solid var(--border-2);
+  background: transparent; color: #FFFFFF;
+  border: 1px solid rgba(255,255,255,0.18);
 }
-.btn-ghost:hover { background: var(--bg-2); border-color: var(--brand); color: var(--brand); }
+.btn-ghost:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.4); color: #FFFFFF; }
 
 .btn-dark {
-  background: var(--ink);
+  background: #111114;
   color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
 }
-.btn-dark:hover { background: var(--ink-2); transform: translateY(-1px); }
+.btn-dark:hover { background: #1A1A20; transform: translateY(-1px); }
 
 .btn-lg { padding: 14px 28px; font-size: 0.9375rem; }
 .btn-xl { padding: 17px 34px; font-size: 1rem; }
@@ -183,30 +187,30 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 
 /* ── CARDS ──────────────────────────────────────────────────── */
 .card {
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: #0B0B0E;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
   transition: box-shadow var(--dur) var(--ease), border-color var(--dur), transform var(--dur) var(--ease);
 }
-.card:hover { box-shadow: var(--shadow-md); border-color: var(--brand); }
+.card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.8); border-color: rgba(255,255,255,0.3); }
 
 .card-2 {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
+  background: #0E0E12;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-lg);
 }
 
 /* ── INPUTS ─────────────────────────────────────────────────── */
 .input {
   width: 100%; padding: 13px 16px;
-  background: var(--bg);
-  border: 1.5px solid var(--border-2);
+  background: #050508;
+  border: 1.5px solid rgba(255,255,255,0.15);
   border-radius: var(--radius-md);
-  color: var(--ink); font-family: var(--font); font-size: 0.9375rem;
+  color: #FFFFFF; font-family: var(--font); font-size: 0.9375rem;
   outline: none; transition: border-color var(--dur), box-shadow var(--dur);
 }
-.input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-glow); }
+.input:focus { border-color: #FFFFFF; box-shadow: 0 0 0 3px rgba(255,255,255,0.15); }
 .input::placeholder { color: var(--subtle); }
 .input-lg { padding: 16px 20px; font-size: 1rem; border-radius: var(--radius-lg); }
 
@@ -215,12 +219,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
   display: inline-flex; align-items: center; gap: 5px;
   padding: 4px 11px;
   border-radius: var(--radius-full);
-  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.badge-brand { background: var(--brand-light); color: var(--brand-dark); border: 1px solid rgba(0,200,150,0.2); }
-.badge-dark  { background: var(--ink); color: #fff; }
+.badge-brand { background: rgba(255,255,255,0.06); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.18); }
+.badge-dark  { background: #FFFFFF; color: #000000; }
 
 /* ── DIVIDER ────────────────────────────────────────────────── */
 .divider { border: none; border-top: 1px solid var(--border); }

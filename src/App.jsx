@@ -160,16 +160,8 @@ function AppContent() {
               <UserDashboard />
             </ProtectedRoute>
           } />
-          <Route path="/app/new" element={
-            <ProtectedRoute>
-              <NewSitePage />
-            </ProtectedRoute>
-          } />
-          <Route path="/app/editor/:siteId" element={
-            <ProtectedRoute>
-              <SiteEditorPage />
-            </ProtectedRoute>
-          } />
+          <Route path="/app/new" element={<NewSitePage />} />
+          <Route path="/app/editor/:siteId" element={<SiteEditorPage />} />
 
           {/* Super Admin */}
           <Route path="/admin" element={

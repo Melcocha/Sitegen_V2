@@ -156,7 +156,7 @@ export default function NewSitePage() {
 
       {/* Top bar */}
       <header className="new-site-header" style={{ background: '#ffffff', borderBottom: '1px solid #E5E7EB', height: 56, display: 'flex', alignItems: 'center', gap: 16, position: 'sticky', top: 0, zIndex: 40 }}>
-        <Link to="/app/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#ffffff' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#ffffff' }}>
           <ArrowLeft size={14} /> Mis sitios
         </Link>
         <div className="topbar-divider" style={{ height: 18, width: 1, minWidth: 1, maxWidth: 1, background: '#E5E7EB', padding: 0, margin: 0, flexShrink: 0 }} />
@@ -403,92 +403,62 @@ export default function NewSitePage() {
                 </div>
               </div>
 
-              {/* Row 2: Dedicated Template Selector (4 Opciones únicas) */}
+              {/* Row 2: Selector estilizado compacto (Opción 1, 2, 3 y 4) */}
               {siteJson && (
-                <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span>🎨</span> Elige la plantilla y estilo de tu iglesia (4 Opciones únicas):
-                  </div>
-                  <div className="template-selector-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-                    <button
-                      type="button"
-                      onClick={() => setSiteJson(prev => ({
-                        ...prev,
-                        churchTemplateVariant: 'nucleus',
-                        font: 'Playfair Display',
-                        primaryColor: '#080A10',
-                        accentColor: '#C4A35A',
-                      }))}
-                      style={{
-                        padding: '12px 10px', borderRadius: 10,
-                        border: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '2px solid #00C896' : '1.5px solid #E5E7EB',
-                        background: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
-                        color: (siteJson.churchTemplateVariant === 'nucleus' || !siteJson.churchTemplateVariant) ? '#00A87A' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
-                      }}
-                    >
-                      <span>👑</span> 1. Obsidian & Gold
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSiteJson(prev => ({
-                        ...prev,
-                        churchTemplateVariant: 'mygateway',
-                        font: 'Plus Jakarta Sans',
-                        primaryColor: '#0F172A',
-                        accentColor: '#E11D48',
-                      }))}
-                      style={{
-                        padding: '12px 10px', borderRadius: 10,
-                        border: siteJson.churchTemplateVariant === 'mygateway' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'mygateway' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'mygateway' ? '#00A87A' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
-                      }}
-                    >
-                      <span>🌊</span> 2. Life Moderno
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSiteJson(prev => ({
-                        ...prev,
-                        churchTemplateVariant: 'poster',
-                        font: 'Plus Jakarta Sans',
-                        primaryColor: '#4F46E5',
-                        accentColor: '#10B981',
-                      }))}
-                      style={{
-                        padding: '12px 10px', borderRadius: 10,
-                        border: siteJson.churchTemplateVariant === 'poster' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'poster' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'poster' ? '#00A87A' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
-                      }}
-                    >
-                      <span>✨</span> 3. Experiencia Simbólica
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSiteJson(prev => ({
-                        ...prev,
-                        churchTemplateVariant: 'afiche',
-                        font: 'Syne',
-                        primaryColor: '#090B10',
-                        accentColor: '#FACC15',
-                      }))}
-                      style={{
-                        padding: '12px 10px', borderRadius: 10,
-                        border: siteJson.churchTemplateVariant === 'afiche' ? '2px solid #00C896' : '1.5px solid #E5E7EB',
-                        background: siteJson.churchTemplateVariant === 'afiche' ? 'rgba(0,200,150,0.08)' : '#F9FAFB',
-                        color: siteJson.churchTemplateVariant === 'afiche' ? '#00A87A' : '#374151',
-                        fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.15s', minHeight: 46, boxSizing: 'border-box'
-                      }}
-                    >
-                      <span>🎨</span> 4. Afiche Cinemático
-                    </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', paddingTop: 2 }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    Plantilla:
+                  </span>
+                  <div style={{ display: 'inline-flex', gap: 4, background: '#F3F4F6', padding: 4, borderRadius: 999, border: '1px solid #E5E7EB' }}>
+                    {[
+                      { id: 'nucleus',   label: 'Opción 1', font: 'Playfair Display',  primary: '#080A10', accent: '#C4A35A' },
+                      { id: 'mygateway', label: 'Opción 2', font: 'Plus Jakarta Sans', primary: '#0F172A', accent: '#E11D48' },
+                      { id: 'poster',    label: 'Opción 3', font: 'Plus Jakarta Sans', primary: '#4F46E5', accent: '#10B981' },
+                      { id: 'afiche',    label: 'Opción 4', font: 'Syne',              primary: '#090B10', accent: '#FACC15' },
+                    ].map(opt => {
+                      const isActive = (siteJson.churchTemplateVariant === opt.id) || (!siteJson.churchTemplateVariant && opt.id === 'nucleus')
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setSiteJson(prev => ({
+                            ...prev,
+                            churchTemplateVariant: opt.id,
+                            font: opt.font,
+                            primaryColor: opt.primary,
+                            accentColor: opt.accent,
+                          }))}
+                          style={{
+                            padding: '7px 20px',
+                            borderRadius: 999,
+                            border: 'none',
+                            background: isActive ? '#000000' : 'transparent',
+                            color: isActive ? '#FFFFFF' : '#4B5563',
+                            fontWeight: isActive ? 800 : 600,
+                            fontSize: '0.825rem',
+                            cursor: 'pointer',
+                            fontFamily: 'inherit',
+                            transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                            whiteSpace: 'nowrap',
+                            boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.18)' : 'none',
+                          }}
+                          onMouseEnter={e => {
+                            if (!isActive) {
+                              e.currentTarget.style.color = '#111827'
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.7)'
+                            }
+                          }}
+                          onMouseLeave={e => {
+                            if (!isActive) {
+                              e.currentTarget.style.color = '#4B5563'
+                              e.currentTarget.style.background = 'transparent'
+                            }
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}

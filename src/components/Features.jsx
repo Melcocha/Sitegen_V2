@@ -1,6 +1,4 @@
-import { ArrowRight } from 'lucide-react'
-
-// Clean SVG icons — no emojis, professional
+// Clean SVG icons — Black on Light
 const IconAI = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
@@ -47,10 +45,9 @@ const FEATURES = [
   {
     icon: <IconAI />,
     tag: 'Motor IA',
-    title: 'GPT-4o genera todo',
+    title: 'GPT-4o y Gemini Pro',
     body: 'Un párrafo de descripción. La IA interpreta la industria, el tono y el público objetivo para crear contenido 100% profesional y relevante a tu negocio.',
     span: 4,
-    accent: '#00C896',
   },
   {
     icon: <IconDeploy />,
@@ -58,15 +55,13 @@ const FEATURES = [
     title: 'Vercel Edge Network',
     body: 'Tu sitio vive en 38 regiones globales simultáneamente. CDN automático, cero downtime, velocidad de carga sub-100ms.',
     span: 4,
-    accent: '#0EA5E9',
   },
   {
     icon: <IconEdit />,
     tag: 'Editor visual',
     title: 'Sin tocar código',
-    body: 'Cambia textos, colores y layouts con un editor lateral intuitivo. Lo que ves es lo que publicas.',
+    body: 'Cambia textos, imágenes y layouts con un editor lateral intuitivo. Lo que ves en pantalla es exactamente lo que publicas.',
     span: 4,
-    accent: '#8B5CF6',
   },
   {
     icon: <IconDomain />,
@@ -74,102 +69,123 @@ const FEATURES = [
     title: 'Dominio propio',
     body: 'Busca y conecta tu .com en segundos. Verificación en tiempo real y sugerencias inteligentes incluidas.',
     span: 3,
-    accent: '#F59E0B',
   },
   {
     icon: <IconSSL />,
     tag: 'Seguridad',
     title: 'SSL automático',
-    body: 'HTTPS configurado sin intervención. Tu sitio nace seguro.',
+    body: 'HTTPS configurado sin intervención. Tu sitio nace con cifrado de grado bancario activo.',
     span: 3,
-    accent: '#10B981',
   },
   {
     icon: <IconMetrics />,
     tag: 'Analytics',
     title: 'Dashboard en vivo',
-    body: 'Visitas, fuente de tráfico, estado del servidor. Todo en tiempo real.',
+    body: 'Visitas, fuentes de tráfico, rendimiento y estado en tiempo real sin scripts pesados.',
     span: 3,
-    accent: '#06B6D4',
   },
   {
     icon: <IconStripe />,
-    tag: 'Pagos',
-    title: 'Stripe integrado',
-    body: 'Checkout nativo mensual o anual con descuento automático aplicado.',
+    tag: 'Donaciones & Pagos',
+    title: 'Integración nativa',
+    body: 'Botones y secciones para recibir donaciones o pagos directos con pasarelas seguras.',
     span: 3,
-    accent: '#635BFF',
   },
 ]
 
 export default function Features() {
   return (
-    <section className="section" id="features" style={{ background: 'var(--bg-2)' }}>
+    <section className="section" id="features" style={{ background: '#FFFFFF', padding: '110px 0' }}>
       <div className="container">
 
-        {/* Header */}
+        {/* Header — Light mode crisp */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <span className="t-label" style={{ marginBottom: 12, display: 'block' }}>
+          <span style={{
+            display: 'inline-block',
+            fontSize: '0.72rem', fontWeight: 800,
+            letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: '#4B5563', marginBottom: 14,
+            padding: '6px 16px', borderRadius: 999,
+            border: '1px solid #E5E7EB',
+            background: '#F3F4F6',
+          }}>
             Plataforma completa
           </span>
-          <h2 className="t-headline" style={{ marginBottom: 16 }}>
-            Todo lo que necesitas.<br />Nada que no necesitas.
+          <h2 style={{
+            fontSize: 'clamp(2.2rem, 4vw, 3.4rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.035em',
+            color: '#0A0A0A',
+            lineHeight: 1.15,
+            marginBottom: 16,
+          }}>
+            Todo lo que necesitas.<br />
+            <span style={{ color: '#6B7280', fontStyle: 'italic' }}>Nada que no necesitas.</span>
           </h2>
-          <p className="t-body" style={{ maxWidth: 460, margin: '0 auto' }}>
-            Construido para profesionales que valoran su tiempo.
-            Sin configuraciones. Sin sorpresas.
+          <p style={{ maxWidth: 500, margin: '0 auto', fontSize: '1.05rem', color: '#4B5563', lineHeight: 1.7 }}>
+            Construido para profesionales e instituciones que valoran su tiempo.
+            Sin configuraciones engorrosas. Sin sorpresas.
           </p>
         </div>
 
-        {/* Bento grid */}
-        <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
+        {/* Bento grid — Clean White & Light Grey Cards */}
+        <div className="bento-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 18 }}>
           {FEATURES.map(f => (
             <div
               key={f.title}
-              className="bento-card card"
+              className="bento-card"
               style={{
                 gridColumn: `span ${f.span}`,
-                padding: 28,
-                background: 'var(--bg)',
+                padding: 30,
+                background: '#F9FAFB',
+                borderRadius: 18,
+                border: '1px solid #E5E7EB',
                 position: 'relative',
                 overflow: 'hidden',
                 cursor: 'default',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-3px)'
-                e.currentTarget.style.borderColor = f.accent + '60'
-                e.currentTarget.style.boxShadow = `0 12px 40px ${f.accent}12`
+                e.currentTarget.style.transform = 'translateY(-4px)'
+                e.currentTarget.style.background = '#FFFFFF'
+                e.currentTarget.style.borderColor = '#000000'
+                e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.07)'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = ''
-                e.currentTarget.style.borderColor = ''
-                e.currentTarget.style.boxShadow = ''
+                e.currentTarget.style.background = '#F9FAFB'
+                e.currentTarget.style.borderColor = '#E5E7EB'
+                e.currentTarget.style.boxShadow = 'none'
               }}
             >
-              {/* Accent dot top right */}
+              {/* Subtle top-right indicator */}
               <div style={{
-                position: 'absolute', top: 20, right: 20,
+                position: 'absolute', top: 22, right: 22,
                 width: 6, height: 6, borderRadius: '50%',
-                background: f.accent,
+                background: '#D1D5DB',
               }} />
 
-              {/* Icon */}
+              {/* Icon — Solid Black Pill */}
               <div style={{
-                width: 44, height: 44, borderRadius: 'var(--radius-md)',
-                background: f.accent + '12',
-                color: f.accent,
+                width: 46, height: 46, borderRadius: 12,
+                background: '#000000',
+                color: '#FFFFFF',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: 18,
-                border: `1px solid ${f.accent}25`,
+                marginBottom: 20,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               }}>
                 {f.icon}
               </div>
 
-              <div className="t-label" style={{ color: f.accent, marginBottom: 8 }}>{f.tag}</div>
-              <h3 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 8, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 8 }}>
+                {f.tag}
+              </div>
+              <h3 style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: 10, letterSpacing: '-0.015em', color: '#0A0A0A' }}>
                 {f.title}
               </h3>
-              <p className="t-caption" style={{ lineHeight: 1.65 }}>{f.body}</p>
+              <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#4B5563' }}>
+                {f.body}
+              </p>
             </div>
           ))}
         </div>

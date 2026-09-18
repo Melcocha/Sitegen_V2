@@ -8,7 +8,6 @@ const PLANS = [
     desc: 'Ideal para proyectos personales',
     monthly: 6,
     annual: 5,
-    color: 'var(--ink)',
     features: [
       '1 sitio web activo',
       'Generación IA asistida',
@@ -22,17 +21,16 @@ const PLANS = [
   {
     id: 'pro',
     name: 'Pro',
-    desc: 'Para creadores profesionales',
+    desc: 'Para iglesias y empresas profesionales',
     monthly: 12,
     annual: 10,
-    color: '#00C896',
     features: [
-      '3 sitios web',
-      'GPT-4o · calidad máxima',
+      '3 sitios web activos',
+      'Motor IA · calidad máxima',
       'Dominio personalizado (.com)',
-      'Editor no-code avanzado',
+      'Editor visual en vivo',
       'Dashboard de métricas',
-      'Integración con Stripe',
+      'Integración con donaciones/pagos',
       'Soporte prioritario',
     ],
     cta: 'Elegir Pro',
@@ -42,169 +40,223 @@ const PLANS = [
   {
     id: 'agency',
     name: 'Agency',
-    desc: 'Para agencias y equipos grandes',
+    desc: 'Para redes y organizaciones grandes',
     monthly: null,
     annual: null,
-    color: 'var(--ink)',
     features: [
       'Sitios ilimitados',
       'White-label completo',
-      'Multi-usuario',
+      'Multi-usuario y roles',
       'API de generación',
       'Analytics avanzados',
       'SLA 99.9% garantizado',
       'Soporte dedicado 24/7',
     ],
-    cta: 'Hablar con ventas',
+    cta: 'Hablar con soporte',
     featured: false,
   },
 ]
 
 export default function Pricing({ onCheckout }) {
-  const [annual, setAnnual] = useState(false)
+  const [annual, setAnnual] = useState(true)
+
+  const handlePlanClick = (plan) => {
+    if (plan.id === 'agency') {
+      window.location.href = 'mailto:hola@saasweb.com?subject=Plan%20Agency'
+      return
+    }
+    if (onCheckout) {
+      onCheckout({ plan: plan.id, billingCycle: annual ? 'annual' : 'monthly' })
+    }
+  }
 
   return (
-    <section className="section" id="pricing" style={{ background: 'var(--bg-2)' }}>
+    <section className="section" id="pricing" style={{ background: '#000000', padding: '100px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="container">
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <span className="t-label" style={{ marginBottom: 12, display: 'block' }}>Precios</span>
-          <h2 className="t-headline" style={{ marginBottom: 16 }}>
-            Sin letra chica. Sin sorpresas.
+          <span style={{
+            display: 'inline-block',
+            fontSize: '0.72rem', fontWeight: 800,
+            letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.6)', marginBottom: 14,
+            padding: '5px 14px', borderRadius: 999,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.04)',
+          }}>
+            Precios transparentes
+          </span>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.035em',
+            color: '#FFFFFF',
+            lineHeight: 1.15,
+            marginBottom: 16,
+          }}>
+            Invierte en tu presencia online
           </h2>
-          <p className="t-body" style={{ maxWidth: 400, margin: '0 auto 32px' }}>
-            Cancela cuando quieras. Sin contratos. Sin descargos ocultos.
+          <p style={{ maxWidth: 460, margin: '0 auto 36px', fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>
+            Sin sorpresas ni contratos forzosos. Cancela en cualquier momento con un clic.
           </p>
 
-          {/* Toggle */}
-          <div className="pill-toggle" style={{ display: 'inline-flex' }}>
-            <button className={`pill-option${!annual ? ' active' : ''}`} onClick={() => setAnnual(false)}>
+          {/* Toggle Mensual / Anual */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: 5, background: '#0E0E12',
+            borderRadius: 999, border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <button
+              onClick={() => setAnnual(false)}
+              style={{
+                padding: '8px 20px', borderRadius: 999, border: 'none',
+                background: !annual ? '#FFFFFF' : 'transparent',
+                color: !annual ? '#000000' : 'rgba(255,255,255,0.6)',
+                fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                transition: 'all 0.2s', fontFamily: 'var(--font)',
+              }}
+            >
               Mensual
             </button>
-            <button className={`pill-option${annual ? ' active' : ''}`} onClick={() => setAnnual(true)}>
-              Anual
-              <span style={{
-                marginLeft: 6, padding: '1px 7px',
-                background: 'var(--brand)', color: 'var(--ink)',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '0.65rem', fontWeight: 800,
-              }}>
-                -20%
-              </span>
+            <button
+              onClick={() => setAnnual(true)}
+              style={{
+                padding: '8px 20px', borderRadius: 999, border: 'none',
+                background: annual ? '#FFFFFF' : 'transparent',
+                color: annual ? '#000000' : 'rgba(255,255,255,0.6)',
+                fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                transition: 'all 0.2s', fontFamily: 'var(--font)',
+              }}
+            >
+              Anual <span style={{ fontSize: '0.72rem', opacity: 0.85, marginLeft: 4 }}>(-20%)</span>
             </button>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, alignItems: 'start' }}>
-          {PLANS.map(plan => (
-            <div
-              key={plan.id}
-              className="pricing-card"
-              style={{
-                background: plan.featured ? '#080F0C' : 'var(--bg)',
-                borderColor: plan.featured ? 'transparent' : 'var(--border)',
-                transform: plan.featured ? 'scale(1.03)' : 'none',
-                padding: 36,
-              }}
-            >
-              {/* Plan badge */}
-              {plan.badge && (
-                <div className="badge badge-brand" style={{ marginBottom: 16, background: 'rgba(0,200,150,0.15)', borderColor: 'rgba(0,200,150,0.3)' }}>
-                  {plan.badge}
-                </div>
-              )}
+        {/* Pricing Cards Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+          gap: 24, maxWidth: 1040, margin: '0 auto',
+        }}>
+          {PLANS.map(p => {
+            const price = annual ? p.annual : p.monthly
 
-              <div style={{ marginBottom: 24 }}>
-                <h3 style={{
-                  fontWeight: 800, fontSize: '1.1rem',
-                  letterSpacing: '-0.02em', marginBottom: 4,
-                  color: plan.featured ? '#fff' : 'var(--ink)',
-                }}>
-                  {plan.name}
-                </h3>
-                <p style={{ fontSize: '0.8125rem', color: plan.featured ? 'rgba(255,255,255,0.5)' : 'var(--muted)' }}>
-                  {plan.desc}
-                </p>
-              </div>
-
-              {/* Price */}
-              <div style={{ marginBottom: 28 }}>
-                {plan.monthly !== null ? (
-                  <div style={{
-                    display: 'flex', alignItems: 'baseline', gap: 4,
-                  }}>
-                    <span style={{
-                      fontSize: '0.875rem', fontWeight: 600,
-                      color: plan.featured ? 'rgba(255,255,255,0.4)' : 'var(--muted)',
-                    }}>
-                      $
-                    </span>
-                    <span style={{
-                      fontSize: '2.75rem', fontWeight: 900,
-                      letterSpacing: '-0.05em', lineHeight: 1,
-                      color: plan.featured ? '#00C896' : 'var(--ink)',
-                    }}>
-                      {annual ? plan.annual : plan.monthly}
-                    </span>
-                    <span style={{ fontSize: '0.875rem', color: plan.featured ? 'rgba(255,255,255,0.4)' : 'var(--muted)' }}>
-                      / mes
-                    </span>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--ink)', height: '44px' }}>
-                    Personalizado
-                  </div>
-                )}
-                {annual && plan.monthly !== null && (
-                  <div style={{ fontSize: '0.78rem', marginTop: 4, fontWeight: 600, color: plan.featured ? 'rgba(0,200,150,0.8)' : 'var(--brand)' }}>
-                    Ahorras ${(plan.monthly - plan.annual) * 12} al año
-                  </div>
-                )}
-              </div>
-
-              {/* Features */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 32 }}>
-                {plan.features.map(f => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{
-                      width: 18, height: 18, borderRadius: '50%',
-                      background: plan.featured ? 'rgba(0,200,150,0.2)' : 'var(--brand-light)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
-                      <Check size={10} strokeWidth={3} color={plan.featured ? '#00C896' : '#00C896'} />
-                    </div>
-                    <span style={{ fontSize: '0.875rem', color: plan.featured ? 'rgba(255,255,255,0.75)' : 'var(--ink-3)' }}>
-                      {f}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <button
-                className={plan.featured ? 'btn btn-primary btn-lg' : 'btn btn-ghost btn-lg'}
+            return (
+              <div
+                key={p.id}
                 style={{
-                  width: '100%', justifyContent: 'center',
-                  fontWeight: 700,
-                  ...(plan.featured ? {} : { borderColor: 'var(--border-2)', color: 'var(--ink-3)' }),
+                  padding: 36,
+                  borderRadius: 20,
+                  background: p.featured ? '#121216' : '#0B0B0E',
+                  border: p.featured ? '1.5px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                  position: 'relative',
+                  boxShadow: p.featured ? '0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(255,255,255,0.03)' : 'none',
+                  transform: p.featured ? 'scale(1.02)' : 'none',
                 }}
-                onClick={() => onCheckout({ plan: plan.id, billingCycle: annual ? 'annual' : 'monthly' })}
               >
-                {plan.cta}
-              </button>
-            </div>
-          ))}
+                {/* Badge if featured */}
+                {p.featured && (
+                  <div style={{
+                    position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                    background: '#FFFFFF', color: '#000000',
+                    fontSize: '0.72rem', fontWeight: 900,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    padding: '4px 14px', borderRadius: 999,
+                    boxShadow: '0 4px 14px rgba(255,255,255,0.2)',
+                  }}>
+                    {p.badge}
+                  </div>
+                )}
+
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: 6 }}>
+                    {p.name}
+                  </h3>
+                  <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.55)', marginBottom: 24, minHeight: 40 }}>
+                    {p.desc}
+                  </p>
+
+                  {/* Price */}
+                  <div style={{ marginBottom: 28, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    {price !== null ? (
+                      <>
+                        <span style={{ fontSize: '3rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.03em' }}>
+                          ${price}
+                        </span>
+                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+                          USD / mes
+                        </span>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FFFFFF' }}>
+                        A medida
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Feature list */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 32 }}>
+                    {p.features.map(f => (
+                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 18, height: 18, borderRadius: '50%',
+                          background: 'rgba(255,255,255,0.1)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          <Check size={11} color="#FFFFFF" strokeWidth={3} />
+                        </div>
+                        <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.75)' }}>
+                          {f}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <button
+                  onClick={() => handlePlanClick(p)}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: 999,
+                    border: p.featured ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                    background: p.featured ? '#FFFFFF' : 'transparent',
+                    color: p.featured ? '#000000' : '#FFFFFF',
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    fontFamily: 'var(--font)',
+                  }}
+                  onMouseEnter={e => {
+                    if (p.featured) {
+                      e.currentTarget.style.background = '#E5E5E5'
+                      e.currentTarget.style.transform = 'translateY(-1px)'
+                    } else {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (p.featured) {
+                      e.currentTarget.style.background = '#FFFFFF'
+                      e.currentTarget.style.transform = 'none'
+                    } else {
+                      e.currentTarget.style.background = 'transparent'
+                    }
+                  }}
+                >
+                  {p.cta}
+                </button>
+              </div>
+            )
+          })}
         </div>
 
-        {/* Trust row */}
-        <div style={{ textAlign: 'center', marginTop: 48 }}>
-          <p className="t-caption">
-            Garantía de devolución 14 días · Sin tarjeta para probar · Cancela en un clic
-          </p>
-        </div>
       </div>
     </section>
   )

@@ -145,57 +145,8 @@ export const MobileSite = ({ d }) => (
   </div>
 )
 
-/* ─── ALL SITES (10 total) ────────────────────────────────────────── */
+/* ─── ALL SITES ───────────────────────────────────────────────────── */
 export const ALL_SITES = [
-  {
-    label: 'Clínica Dental', color: '#06B6D4', category: 'salud',
-    mob: { navBg: '#fff', logo: 'SmileCare Dental', lc: '#0E7490', ctaBg: '#06B6D4', cta: 'Cita gratis', photo: 'photo-1606811971618-4486d14f3f99', pos: 'center top', tint: 'linear-gradient(to top,rgba(8,145,178,0.96) 0%,rgba(8,145,178,0.2) 55%,transparent 100%)', hl: 'Tu sonrisa perfecta<br/>nos espera', sub: 'Ortodoncia · Blanqueamiento · Implantes', c1: 'Primera cita →', c1Bg: '#fff', c1C: '#0E7490', pills: ['✓ 1ra cita gratis', '✓ Lun–Sáb'], pillsBg: '#ECFEFF', pillsC: '#0E7490', pillsBorder: '#A5F3FC' },
-    site: () => (<div style={{ fontFamily: 'Inter,sans-serif' }}><DNav logo="SmileCare Dental" lc="#0E7490" links={['Servicios', 'Equipo', 'Contacto']} cta="Cita gratis" ctaBg="#06B6D4" /><DPhoto id="photo-1606811971618-4486d14f3f99" tint="linear-gradient(to right,rgba(8,145,178,0.88),rgba(6,182,212,0.28))" tag="Consultorio · San Salvador" hl="Tu sonrisa perfecta<br/>nos espera" sub="Ortodoncia, blanqueamiento e implantes. Primera consulta gratis." c1="Primera cita →" c1Bg="#fff" c1C="#0E7490" /><DCal bg="#ECFEFF" ac="#06B6D4" cb="#CFFAFE" border="#A5F3FC" tc="#0E7490" /></div>),
-  },
-  {
-    label: 'Clínica Médica', color: '#0EA5E9', category: 'salud',
-    mob: { navBg: '#fff', logo: 'ClinicaSalud+', lc: '#0EA5E9', ctaBg: '#0EA5E9', cta: 'Cita online', photo: 'photo-1551190822-a9333d879b1f', pos: 'center top', tint: 'linear-gradient(to top,rgba(14,165,233,0.95) 0%,rgba(14,165,233,0.2) 55%,transparent 100%)', hl: 'Tu salud,<br/>nuestra misión', sub: 'Más de 20 especialistas. Tecnología de última gen.', c1: 'Agendar cita →', c1Bg: '#fff', c1C: '#0EA5E9', pills: ['Medicina General', 'Cardiología', 'Pediatría'], pillsBg: '#F0F9FF', pillsC: '#0C4A6E', pillsBorder: '#BAE6FD' },
-    site: () => (<div style={{ fontFamily: 'Inter,sans-serif' }}><DNav logo="ClinicaSalud+" lc="#0EA5E9" links={['Servicios', 'Médicos', 'Urgencias']} cta="Cita online" ctaBg="#0EA5E9" /><DPhoto id="photo-1551190822-a9333d879b1f" tint="linear-gradient(to right,rgba(14,165,233,0.86),rgba(7,89,133,0.45))" tag="Medicina · San Salvador" hl="Tu salud,<br/>nuestra misión" sub="Más de 20 especialistas. Tecnología de última generación." c1="Agendar cita →" c2="Médicos" c1Bg="#fff" c1C="#0EA5E9" /><DCards bg="#F0F9FF" items={[{ t: 'Medicina General', s: 'Atención integral', photo: 'photo-1576091160399-112ba8d25d1d', border: '#BAE6FD', bg: '#fff', tc: '#0C4A6E' }, { t: 'Cardiología', s: 'Corazón sano', photo: 'photo-1559757175-0eb30cd8c063', border: '#BAE6FD', bg: '#fff', tc: '#0C4A6E' }, { t: 'Pediatría', s: 'Cuidado infantil', photo: 'photo-1587813369290-091c9d432daf', border: '#BAE6FD', bg: '#fff', tc: '#0C4A6E' }]} /></div>),
-  },
-  {
-    label: 'Restaurante', color: '#DC2626', category: 'negocio',
-    mob: { navBg: '#7C2D12', logo: 'LA HACIENDA', lc: '#FED7AA', ctaBg: '#DC2626', cta: 'Reservar', photo: 'photo-1414235077428-338989a2e8c0', pos: 'center', tint: 'linear-gradient(to top,rgba(124,45,18,0.97) 0%,rgba(124,45,18,0.2) 55%,transparent 100%)', hl: 'Sabores que<br/>cuentan historias', sub: 'Ingredientes locales, recetas de 3 generaciones.', c1: 'Ver menú →', c1Bg: '#DC2626', c1C: '#fff', pills: ['Lun–Dom 12–10pm', '✓ Terraza', '✓ Reservas'], pillsBg: '#FFF7ED', pillsC: '#92400E', pillsBorder: '#FED7AA' },
-    site: () => (<div style={{ fontFamily: 'Inter,sans-serif' }}><DNav logo="LA HACIENDA" lc="#FED7AA" links={['Menú', 'Reservas', 'Nosotros']} cta="Reservar mesa" ctaBg="#DC2626" bg="#7C2D12" /><DPhoto id="photo-1414235077428-338989a2e8c0" tint="linear-gradient(to right,rgba(124,45,18,0.92),rgba(124,45,18,0.32))" tag="Cocina salvadoreña auténtica" hl="Sabores que<br/>cuentan historias" sub="Ingredientes locales, recetas de 3 generaciones." c1="Ver menú" c2="Reservar" c1Bg="#DC2626" /><DCards bg="#FFF7ED" items={[{ t: 'Carnes a la Brasa', s: '$12.50', photo: 'photo-1565299624946-b28f40a0ae38', border: '#FED7AA' }, { t: 'Sopas del Mar', s: '$8.00', photo: 'photo-1547592180-85f173990554', border: '#FED7AA' }, { t: 'Tacos Premium', s: '$6.00', photo: 'photo-1565299585323-38d6b0865b47', border: '#FED7AA' }]} /></div>),
-  },
-  {
-    label: 'Barbería Premium', color: '#D97706', category: 'negocio',
-    site: () => (
-      <div style={{ fontFamily: "'Inter',sans-serif" }}>
-        <DNav
-          logo="RAZOR & BLADE"
-          lc="#F59E0B"
-          links={['Servicios', 'Galería', 'Reservas']}
-          cta="Reservar"
-          ctaBg="#F59E0B"
-          ctaC="#111"
-          bg="#0D1117"
-        />
-        <DPhoto
-          id="photo-1503951914875-452162b0f3f1"
-          tint="linear-gradient(to right,rgba(13,17,23,0.93),rgba(13,17,23,0.35))"
-          tag="Est. 2015 &#xb7; San Salvador"
-          hl="Arte &amp; <span style='color:#F59E0B;font-style:italic'>Estilo</span>"
-          sub="Cortes de precisión, afeitados clásicos y tratamientos premium."
-          c1="Reservar turno →"
-          c1Bg="#F59E0B"
-          c1C="#111"
-        />
-        <DPrices
-          bg="#161B22"
-          items={[
-            { s: 'Corte Clásico', p: '$15', bg: '#21262D', border: '#30363D', tc: '#F59E0B' },
-            { s: 'Afeitado Real',  p: '$18', bg: '#21262D', border: '#30363D', tc: '#F59E0B' },
-            { s: 'Full Grooming',  p: '$35', bg: '#21262D', border: '#30363D', tc: '#F59E0B' },
-          ]}
-        />
-      </div>
-    ),
-  },
   {
     label: 'Hotel & Spa', color: '#B8965A', category: 'negocio',
     mob: { navBg: '#1C1917', logo: 'HOTEL PIEDRA BLANCA', lc: '#D4AF70', ctaBg: '#D4AF70', ctaC: '#1C1917', cta: 'Reservar', photo: 'photo-1520250497591-112ba8d25d1d', pos: 'center', tint: 'linear-gradient(to top,rgba(28,25,23,0.97) 0%,rgba(28,25,23,0.15) 55%,transparent 100%)', hl: 'Donde el lujo<br/>abraza la naturaleza', sub: 'Suite con vista al lago y spa privado.', c1: 'Ver habitaciones', c1Bg: '#D4AF70', c1C: '#1C1917', pills: ['32 Suites', '4.9 Rating', 'Spa privado'], pillsBg: '#1C1917', pillsC: '#D4AF70', pillsBorder: '#292524' },
@@ -221,14 +172,39 @@ export const ALL_SITES = [
     mob: { navBg: '#fff', logo: 'PRIME REALTY', lc: '#0F766E', ctaBg: '#0F766E', cta: 'Ver prop.', photo: 'photo-1600596542815-ffad4c1539a9', pos: 'center', tint: 'linear-gradient(to top,rgba(2,44,40,0.97) 0%,rgba(2,44,40,0.15) 55%,transparent 100%)', hl: 'Encuentra tu<br/><span style="color:#2DD4BF">hogar ideal</span>', sub: 'Casas, apartamentos y locales. Asesoría gratis.', c1: 'Buscar propiedades', c1Bg: '#0F766E', pills: ['Casas $180k+', 'Apto $65k+', 'Penthouse $320k+'], pillsBg: '#F0FDFA', pillsC: '#134E4A', pillsBorder: '#99F6E4' },
     site: () => (<div style={{ fontFamily: 'Inter,sans-serif' }}><DNav logo="PRIME REALTY" lc="#0F766E" links={['Propiedades', 'Agentes', 'Contacto']} cta="Ver propiedades" ctaBg="#0F766E" /><DPhoto id="photo-1600596542815-ffad4c1539a9" tint="linear-gradient(to right,rgba(2,44,40,0.9),rgba(15,118,110,0.32))" tag="Propiedades exclusivas · El Salvador" hl="Encuentra tu<br/><span style='color:#2DD4BF'>hogar ideal</span>" sub="Casas, apartamentos y locales comerciales. Asesoría gratuita." c1="Buscar propiedades" c2="Valuación" c1Bg="#0F766E" /><DCards bg="#F0FDFA" items={[{ t: 'Casas de Lujo', s: 'Desde $180k', photo: 'photo-1564013799919-ab600027ffc6', border: '#99F6E4', tc: '#134E4A' }, { t: 'Apartamentos', s: 'Desde $65k', photo: 'photo-1600585154340-be6161a56a0c', border: '#99F6E4', tc: '#134E4A' }, { t: 'Penthouses', s: 'Desde $320k', photo: 'photo-1600047509807-ba8f99d2cdde', border: '#99F6E4', tc: '#134E4A' }]} /></div>),
   },
+  {
+    label: 'Iglesia Gateway', color: '#E11D48', category: 'iglesia',
+    site: () => (
+      <div style={{ fontFamily: 'Inter,sans-serif' }}>
+        <DNav logo="GATEWAY CHURCH" lc="#fff" links={['Servicios', 'Eventos', 'Contacto']} cta="Planificar visita" ctaBg="#E11D48" bg="#05070C" />
+        <DPhoto id="photo-1438232992991-995b7058bbb3" tint="linear-gradient(to right,rgba(5,7,12,0.92),rgba(5,7,12,0.38))" tag="Domingos 9:00 AM y 11:00 AM" hl="Un lugar donde<br/>perteneces" sub="Música en vivo, mensaje práctico y comunidad real para toda la familia." c1="Planificar visita →" c1Bg="#E11D48" c1C="#fff" c2="Ver prédicas" />
+        <DStats bg="#05070C" stats={[{ n: '10K+', l: 'Miembros' }, { n: '15', l: 'Años' }, { n: '3', l: 'Sedes' }, { n: 'En vivo', l: 'Domingos' }]} sc="#E11D48" lc="#4B5563" />
+      </div>
+    ),
+  },
+  {
+    label: 'Iglesia Vida Nueva', color: '#00C896', category: 'iglesia',
+    site: () => (
+      <div style={{ fontFamily: 'Inter,sans-serif' }}>
+        <DNav logo="VIDA NUEVA" lc="#00C896" links={['Ministerios', 'Prédicas', 'Visita']} cta="Unirme" ctaBg="#00C896" ctaC="#040C09" bg="#0F172A" />
+        <DPhoto id="photo-1510936111840-65e151ad71bb" tint="linear-gradient(to right,rgba(15,23,42,0.93),rgba(15,23,42,0.35))" tag="Iglesia · San Salvador" hl="Fe que<br/>transforma vidas" sub="Comunidad auténtica, prédicas bíblicas y ministerios para toda la familia." c1="Planificar visita" c1Bg="#00C896" c1C="#040C09" c2="Prédicas" />
+        <DStats bg="#0F172A" stats={[{ n: '2.5K', l: 'Familias' }, { n: 'Dom 10am', l: 'Servicio' }, { n: '12 años', l: 'Sirviendo' }]} sc="#00C896" lc="#475569" />
+      </div>
+    ),
+  },
+  {
+    label: 'Noche de Adoración', color: '#FACC15', category: 'iglesia',
+    site: () => (
+      <div style={{ fontFamily: 'Inter,sans-serif' }}>
+        <DNav logo="NOCHE DE ADORACIÓN ✦" lc="#FACC15" links={['Eventos', 'Ministerios', 'Conectar']} cta="Registrarme" ctaBg="#FACC15" ctaC="#06070A" bg="#090B10" />
+        <DPhoto id="photo-1429962714451-bb934ecdc4ec" tint="linear-gradient(to right,rgba(9,11,16,0.94),rgba(9,11,16,0.36))" tag="Experiencia de adoración" hl="Donde el cielo<br/>toca la tierra" sub="Noches de adoración, eventos especiales y grupos de conexión cada semana." c1="Próximo evento →" c1Bg="#FACC15" c1C="#06070A" />
+        <DCards bg="#090B10" items={[{ t: 'Noche de Adoración', s: 'Viernes 7pm', photo: 'photo-1429962714451-bb934ecdc4ec', border: 'rgba(250,204,21,0.2)', bg: '#0D0F18', tc: '#FACC15' }, { t: 'Grupos de Conexión', s: 'Semana a semana', photo: 'photo-1510936111840-65e151ad71bb', border: 'rgba(250,204,21,0.2)', bg: '#0D0F18', tc: '#FACC15' }, { t: 'Ministerio Infantil', s: 'Dom 10am', photo: 'photo-1587813369290-091c9d432daf', border: 'rgba(250,204,21,0.2)', bg: '#0D0F18', tc: '#FACC15' }]} />
+      </div>
+    ),
+  },
 ]
 
-// Prime Realty first, then rest (Dental idx=0 and Hotel idx=4 stay in Examples only)
-// ALL_SITES now has 9 entries (Bufete removed): idx 8 = Inmobiliaria
-export const HERO_SITES = [
-  ALL_SITES[8], // Prime Realty — featured first
-  ...ALL_SITES.filter((_, i) => i !== 0 && i !== 4 && i !== 8),
-]
+export const HERO_SITES = ALL_SITES
 
 /* ─── Browser window mockup (shared by Hero + Examples) ─────────── */
 export function BrowserMockup({ children, accent = '#00C896', height }) {

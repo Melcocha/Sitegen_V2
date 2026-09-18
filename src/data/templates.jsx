@@ -82,6 +82,20 @@ export const PRESET_TEMPLATES = [
       seo: {
         title: 'Iglesia Vida Nueva | Una comunidad de fe para toda la familia',
         description: 'Te invitamos a nuestras reuniones dominicales. Prédicas bíblicas, música contemporánea y programas para niños.'
+      },
+      donation: {
+        title: 'Tu Generosidad Transforma Vidas',
+        subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
+        ctaText: 'Ofrendar en Línea',
+        ctaLink: 'https://paypal.com'
+      },
+      events: {
+        title: 'Lo Que Viene',
+        items: [
+          { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact' }
+        ]
       }
     }
   },
@@ -529,6 +543,20 @@ export const PRESET_TEMPLATES = [
       seo: {
         title: 'Iglesia Vida Nueva | Una comunidad de fe para toda la familia',
         description: 'Te invitamos a nuestras reuniones dominicales. Prédicas bíblicas, música contemporánea y programas para niños.'
+      },
+      donation: {
+        title: 'Tu Generosidad Transforma Vidas',
+        subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
+        ctaText: 'Ofrendar en Línea',
+        ctaLink: 'https://paypal.com'
+      },
+      events: {
+        title: 'Lo Que Viene',
+        items: [
+          { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact' }
+        ]
       }
     }
   },
@@ -610,6 +638,20 @@ export const PRESET_TEMPLATES = [
       seo: {
         title: 'Iglesia Comunidad de Gracia | Una familia de fe',
         description: 'Únete a nuestras reuniones dominicales. Discipulado, oración y ambiente familiar.'
+      },
+      donation: {
+        title: 'Tu Generosidad Transforma Vidas',
+        subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
+        ctaText: 'Ofrendar en Línea',
+        ctaLink: 'https://paypal.com'
+      },
+      events: {
+        title: 'Lo Que Viene',
+        items: [
+          { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact' },
+          { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact' }
+        ]
       }
     }
   }

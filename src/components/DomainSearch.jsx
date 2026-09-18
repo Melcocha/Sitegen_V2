@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { Search, CheckCircle2, XCircle, Loader2, ArrowRight } from 'lucide-react'
 import { checkDomainAvailability } from '../lib/domainChecker'
 
-// Professional SVG trust icons — no emojis
 const IconLock = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -62,67 +61,84 @@ export default function DomainSearch() {
   }
 
   return (
-    <section className="section" id="domains" style={{ background: 'var(--bg)' }}>
+    <section className="section" id="domains" style={{ background: '#F9FAFB', padding: '100px 0' }}>
       <div className="container">
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
+        <div style={{ maxWidth: 660, margin: '0 auto' }}>
 
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: 44 }}>
-            <span className="t-label" style={{ marginBottom: 12, display: 'block' }}>Paso 4</span>
-            <h2 className="t-headline" style={{ marginBottom: 14 }}>
+            <span style={{
+              display: 'inline-block',
+              fontSize: '0.72rem', fontWeight: 800,
+              letterSpacing: '0.2em', textTransform: 'uppercase',
+              color: '#4B5563', marginBottom: 14,
+              padding: '6px 16px', borderRadius: 999,
+              border: '1px solid #E5E7EB',
+              background: '#FFFFFF',
+            }}>
+              Paso 4 · Dominio Propio
+            </span>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: 900,
+              letterSpacing: '-0.035em',
+              color: '#0A0A0A',
+              lineHeight: 1.15,
+              marginBottom: 14,
+            }}>
               Encuentra tu dominio perfecto
             </h2>
-            <p className="t-body" style={{ maxWidth: 400, margin: '0 auto' }}>
-              Disponibilidad en tiempo real. Sugerencias inteligentes si tu .com está tomado.
+            <p style={{ maxWidth: 420, margin: '0 auto', fontSize: '1rem', color: '#4B5563', lineHeight: 1.65 }}>
+              Disponibilidad en tiempo real con sugerencias instantáneas.
             </p>
           </div>
 
-          {/* Search box */}
-          <div className="domain-search-bar" style={{
+          {/* Search box — Crisp Light with Black Button */}
+          <div style={{
             display: 'flex', gap: 10, alignItems: 'center',
-            background: 'var(--bg)',
-            border: '1.5px solid var(--border-2)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '8px 8px 8px 20px',
-            boxShadow: 'var(--shadow-sm)',
-            transition: 'border-color var(--dur), box-shadow var(--dur)',
-          }}
-            onFocusCapture={e => {
-              e.currentTarget.style.borderColor = 'var(--brand)'
-              e.currentTarget.style.boxShadow = '0 0 0 3px var(--brand-glow)'
-            }}
-            onBlurCapture={e => {
-              e.currentTarget.style.borderColor = 'var(--border-2)'
-              e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
-            }}
-          >
-            <div style={{ color: 'var(--muted)', display: 'flex', alignItems: 'center' }}>
+            background: '#FFFFFF',
+            border: '1.5px solid #D1D5DB',
+            borderRadius: 999,
+            padding: '8px 8px 8px 22px',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
+            transition: 'border-color 0.2s, box-shadow 0.2s',
+          }}>
+            <div style={{ color: '#9CA3AF', display: 'flex', alignItems: 'center' }}>
               {isSearching
-                ? <Loader2 size={17} style={{ animation: 'spin 1s linear infinite' }} />
-                : <Search size={17} />
+                ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                : <Search size={18} />
               }
             </div>
             <input
               type="text"
               value={query}
               onChange={handleChange}
-              placeholder="tuempresa"
+              placeholder="tuiglesia o tuempresa"
               style={{
                 flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                fontSize: '1rem', fontWeight: 600, color: 'var(--ink)', fontFamily: 'var(--font)',
+                fontSize: '1rem', fontWeight: 600, color: '#0A0A0A', fontFamily: 'var(--font)',
               }}
             />
-            <span style={{
-              fontSize: '1rem', fontWeight: 700, color: 'var(--muted)',
-              padding: '0 4px',
-            }}>
+            <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#6B7280', padding: '0 4px' }}>
               .com
             </span>
             <button
-              className="btn btn-primary"
               onClick={() => handleSearch(query)}
               disabled={!query.trim()}
-              style={{ borderRadius: 'var(--radius-lg)', fontWeight: 700 }}
+              style={{
+                padding: '12px 26px',
+                borderRadius: 999,
+                background: '#000000',
+                color: '#FFFFFF',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '0.875rem',
+                cursor: query.trim() ? 'pointer' : 'default',
+                opacity: query.trim() ? 1 : 0.45,
+                transition: 'all 0.2s',
+                fontFamily: 'var(--font)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              }}
             >
               Buscar
             </button>
@@ -130,30 +146,44 @@ export default function DomainSearch() {
 
           {/* Results */}
           {results && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 20 }}>
               {results.results?.map(item => (
-                <div key={item.domain} className="domain-row">
+                <div
+                  key={item.domain}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '14px 20px', borderRadius: 14,
+                    background: '#FFFFFF', border: '1px solid #E5E7EB',
+                    marginBottom: 8,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {item.available
-                      ? <CheckCircle2 size={17} color="var(--brand)" strokeWidth={2.5} />
-                      : <XCircle size={17} color="var(--danger)" strokeWidth={2.5} />
+                      ? <CheckCircle2 size={18} color="#059669" strokeWidth={2.5} />
+                      : <XCircle size={18} color="#EF4444" strokeWidth={2.5} />
                     }
-                    <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--ink)' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0A0A0A' }}>
                       {item.domain}
                     </span>
                     {item.popular && item.available && (
-                      <span className="badge badge-brand" style={{ fontSize: '0.65rem' }}>Recomendado</span>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: 999, background: '#000000', color: '#FFFFFF' }}>
+                        Recomendado
+                      </span>
                     )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{
-                      fontSize: '0.875rem', fontWeight: 700,
-                      color: item.available ? 'var(--ink)' : 'var(--muted)',
-                    }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: item.available ? '#0A0A0A' : '#9CA3AF' }}>
                       {item.available ? item.price + '/año' : 'No disponible'}
                     </span>
                     {item.available && (
-                      <button className="btn btn-primary btn-sm">
+                      <button style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        padding: '6px 14px', borderRadius: 999,
+                        background: '#000000', color: '#FFFFFF',
+                        border: 'none', fontWeight: 800, fontSize: '0.78rem',
+                        cursor: 'pointer', fontFamily: 'var(--font)',
+                      }}>
                         Registrar <ArrowRight size={11} />
                       </button>
                     )}
@@ -163,21 +193,26 @@ export default function DomainSearch() {
 
               {results.alternatives?.length > 0 && (
                 <div style={{
-                  marginTop: 14, padding: '16px 20px',
-                  background: 'var(--brand-light)',
-                  border: '1px solid rgba(0,200,150,0.2)',
-                  borderRadius: 'var(--radius-lg)',
+                  marginTop: 16, padding: '18px 22px',
+                  background: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                 }}>
-                  <div className="t-label" style={{ color: 'var(--brand-dark)', marginBottom: 10 }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B7280', marginBottom: 10 }}>
                     Sugerencias alternativas
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {results.alternatives.map(alt => (
                       <button
                         key={alt}
-                        className="btn btn-ghost btn-sm"
                         onClick={() => { setQuery(alt); handleSearch(alt) }}
-                        style={{ fontSize: '0.8rem' }}
+                        style={{
+                          padding: '6px 14px', borderRadius: 999,
+                          background: '#F3F4F6', border: '1px solid #E5E7EB',
+                          color: '#0A0A0A', fontSize: '0.82rem', fontWeight: 600,
+                          cursor: 'pointer', fontFamily: 'var(--font)',
+                        }}
                       >
                         {alt}.com
                       </button>
@@ -188,17 +223,17 @@ export default function DomainSearch() {
             </div>
           )}
 
-          {/* Trust badges — SVG icons, no emojis */}
+          {/* Trust badges */}
           <div style={{
             display: 'flex', justifyContent: 'center',
-            gap: 32, marginTop: 36, flexWrap: 'wrap',
+            gap: 28, marginTop: 36, flexWrap: 'wrap',
           }}>
             {TRUST_BADGES.map(b => (
               <div key={b.label} style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                color: 'var(--muted)', fontSize: '0.8125rem', fontWeight: 600,
+                display: 'flex', alignItems: 'center', gap: 8,
+                color: '#4B5563', fontSize: '0.8125rem', fontWeight: 600,
               }}>
-                <span style={{ color: 'var(--brand)', display: 'flex' }}>{b.icon}</span>
+                <span style={{ color: '#000000', display: 'flex' }}>{b.icon}</span>
                 {b.label}
               </div>
             ))}

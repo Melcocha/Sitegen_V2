@@ -1,25 +1,16 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 
-const ThemeContext = createContext({ isDark: false, toggle: () => {} })
+export const ThemeContext = createContext({ isDark: true, toggle: () => {} })
 
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(false)
-
+  // Dark mode is always on — no toggle
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('sitegen-theme')
-      if (saved === 'dark') setIsDark(true)
-      else if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) setIsDark(true)
-    } catch (_) {}
+    document.documentElement.classList.add('dark')
+    document.documentElement.classList.remove('light')
   }, [])
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-    try { localStorage.setItem('sitegen-theme', isDark ? 'dark' : 'light') } catch (_) {}
-  }, [isDark])
-
   return (
-    <ThemeContext.Provider value={{ isDark, toggle: () => setIsDark(v => !v) }}>
+    <ThemeContext.Provider value={{ isDark: true, toggle: () => {} }}>
       {children}
     </ThemeContext.Provider>
   )

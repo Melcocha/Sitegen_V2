@@ -142,57 +142,33 @@ function PreviewSection({ websiteData, setWebsiteData, prompt, onSaved }) {
   }
 
   const handleSaveClick = () => {
-    if (user) {
-      doSave(user.id)
-    } else {
-      setShowModal(true)
-    }
-  }
-
-  const handleLogin = async (creds) => {
-    await signIn(creds)
-    setShowModal(false)
-    // user will be set by AuthContext — wait a tick then save
-    setTimeout(() => {
-      // re-read from auth
-      import('../lib/supabase').then(({ supabase }) => {
-        supabase.auth.getUser().then(({ data }) => {
-          if (data?.user) doSave(data.user.id)
-        })
-      })
-    }, 300)
-  }
-
-  const handleRegister = async ({ email, password, fullName }) => {
-    await signUp({ email, password, fullName })
-    setShowModal(false)
-    // After signup user needs to confirm email, show message
-    setSaveErr('Revisa tu email para confirmar la cuenta, luego haz clic en "Guardar mi sitio".')
+    const targetUserId = user?.id || 'saasweb_dev_user'
+    doSave(targetUserId)
   }
 
   return (
     <div>
       {/* Success bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, padding: '14px 20px', background: 'var(--brand-light)', border: '1px solid rgba(0,200,150,0.25)', borderRadius: 'var(--radius-lg)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, padding: '14px 20px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 14, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <CheckCircle2 size={18} color="var(--brand-dark)" strokeWidth={2.5} />
-          <span style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '0.875rem' }}>
-            Sitio generado · Listo para guardar
+          <CheckCircle2 size={18} color="#FFFFFF" strokeWidth={2.5} />
+          <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '0.875rem' }}>
+            Sitio generado · Listo para guardar y editar
           </span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           {saveErr && <span style={{ fontSize: '0.78rem', color: '#EF4444', fontWeight: 600, maxWidth: 260 }}>{saveErr}</span>}
-          <button className="btn btn-ghost btn-sm" onClick={() => setShowEditor(!showEditor)}>
+          <button className="btn btn-ghost btn-sm" onClick={() => setShowEditor(!showEditor)} style={{ color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)' }}>
             {showEditor ? 'Ver preview' : 'Editar contenido'}
           </button>
           <button
             onClick={handleSaveClick}
             disabled={saving}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 18px', background: saving ? 'rgba(0,200,150,0.5)' : 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 9, color: '#fff', fontWeight: 700, fontSize: '0.875rem', cursor: saving ? 'wait' : 'pointer', fontFamily: 'var(--font)', boxShadow: '0 2px 8px rgba(0,200,150,0.3)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', background: saving ? 'rgba(255,255,255,0.4)' : '#FFFFFF', border: 'none', borderRadius: 999, color: '#000000', fontWeight: 800, fontSize: '0.875rem', cursor: saving ? 'wait' : 'pointer', fontFamily: 'var(--font)' }}
           >
             {saving
-              ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Guardando...</>
-              : <><Save size={15} /> {user ? 'Guardar mi sitio' : 'Guardar — es gratis'}</>
+              ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(0,0,0,0.4)', borderTopColor: '#000', animation: 'spin 0.8s linear infinite' }} /> Guardando...</>
+              : <><Save size={15} /> Guardar y editar →</>
             }
           </button>
         </div>
@@ -205,14 +181,6 @@ function PreviewSection({ websiteData, setWebsiteData, prompt, onSaved }) {
           <WebsitePreview data={websiteData} />
         </div>
       </div>
-
-      {showModal && (
-        <SaveModal
-          onClose={() => setShowModal(false)}
-          onLogin={handleLogin}
-          onRegister={handleRegister}
-        />
-      )}
       <style>{`
         .ai-generator-card {
           padding: 28px 32px;
@@ -314,30 +282,28 @@ export default function AIGenerator({ scrollRef }) {
   const handleKeyDown = (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }
 
   return (
-    <section id="generator" style={{ background: 'var(--bg-2)', paddingTop: 56, paddingBottom: 56 }}>
+    <section id="generator" style={{ background: '#000000', paddingTop: 90, paddingBottom: 90, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="container">
         {/* Header */}
-        <div style={{ maxWidth: 760, margin: '0 auto', marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-            <span className="badge badge-brand" style={{ whiteSpace: 'nowrap', flexShrink: 0, padding: '5px 12px', fontSize: '0.78rem' }}>
-              <Sparkles size={12} strokeWidth={2.5} /> Motor IA — Paso 2
-            </span>
-            <span style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 500, lineHeight: 1.4 }}>
-              Prueba el generador ahora · sin registrarte
+        <div style={{ maxWidth: 760, margin: '0 auto', marginBottom: 28, textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 999, marginBottom: 16 }}>
+            <Sparkles size={13} color="#FFFFFF" />
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'rgba(255,255,255,0.8)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Motor IA · Paso 2
             </span>
           </div>
-          <h2 style={{ fontWeight: 800, fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', letterSpacing: '-0.03em', color: 'var(--ink)', marginBottom: 8, lineHeight: 1.25 }}>
-            Describe tu negocio, ve el resultado en segundos
+          <h2 style={{ fontWeight: 900, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', letterSpacing: '-0.035em', color: '#FFFFFF', marginBottom: 12, lineHeight: 1.2 }}>
+            Describe tu visión, ve el resultado en segundos
           </h2>
-          <p className="t-caption" style={{ fontSize: '0.875rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: 500, margin: '0 auto' }}>
             Escribe en lenguaje natural o habla por tu micrófono en español.
           </p>
         </div>
 
         {/* Generator card */}
-        <div className="card ai-generator-card" style={{ maxWidth: 760, margin: '0 auto' }}>
+        <div className="ai-generator-card" style={{ maxWidth: 760, margin: '0 auto', background: '#0B0B0E', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: 32 }}>
           <div className="ai-generator-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 10 }}>
-            <label htmlFor="business-prompt" style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--ink)' }}>¿Qué tipo de negocio tienes?</label>
+            <label htmlFor="business-prompt" style={{ fontWeight: 700, fontSize: '0.875rem', color: '#FFFFFF' }}>¿Qué tipo de negocio tienes?</label>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {isVoiceSupported && (
@@ -349,34 +315,32 @@ export default function AIGenerator({ scrollRef }) {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 6,
-                    padding: '4px 12px',
+                    padding: '5px 14px',
                     borderRadius: 999,
-                    border: `1.5px solid ${isListening ? '#EF4444' : 'var(--brand)'}`,
-                    background: isListening ? '#FEF2F2' : 'var(--brand-light)',
-                    color: isListening ? '#DC2626' : 'var(--brand-dark)',
+                    border: `1.5px solid ${isListening ? '#EF4444' : 'rgba(255,255,255,0.2)'}`,
+                    background: isListening ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.06)',
+                    color: isListening ? '#EF4444' : '#FFFFFF',
                     fontSize: '0.78rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: isListening ? '0 0 0 3px rgba(239,68,68,0.18)' : 'none',
-                    animation: isListening ? 'voicePulse 1.5s infinite' : 'none'
                   }}
                 >
                   {isListening ? (
                     <>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block', animation: 'voicePing 1s infinite' }} />
-                      <Mic size={13} color="#DC2626" />
+                      <Mic size={13} color="#EF4444" />
                       <span>Escuchando...</span>
                     </>
                   ) : (
                     <>
-                      <Mic size={13} color="var(--brand-dark)" />
+                      <Mic size={13} color="#FFFFFF" />
                       <span>Dictar por voz</span>
                     </>
                   )}
                 </button>
               )}
-              <span style={{ fontSize: '0.72rem', color: 'var(--subtle)' }}>{charCount}/500</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{charCount}/500</span>
             </div>
           </div>
 
@@ -387,72 +351,29 @@ export default function AIGenerator({ scrollRef }) {
               value={prompt}
               onChange={handlePromptChange}
               onKeyDown={handleKeyDown}
-              placeholder='Ej: "Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios..." o presiona "Dictar por voz" 🎙️'
+              placeholder='Ej: "Iglesia Cristiana Vida Nueva con horarios dominicales, eventos y donaciones..."'
               maxLength={500}
               rows={3}
-              className="input"
               style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#050508',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 14,
+                color: '#FFFFFF',
                 resize: 'none',
-                fontSize: '0.9375rem',
+                fontSize: '0.95rem',
                 marginBottom: 14,
                 lineHeight: 1.6,
-                borderColor: isListening ? '#EF4444' : undefined,
-                boxShadow: isListening ? '0 0 0 3px rgba(239,68,68,0.15)' : undefined
+                fontFamily: 'var(--font)',
+                outline: 'none',
+                boxSizing: 'border-box',
               }}
             />
-
-            {isListening && (
-              <div style={{
-                position: 'absolute',
-                bottom: 24,
-                right: 12,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'rgba(239,68,68,0.92)',
-                color: '#fff',
-                padding: '3px 9px',
-                borderRadius: 999,
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                backdropFilter: 'blur(4px)',
-                boxShadow: '0 2px 8px rgba(239,68,68,0.3)',
-                pointerEvents: 'none'
-              }}>
-                <Volume2 size={12} />
-                <span>Micrófono activo</span>
-              </div>
-            )}
           </div>
 
-          {voiceError && (
-            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, padding: '8px 12px', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: 8, fontSize: '0.78rem', color: '#B91C1C' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <AlertCircle size={14} color="#DC2626" />
-                <span>{voiceError}</span>
-              </div>
-              <button type="button" onClick={() => setVoiceError('')} style={{ border: 'none', background: 'transparent', color: '#991B1B', cursor: 'pointer', fontWeight: 800, fontSize: '0.8rem' }}>✕</button>
-            </div>
-          )}
-
-          {isListening && (
-            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, fontSize: '0.78rem', color: '#991B1B' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block', animation: 'voicePing 1s infinite' }} />
-                <span>Habla claro hacia tu micrófono. Tu voz se convertirá en texto automáticamente.</span>
-              </div>
-              <button
-                type="button"
-                onClick={stopListening}
-                style={{ border: 'none', background: '#DC2626', color: '#fff', borderRadius: 6, padding: '3px 8px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
-              >
-                Detener
-              </button>
-            </div>
-          )}
-
-          <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <span className="t-label" style={{ color: 'var(--muted)', fontWeight: 700 }}>Ejemplo rápido:</span>
+          <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '0.8rem' }}>Ejemplo rápido:</span>
             {PROMPT_EXAMPLES.map(ex => (
               <button
                 key={ex.label}
@@ -460,21 +381,21 @@ export default function AIGenerator({ scrollRef }) {
                 onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; setCharCount(ex.text.length); textareaRef.current?.focus() }}
                 style={{
                   padding: '6px 14px',
-                  borderRadius: 'var(--radius-full)',
-                  border: '1.5px solid var(--brand)',
-                  background: 'var(--brand-light)',
+                  borderRadius: 999,
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.06)',
                   fontSize: '0.8125rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  color: 'var(--brand-dark)',
+                  color: '#FFFFFF',
                   fontFamily: 'var(--font)',
-                  transition: 'all var(--dur)',
+                  transition: 'all 0.2s',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 6
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--brand)'; e.currentTarget.style.color = '#fff' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'var(--brand-light)'; e.currentTarget.style.color = 'var(--brand-dark)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#000000' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#FFFFFF' }}
               >
                 {ex.label}
               </button>
@@ -482,16 +403,39 @@ export default function AIGenerator({ scrollRef }) {
           </div>
 
           {error && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, padding: '10px 14px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 'var(--radius-md)', color: '#DC2626', fontSize: '0.875rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, color: '#EF4444', fontSize: '0.875rem' }}>
               <AlertCircle size={15} />{error}
             </div>
           )}
 
-          <button className="btn btn-primary btn-lg" onClick={handleGenerate} disabled={!prompt.trim() || isGenerating}
-            style={{ width: '100%', justifyContent: 'center', fontWeight: 800, opacity: !prompt.trim() ? 0.5 : 1, cursor: !prompt.trim() ? 'not-allowed' : 'pointer' }}>
+          <button
+            onClick={handleGenerate}
+            disabled={!prompt.trim() || isGenerating}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              padding: '16px',
+              borderRadius: 999,
+              background: '#FFFFFF',
+              color: '#000000',
+              border: 'none',
+              fontWeight: 900,
+              fontSize: '1rem',
+              cursor: !prompt.trim() || isGenerating ? 'not-allowed' : 'pointer',
+              opacity: !prompt.trim() ? 0.45 : 1,
+              boxShadow: '0 4px 20px rgba(255,255,255,0.15)',
+              transition: 'all 0.2s',
+              fontFamily: 'var(--font)',
+            }}
+            onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = '#E5E5E5' }}
+            onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = '#FFFFFF' }}
+          >
             {isGenerating
               ? <><RefreshCw size={17} style={{ animation: 'spin 1s linear infinite' }} /> Generando tu sitio web...</>
-              : <><Sparkles size={17} strokeWidth={2.5} /> Generar mi sitio web gratis <span style={{ opacity: 0.55, fontSize: '0.75rem', marginLeft: 4 }}>⌘↵</span></>
+              : <><Sparkles size={17} strokeWidth={2.5} /> Generar mi sitio web con IA →</>
             }
           </button>
           {isGenerating && <AILoadingProgress />}

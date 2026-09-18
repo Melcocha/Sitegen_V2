@@ -1165,6 +1165,115 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         </div>
       )}
 
+      {/* ── 6.2. EVENTOS ── */}
+      {data.sectionsVisibility?.events !== false && (
+      <section id="wp-events" style={{ width: '100%', background: '#05070C', padding: '100px 6%', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.08)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 20 }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>PRÓXIMOS EVENTOS</div>
+              <h2
+                data-field="events.title" data-ovkey="events.title"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'events.title', 'Título Sección Eventos', 'text', data.events?.title || 'Lo Que Viene')}
+                style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 900, color: '#FFFFFF', margin: 0, letterSpacing: '-0.03em', lineHeight: 1.1, fontFamily: 'Playfair Display, serif', ...ost('events.title') }}
+              >
+                {data.events?.title || 'Lo Que Viene'}
+              </h2>
+            </div>
+            <a href={data.events?.allLink || '#wp-contact'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: accentGold, fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', opacity: 0.8, whiteSpace: 'nowrap' }}>
+              Ver todos los eventos →
+            </a>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            {(data.events?.items || [
+              { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.' },
+              { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.' },
+              { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.' },
+            ]).map((ev, idx) => (
+              <div key={idx} style={{ background: '#0D0F16', border: '1px solid rgba(196,163,90,0.12)', borderRadius: 20, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = `rgba(196,163,90,0.35)`; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(196,163,90,0.12)'; e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
+                  <img src={ev.image} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display='none' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(13,15,22,0.9) 100%)' }} />
+                  <div style={{ position: 'absolute', top: 16, left: 16, background: accentGold, color: '#05070C', borderRadius: 10, padding: '8px 14px', textAlign: 'center', minWidth: 52 }}>
+                    <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1 }}>{ev.day}</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.62rem', letterSpacing: '0.12em' }}>{ev.month}</div>
+                  </div>
+                </div>
+                <div style={{ padding: '20px 22px 24px' }}>
+                  <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 8px', letterSpacing: '-0.01em' }}>{ev.title}</h3>
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
+                    <span style={{ fontSize: '0.78rem', color: accentGold, fontWeight: 700 }}>⏰ {ev.time}</span>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>📍 {ev.location}</span>
+                  </div>
+                  <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, margin: '0 0 18px' }}>{ev.description}</p>
+                  <a href={ev.link || '#wp-contact'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 999, border: `1px solid rgba(196,163,90,0.4)`, color: accentGold, fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = accentGold; e.currentTarget.style.color = '#05070C' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = accentGold }}
+                  >
+                    Inscribirme →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* ── 6.5. DONACIONES ── */}
+      {data.sectionsVisibility?.donation !== false && (
+      <section id="wp-donations" style={{ width: '100%', background: '#040508', padding: '100px 8%', boxSizing: 'border-box' }}>
+        <div style={{
+          maxWidth: 860, margin: '0 auto', textAlign: 'center',
+          background: 'linear-gradient(135deg, rgba(196,163,90,0.08) 0%, rgba(196,163,90,0.03) 100%)',
+          border: '1px solid rgba(196,163,90,0.2)',
+          borderRadius: 28, padding: '60px 40px',
+          boxShadow: '0 0 80px rgba(196,163,90,0.05)',
+        }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16 }}>GENEROSIDAD</div>
+          <h2
+            data-field="donation.title" data-ovkey="donation.title"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.title', 'Título Donaciones', 'text', data.donation?.title || 'Tu Generosidad Transforma Vidas')}
+            style={{ fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 20px', letterSpacing: '-0.03em', lineHeight: 1.1, fontFamily: 'Playfair Display, serif', ...ost('donation.title') }}
+          >
+            {data.donation?.title || 'Tu Generosidad Transforma Vidas'}
+          </h2>
+          <p
+            data-field="donation.subtitle" data-ovkey="donation.subtitle"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.subtitle', 'Descripción Donaciones', 'textarea', data.donation?.subtitle || 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá.')}
+            style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.75, margin: '0 0 36px', maxWidth: 600, marginLeft: 'auto', marginRight: 'auto', ...ost('donation.subtitle') }}
+          >
+            {data.donation?.subtitle || 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá.'}
+          </p>
+          <a
+            data-field="donation.ctaText" data-ovkey="donation.ctaText"
+            href={data.donation?.ctaLink || '#wp-contact'}
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.ctaText', 'Botón Donaciones', 'text', data.donation?.ctaText || 'Ofrendar en Línea')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              padding: '16px 40px', borderRadius: 999,
+              background: accentGold,
+              color: '#040508', fontWeight: 900, fontSize: '0.9rem',
+              textDecoration: 'none',
+              boxShadow: `0 8px 32px rgba(196,163,90,0.3)`,
+              transition: 'all 0.2s ease',
+              ...ost('donation.ctaText')
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            {data.donation?.ctaText || 'Ofrendar en Línea'}
+          </a>
+        </div>
+      </section>
+      )}
+
       {/* ── 7. FOOTER EDITORIAL ── */}
       <footer id="wp-contact" style={{ width: '100%', background: '#040508', color: '#FFFFFF', padding: '100px 6% 40px', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 48, marginBottom: 60 }}>
