@@ -63,9 +63,9 @@ export default function Hero() {
         }
         .gw-cta-primary {
           display: inline-flex; align-items: center; gap: 10px;
-          padding: 18px 44px; border-radius: 999px;
+          padding: 14px 36px; border-radius: 999px;
           background: #FFFFFF;
-          color: #000000; font-weight: 900; font-size: 1rem;
+          color: #000000; font-weight: 900; font-size: 0.95rem;
           text-decoration: none; border: none; cursor: pointer;
           font-family: var(--font); letter-spacing: -0.01em;
           transition: all 0.25s cubic-bezier(0.34,1.4,0.64,1);
@@ -79,10 +79,10 @@ export default function Hero() {
         }
         .gw-cta-secondary {
           display: inline-flex; align-items: center; gap: 8px;
-          padding: 17px 36px; border-radius: 999px;
+          padding: 13px 28px; border-radius: 999px;
           background: transparent;
           border: 1.5px solid rgba(255,255,255,0.25);
-          color: #FFFFFF; font-weight: 600; font-size: 0.95rem;
+          color: #FFFFFF; font-weight: 600; font-size: 0.9rem;
           text-decoration: none;
           transition: all 0.25s ease;
           font-family: var(--font);
@@ -93,8 +93,8 @@ export default function Hero() {
           transform: translateY(-2px);
         }
         .gw-stat {
-          display: flex; flex-direction: column; gap: 4px;
-          padding: 18px 24px;
+          display: flex; flex-direction: column; gap: 3px;
+          padding: 10px 22px;
           border-left: 1px solid rgba(255,255,255,0.12);
         }
         .gw-stat:first-child { border-left: none; }
@@ -108,13 +108,16 @@ export default function Hero() {
 
       <section style={{
         position: 'relative',
-        minHeight: '100vh',
+        minHeight: 'calc(100vh - 68px)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         overflow: 'hidden',
         background: '#000000',
+        paddingTop: 'clamp(20px, 3vh, 40px)',
+        paddingBottom: 'clamp(20px, 3vh, 40px)',
+        boxSizing: 'border-box',
       }}>
 
         {/* ── Background photo (desaturated monochrome feel) ── */}
@@ -141,22 +144,23 @@ export default function Hero() {
         {/* ── Content ── */}
         <div className="container" style={{
           position: 'relative', zIndex: 10,
-          paddingTop: 140, paddingBottom: 90,
           width: '100%',
+          paddingTop: 10,
+          paddingBottom: 10,
         }}>
 
           {/* Eyebrow */}
           <div style={{
-            marginBottom: 28,
+            marginBottom: 'clamp(10px, 1.6vh, 18px)',
             opacity: mounted ? 1 : 0,
             animation: mounted ? 'gatewayFadeUp 0.8s ease 0.05s forwards' : 'none',
           }}>
             <span style={{
               display: 'inline-block',
-              fontSize: '0.75rem', fontWeight: 800,
+              fontSize: '0.72rem', fontWeight: 800,
               color: '#FFFFFF',
-              letterSpacing: '0.2em', textTransform: 'uppercase',
-              padding: '6px 16px',
+              letterSpacing: '0.18em', textTransform: 'uppercase',
+              padding: '5px 14px',
               border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 999,
               background: 'rgba(255,255,255,0.06)',
@@ -168,13 +172,13 @@ export default function Hero() {
 
           {/* Headline — massive, pure white, left-aligned */}
           <h1 style={{
-            fontSize: 'clamp(3rem, 7vw, 6.5rem)',
+            fontSize: 'clamp(2.4rem, 4.6vw, 4.4rem)',
             fontWeight: 900,
-            lineHeight: 1.02,
-            letterSpacing: '-0.045em',
+            lineHeight: 1.04,
+            letterSpacing: '-0.04em',
             color: '#FFFFFF',
-            margin: '0 0 32px',
-            maxWidth: 850,
+            margin: '0 0 clamp(12px, 1.8vh, 20px)',
+            maxWidth: 820,
             opacity: mounted ? 1 : 0,
             animation: mounted ? 'gatewayFadeUp 0.9s ease 0.12s forwards' : 'none',
           }}>
@@ -188,11 +192,11 @@ export default function Hero() {
 
           {/* Subtitle */}
           <p style={{
-            fontSize: 'clamp(1.05rem, 2vw, 1.3rem)',
+            fontSize: 'clamp(0.92rem, 1.1vw, 1.12rem)',
             color: 'rgba(255,255,255,0.7)',
-            maxWidth: 580,
-            lineHeight: 1.65,
-            margin: '0 0 44px',
+            maxWidth: 560,
+            lineHeight: 1.55,
+            margin: '0 0 clamp(18px, 2.4vh, 28px)',
             fontWeight: 400,
             opacity: mounted ? 1 : 0,
             animation: mounted ? 'gatewayFadeUp 0.9s ease 0.2s forwards' : 'none',
@@ -203,8 +207,8 @@ export default function Hero() {
 
           {/* ── CTAs: Blanco y Negro puros ── */}
           <div className="gw-hero-ctas" style={{
-            display: 'flex', alignItems: 'center', gap: 16,
-            marginBottom: 64,
+            display: 'flex', alignItems: 'center', gap: 14,
+            marginBottom: 'clamp(20px, 3vh, 32px)',
             opacity: mounted ? 1 : 0,
             animation: mounted ? 'gatewayFadeUp 0.9s ease 0.28s forwards' : 'none',
           }}>
@@ -230,7 +234,7 @@ export default function Hero() {
             background: 'rgba(255,255,255,0.04)',
             backdropFilter: 'blur(16px)',
             border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 18,
+            borderRadius: 14,
             opacity: mounted ? 1 : 0,
             animation: mounted ? 'gatewayFadeUp 0.9s ease 0.36s forwards' : 'none',
           }}>
@@ -241,8 +245,8 @@ export default function Hero() {
               { val: 'SSL & CDN',label: 'Incluidos de fábrica' },
             ].map(s => (
               <div key={s.val} className="gw-stat">
-                <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em' }}>{s.val}</span>
-                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{s.label}</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em' }}>{s.val}</span>
+                <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{s.label}</span>
               </div>
             ))}
           </div>
