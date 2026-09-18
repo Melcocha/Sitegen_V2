@@ -378,26 +378,32 @@ export default function NewSitePage() {
         {siteJson && (
           <div ref={previewRef}>
             {/* Action & Template Selector Bar */}
-            <div style={{ marginBottom: 20, padding: '16px 20px', background: '#FFFFFF', border: '1.5px solid #E5E7EB', borderRadius: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ marginBottom: 24, padding: '16px 20px', background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', gap: 14 }}>
               
               {/* Row 1: Status + Actions */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, borderBottom: '1px solid #F3F4F6', paddingBottom: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <CheckCircle2 size={18} color="#00A87A" />
-                  <span style={{ fontWeight: 800, color: '#111827', fontSize: '0.95rem' }}>
-                    Sitio generado — <span style={{ color: '#00A87A' }}>{siteJson.businessName}</span>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }} />
+                  <span style={{ fontWeight: 800, color: '#111827', fontSize: '0.92rem' }}>
+                    Sitio generado: <span style={{ color: '#000000', fontWeight: 900 }}>{siteJson.businessName}</span>
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={handleGenerate} disabled={generating}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 9, color: '#374151', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 9, color: '#111827', fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>
                     <RefreshCw size={13} /> Regenerar
                   </button>
                   <button onClick={handleSave} disabled={saving || blocked}
-                    style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 20px', background: (saving || blocked) ? 'rgba(0,200,150,0.4)' : 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 9, color: '#fff', fontWeight: 700, fontSize: '0.875rem', cursor: (saving || blocked) ? 'not-allowed' : 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 8px rgba(0,200,150,0.3)' }}>
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 7, padding: '8px 22px',
+                      background: (saving || blocked) ? '#9CA3AF' : '#000000',
+                      border: 'none', borderRadius: 9, color: '#FFFFFF', fontWeight: 700, fontSize: '0.85rem',
+                      cursor: (saving || blocked) ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.15)', transition: 'all 0.15s'
+                    }}>
                     {saving
                       ? <><div style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Guardando...</>
-                      : <><Save size={14} /> Guardar y editar</>
+                      : <><Save size={14} /> Guardar y editar →</>
                     }
                   </button>
                 </div>
@@ -405,11 +411,18 @@ export default function NewSitePage() {
 
               {/* Row 2: Selector estilizado compacto (Opción 1, 2, 3 y 4) */}
               {siteJson && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', paddingTop: 2 }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Plantilla:
                   </span>
-                  <div style={{ display: 'inline-flex', gap: 4, background: '#F3F4F6', padding: 4, borderRadius: 999, border: '1px solid #E5E7EB' }}>
+                  <div style={{
+                    display: 'inline-flex',
+                    background: '#F3F4F6',
+                    padding: 4,
+                    borderRadius: 999,
+                    border: '1px solid #E5E7EB',
+                    gap: 4
+                  }}>
                     {[
                       { id: 'nucleus',   label: 'Opción 1', font: 'Playfair Display',  primary: '#080A10', accent: '#C4A35A' },
                       { id: 'mygateway', label: 'Opción 2', font: 'Plus Jakarta Sans', primary: '#0F172A', accent: '#E11D48' },

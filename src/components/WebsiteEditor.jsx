@@ -961,130 +961,50 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
         {activeTab === 'style' && (
           <div>
             {isChurch && (
-              <Section title="Plantillas y Estilos de Iglesia (1 Clic)" icon={<Sparkles size={14}/>} {...sec('churchTemplate')}>
-                <p style={{ fontSize:'.72rem', color:'#6B7280', margin:'0 0 12px' }}>
-                  Alterna al instante entre las 4 opciones de diseño:
-                </p>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:10, marginBottom:16 }}>
-                  {/* Option 1: Obsidian & Gold Editorial */}
-                  <button
-                    onClick={() => {
-                      const name = websiteData.businessName || 'Comunidad de Fe'
-                      const isSvg = !websiteData.logoImage || websiteData.logoImage.startsWith('data:image/svg+xml')
-                      onChange({
-                        ...websiteData,
-                        churchTemplateVariant: 'nucleus',
-                        font: 'Playfair Display',
-                        primaryColor: '#080A10',
-                        accentColor: '#C4A35A',
-                        logoImage: isSvg ? generateChurchLogoSvg(name, 'nucleus', '#080A10', '#C4A35A') : websiteData.logoImage
-                      })
-                    }}
-                    style={{
-                      padding: '12px', borderRadius: 12, textAlign: 'left',
-                      border: `2px solid ${websiteData.churchTemplateVariant === 'nucleus' || !websiteData.churchTemplateVariant ? '#C4A35A' : '#E5E7EB'}`,
-                      background: websiteData.churchTemplateVariant === 'nucleus' || !websiteData.churchTemplateVariant ? 'rgba(196, 163, 90, 0.1)' : '#F9FAFB',
-                      cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontWeight: 800, fontSize: '.84rem', color: '#111827' }}>👑 Opción 1: Obsidian & Gold</div>
-                      {(websiteData.churchTemplateVariant === 'nucleus' || !websiteData.churchTemplateVariant) && (
-                        <span style={{ fontSize: '.6rem', fontWeight: 800, color: '#B45309', background: '#FEF3C7', padding: '2px 6px', borderRadius: 99 }}>ACTIVO</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '.68rem', color: '#64748B', marginTop: 3 }}>Tipografía Playfair Display, acentos dorados, panel lateral glass de 550px y secciones panorámicas.</div>
-                  </button>
-
-                  {/* Option 2: Modern Cinematic (Life Theme) */}
-                  <button
-                    onClick={() => {
-                      const name = websiteData.businessName || 'Comunidad de Fe'
-                      const isSvg = !websiteData.logoImage || websiteData.logoImage.startsWith('data:image/svg+xml')
-                      onChange({
-                        ...websiteData,
-                        churchTemplateVariant: 'mygateway',
-                        font: 'Plus Jakarta Sans',
-                        primaryColor: '#0F172A',
-                        accentColor: '#00D8F6',
-                        logoImage: isSvg ? generateChurchLogoSvg(name, 'mygateway', '#0F172A', '#00D8F6') : websiteData.logoImage
-                      })
-                    }}
-                    style={{
-                      padding: '12px', borderRadius: 12, textAlign: 'left',
-                      border: `2px solid ${websiteData.churchTemplateVariant === 'mygateway' ? '#00D8F6' : '#E5E7EB'}`,
-                      background: websiteData.churchTemplateVariant === 'mygateway' ? 'rgba(0, 216, 246, 0.08)' : '#F9FAFB',
-                      cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontWeight: 800, fontSize: '.84rem', color: '#111827' }}>🌊 Opción 2: Life Moderno</div>
-                      {websiteData.churchTemplateVariant === 'mygateway' && (
-                        <span style={{ fontSize: '.6rem', fontWeight: 800, color: '#0369A1', background: '#E0F2FE', padding: '2px 6px', borderRadius: 99 }}>ACTIVO</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '.68rem', color: '#64748B', marginTop: 3 }}>Inspirado en Northside y Rose Church: hero amplio, sección split 50/50 y footer minimalista en negro.</div>
-                  </button>
-
-                  {/* Option 3: Experiencia Simbólica & Creativa */}
-                  <button
-                    onClick={() => {
-                      const name = websiteData.businessName || 'Comunidad de Fe'
-                      const isSvg = !websiteData.logoImage || websiteData.logoImage.startsWith('data:image/svg+xml')
-                      onChange({
-                        ...websiteData,
-                        churchTemplateVariant: 'poster',
-                        font: 'Outfit',
-                        primaryColor: '#FFFFFF',
-                        accentColor: '#4F46E5',
-                        logoImage: isSvg ? generateChurchLogoSvg(name, 'poster', '#FFFFFF', '#4F46E5') : websiteData.logoImage
-                      })
-                    }}
-                    style={{
-                      padding: '12px', borderRadius: 12, textAlign: 'left',
-                      border: `2px solid ${websiteData.churchTemplateVariant === 'poster' ? '#4F46E5' : '#E5E7EB'}`,
-                      background: websiteData.churchTemplateVariant === 'poster' ? 'rgba(79, 70, 229, 0.08)' : '#F9FAFB',
-                      cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontWeight: 800, fontSize: '.84rem', color: '#111827' }}>✨ Opción 3: Experiencia Simbólica & Creativa</div>
-                      {websiteData.churchTemplateVariant === 'poster' && (
-                        <span style={{ fontSize: '.6rem', fontWeight: 800, color: '#3730A3', background: '#EEF2FF', padding: '2px 6px', borderRadius: 99 }}>ACTIVO</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '.68rem', color: '#64748B', marginTop: 3 }}>Menú navbar limpio con enlaces, hero creativo con mosaico de fotos y 5 apartados simbólicos interactivos.</div>
-                  </button>
-
-                  {/* Option 4: Afiche Editorial & Noche de Adoración */}
-                  <button
-                    onClick={() => {
-                      const name = websiteData.businessName || 'Comunidad de Fe'
-                      const isSvg = !websiteData.logoImage || websiteData.logoImage.startsWith('data:image/svg+xml')
-                      onChange({
-                        ...websiteData,
-                        churchTemplateVariant: 'afiche',
-                        font: 'Syne',
-                        primaryColor: '#090B10',
-                        accentColor: '#FACC15',
-                        logoImage: isSvg ? generateChurchLogoSvg(name, 'afiche', '#090B10', '#FACC15') : websiteData.logoImage
-                      })
-                    }}
-                    style={{
-                      padding: '12px', borderRadius: 12, textAlign: 'left',
-                      border: `2px solid ${websiteData.churchTemplateVariant === 'afiche' ? '#FACC15' : '#E5E7EB'}`,
-                      background: websiteData.churchTemplateVariant === 'afiche' ? 'rgba(250, 204, 21, 0.12)' : '#F9FAFB',
-                      cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ fontWeight: 800, fontSize: '.84rem', color: '#111827' }}>🎨 Opción 4: Estilo Afiche & Noche de Evento</div>
-                      {websiteData.churchTemplateVariant === 'afiche' && (
-                        <span style={{ fontSize: '.6rem', fontWeight: 800, color: '#854D0E', background: '#FEF08A', padding: '2px 6px', borderRadius: 99 }}>ACTIVO</span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '.68rem', color: '#64748B', marginTop: 3 }}>Diseño tipo afiche/cartel cinematográfico: tipografía script + mayúsculas gigantes condensadas (Noche de ADORACIÓN), fondos oscuros sin cajas encerradas, badges ovalados y mosaico de imágenes panorámicas.</div>
-                  </button>
+              <Section title="Plantilla de Iglesia" icon={<Sparkles size={14}/>} {...sec('churchTemplate')}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 16 }}>
+                  {[
+                    { id: 'nucleus',   label: 'Opción 1', font: 'Playfair Display',  primary: '#080A10', accent: '#C4A35A' },
+                    { id: 'mygateway', label: 'Opción 2', font: 'Plus Jakarta Sans', primary: '#0F172A', accent: '#00D8F6' },
+                    { id: 'poster',    label: 'Opción 3', font: 'Outfit',            primary: '#FFFFFF', accent: '#4F46E5' },
+                    { id: 'afiche',    label: 'Opción 4', font: 'Syne',              primary: '#090B10', accent: '#FACC15' },
+                  ].map(opt => {
+                    const isActive = (websiteData.churchTemplateVariant === opt.id) || (!websiteData.churchTemplateVariant && opt.id === 'nucleus')
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          const name = websiteData.businessName || 'Comunidad de Fe'
+                          const isSvg = !websiteData.logoImage || websiteData.logoImage.startsWith('data:image/svg+xml')
+                          onChange({
+                            ...websiteData,
+                            churchTemplateVariant: opt.id,
+                            font: opt.font,
+                            primaryColor: opt.primary,
+                            accentColor: opt.accent,
+                            logoImage: isSvg ? generateChurchLogoSvg(name, opt.id, opt.primary, opt.accent) : websiteData.logoImage
+                          })
+                        }}
+                        style={{
+                          padding: '9px 12px',
+                          borderRadius: 10,
+                          border: isActive ? '1.5px solid #000000' : '1px solid #E5E7EB',
+                          background: isActive ? '#000000' : '#FFFFFF',
+                          color: isActive ? '#FFFFFF' : '#374151',
+                          fontWeight: isActive ? 800 : 600,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          textAlign: 'center',
+                          boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    )
+                  })}
                 </div>
               </Section>
             )}
