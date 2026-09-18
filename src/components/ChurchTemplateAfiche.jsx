@@ -188,6 +188,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
 
   return (
     <div className={rootClassName} style={{
+      position: 'relative',
       containerType: 'inline-size',
       fontFamily: `'${activeFont}', 'Syne', 'Plus Jakarta Sans', sans-serif`,
       color: '#FFFFFF',
@@ -436,7 +437,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexShrink: 0 }}>
               <nav style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'nowrap' }}>
                 {filteredNavs.map((item, idx) => {
-                  const itemLabel = item.text || item.label || 'Link'
+                  const itemLabel = item.text || item.label || 'Enlace'
                   return (
                     <a
                       key={idx}

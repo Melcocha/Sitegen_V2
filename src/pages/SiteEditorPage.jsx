@@ -273,25 +273,73 @@ export default function SiteEditorPage() {
 
   // ── Load site from Supabase or Local Storage ───────────
   useEffect(() => {
-    if (!siteId || !user?.id) return
+    if (!siteId) return
+    const effectiveUserId = user?.id || 'saasweb_dev_user'
+
+    let isCancelled = false
     setLoading(true)
-    getSite(siteId, user.id)
+
+    // Fail-safe safety timer: if anything hangs, unlock editor after 3 seconds
+    const safetyTimer = setTimeout(() => {
+      if (!isCancelled) {
+        setSite(prev => prev || {
+          id: siteId,
+          user_id: effectiveUserId,
+          name: 'Mi Sitio Web',
+          status: 'draft',
+          site_json: DEFAULT_SITE_JSON
+        })
+        setSiteJson(prev => prev || DEFAULT_SITE_JSON)
+        setHistory(prev => (prev.length === 0 ? [JSON.parse(JSON.stringify(DEFAULT_SITE_JSON))] : prev))
+        setHistoryIdx(prev => (prev === -1 ? 0 : prev))
+        setLoading(false)
+      }
+    }, 3000)
+
+    getSite(siteId, effectiveUserId)
       .then((data) => {
-        if (!data) { navigate('/app/dashboard'); return }
-        const initialJson = data.site_json || { ...DEFAULT_SITE_JSON, businessName: data.name }
-        setSite(data)
+        if (isCancelled) return
+        clearTimeout(safetyTimer)
+        const initialSite = data || {
+          id: siteId,
+          user_id: effectiveUserId,
+          name: 'Mi Sitio Web',
+          status: 'draft',
+          site_json: DEFAULT_SITE_JSON
+        }
+        const initialJson = initialSite.site_json || { ...DEFAULT_SITE_JSON, businessName: initialSite.name }
+        setSite(initialSite)
         setSiteJson(initialJson)
         setHistory([JSON.parse(JSON.stringify(initialJson))])
         setHistoryIdx(0)
-        const sub = data.subdomain || initialJson.subdomain || (initialJson.businessName || data.name || 'mi-sitio')
+        const sub = initialSite.subdomain || initialJson.subdomain || (initialJson.businessName || initialSite.name || 'mi-sitio')
           .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
           .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
         setCustomSubdomain(sub)
         setLoading(false)
       })
-      .catch(() => {
-        navigate('/app/dashboard')
+      .catch((err) => {
+        if (isCancelled) return
+        clearTimeout(safetyTimer)
+        console.warn('[SiteEditorPage] Fallback site initialization:', err)
+        const fallback = {
+          id: siteId,
+          user_id: effectiveUserId,
+          name: 'Mi Sitio Web',
+          status: 'draft',
+          site_json: DEFAULT_SITE_JSON
+        }
+        setSite(fallback)
+        setSiteJson(DEFAULT_SITE_JSON)
+        setHistory([JSON.parse(JSON.stringify(DEFAULT_SITE_JSON))])
+        setHistoryIdx(0)
+        setLoading(false)
       })
+
+    return () => {
+      isCancelled = true
+      clearTimeout(safetyTimer)
+    }
   }, [siteId, user?.id])
 
   // ── Quick-edit: update a specific field from floating panel ────
@@ -496,11 +544,11 @@ export default function SiteEditorPage() {
   // ── Loading skeleton ─────────────────
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', border: '3px solid #00C896', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+          <div style={{ width: 44, height: 44, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.18)', borderTopColor: '#FFFFFF', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{ fontWeight: 600, color: '#6B7280' }}>Cargando editor...</div>
+          <div style={{ fontWeight: 600, color: '#FFFFFF', letterSpacing: '-0.01em', fontSize: '0.95rem' }}>Cargando editor...</div>
         </div>
       </div>
     )

@@ -86,7 +86,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
     eyebrow: rawPlan.eyebrow || '10:30 a.m. los Domingos',
     title: rawPlan.title || 'Planifica tu Visita',
     subtitle: rawPlan.subtitle || '¡Acompáñanos en persona este fin de semana! Nos encantará recibirte a ti y a tu familia. Encuentra horarios, dirección y todo lo necesario para tu primera visita haciendo clic abajo.',
-    ctaText: rawPlan.ctaText || 'PLAN A VISIT',
+    ctaText: rawPlan.ctaText || 'PLANIFICA TU VISITA',
     ctaLink: '#wp-contact',
     image: rawPlan.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&q=85&fit=crop'
   }
@@ -94,18 +94,18 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
   const rawCols = data.nucleusColumns || {}
   const nucleusColumns = {
     col1: {
-      eyebrow: 'Meet Our Team',
-      title: 'Leaders & Staff',
-      text: 'Our dedicated team of pastors and staff are here to provide spiritual guidance and support - as well as resources to help you on your faith journey.',
+      eyebrow: 'Conoce a Nuestro Equipo',
+      title: 'Pastores & Equipo',
+      text: 'Nuestro dedicado equipo de pastores y líderes está aquí para brindarte apoyo espiritual, consejería y recursos para fortalecer tu camino de fe.',
       image: 'https://images.unsplash.com/photo-1477281765962-ef34e8bb0967?w=1000&q=85&fit=crop',
       ctaText: 'NUESTRO EQUIPO',
       ctaLink: '#wp-contact',
       ...(rawCols.col1 || {})
     },
     col2: {
-      eyebrow: 'Our Calendar',
-      title: "See What's Happening",
-      text: "Check out this month's events to find out what's happening and how you can be involved. Explore the full list of upcoming ministries and services.",
+      eyebrow: 'Nuestro Calendario',
+      title: 'Próximos Eventos & Actividades',
+      text: 'Descubre los eventos de este mes para enterarte de lo que está sucediendo y cómo puedes participar. Explora la lista completa de próximos ministerios y reuniones.',
       image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1000&q=85&fit=crop',
       ctaText: 'NUESTRO CALENDARIO',
       ctaLink: '#wp-contact',
@@ -171,7 +171,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
   const accentIndigo = data.accentColor || '#000000'
 
   return (
-    <div className={rootClassName} style={{ containerType: 'inline-size', fontFamily: `'${activeFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, color: '#000000', background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+    <div className={rootClassName} style={{ position: 'relative', containerType: 'inline-size', fontFamily: `'${activeFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, color: '#000000', background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       <style>{`
         .poster-template-root {
@@ -677,7 +677,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
               onClick={(e) => handleNavClick(e, '#wp-plan-visit', 'hero.ctaText', 'Texto Botón Principal', hero.ctaText)}
               style={{ padding: '18px 42px', background: '#FFFFFF', color: '#000000', borderRadius: 8, textDecoration: 'none', fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', ...ost('hero.ctaText') }}
             >
-              {hero.ctaText || 'PLAN A VISIT'}
+              {hero.ctaText || 'PLANIFICA TU VISITA'}
               {rdh('hero.ctaText')}
             </a>
           </div>
@@ -748,7 +748,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
               className="poster-btn-primary editable-element"
               style={{ padding: '18px 40px', borderRadius: 8, textDecoration: 'none', fontSize: '0.85rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', ...ost('planAVisit.ctaText') }}
             >
-              {planAVisit.ctaText || 'PLAN A VISIT'}
+              {planAVisit.ctaText || 'PLANIFICA TU VISITA'}
             </a>
           </div>
 
@@ -788,7 +788,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col1.eyebrow', 'Etiqueta Columna 1', 'text', nucleusColumns.col1.eyebrow)}
                   style={{ fontSize: '0.85rem', fontWeight: 700, color: '#A1A1AA', marginBottom: 14, ...ost('nucleusColumns.col1.eyebrow') }}
                 >
-                  {nucleusColumns.col1.eyebrow || 'Meet Our Team'}
+                  {nucleusColumns.col1.eyebrow || 'Conoce a Nuestro Equipo'}
                 </div>
                 <h3
                   data-field="nucleusColumns.col1.title"
@@ -797,7 +797,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col1.title', 'Título Columna 1', 'text', nucleusColumns.col1.title)}
                   style={{ fontSize: 'clamp(2.4rem, 4vw, 3.4rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1, ...ost('nucleusColumns.col1.title') }}
                 >
-                  {nucleusColumns.col1.title || 'Leaders & Staff'}
+                  {nucleusColumns.col1.title || 'Pastores & Equipo'}
                 </h3>
                 <p
                   data-field="nucleusColumns.col1.description"
@@ -806,7 +806,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col1.description', 'Descripción Columna 1', 'textarea', nucleusColumns.col1.description)}
                   style={{ fontSize: '1.1rem', lineHeight: 1.7, color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 32px', maxWidth: 560, fontFamily: 'Georgia, serif', ...ost('nucleusColumns.col1.description') }}
                 >
-                  {nucleusColumns.col1.description || nucleusColumns.col1.text || 'Our dedicated team of pastors and staff are here to provide spiritual guidance and support - as well as resources to help you on your faith journey.'}
+                  {nucleusColumns.col1.description || nucleusColumns.col1.text || 'Nuestro dedicado equipo de pastores y líderes está aquí para brindarte apoyo espiritual, consejería y recursos para fortalecer tu camino de fe.'}
                 </p>
               </div>
             </div>
@@ -839,7 +839,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col2.eyebrow', 'Etiqueta Columna 2', 'text', nucleusColumns.col2.eyebrow)}
                   style={{ fontSize: '0.85rem', fontWeight: 700, color: '#A1A1AA', marginBottom: 14, ...ost('nucleusColumns.col2.eyebrow') }}
                 >
-                  {nucleusColumns.col2.eyebrow || 'Our Calendar'}
+                  {nucleusColumns.col2.eyebrow || 'Nuestro Calendario'}
                 </div>
                 <h3
                   data-field="nucleusColumns.col2.title"
@@ -848,7 +848,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col2.title', 'Título Columna 2', 'text', nucleusColumns.col2.title)}
                   style={{ fontSize: 'clamp(2.4rem, 4vw, 3.4rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1, ...ost('nucleusColumns.col2.title') }}
                 >
-                  {nucleusColumns.col2.title || "See What's Happening"}
+                  {nucleusColumns.col2.title || 'Próximos Eventos & Actividades'}
                 </h3>
                 <p
                   data-field="nucleusColumns.col2.text"
@@ -857,7 +857,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, 'nucleusColumns.col2.text', 'Texto Columna 2', 'textarea', nucleusColumns.col2.text)}
                   style={{ fontSize: '1.1rem', lineHeight: 1.7, color: 'rgba(255, 255, 255, 0.85)', margin: '0 0 32px', maxWidth: 560, fontFamily: 'Georgia, serif', ...ost('nucleusColumns.col2.text') }}
                 >
-                  {nucleusColumns.col2.text || "Check out this month's events to find out what's happening and how you can be involved. Explore the full list of upcoming ministries and services."}
+                  {nucleusColumns.col2.text || 'Descubre los eventos de este mes para enterarte de lo que está sucediendo y cómo puedes participar. Explora la lista completa de próximos ministerios y reuniones.'}
                 </p>
               </div>
             </div>
@@ -878,41 +878,41 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
               data-field="nextSteps.eyebrow"
               data-ovkey="nextSteps.eyebrow"
               className="editable-element"
-              onClick={(e) => handleEdit(e, 'nextSteps.eyebrow', 'Etiqueta Próximos Pasos', 'text', data.nextSteps?.eyebrow || 'Get Involved')}
+              onClick={(e) => handleEdit(e, 'nextSteps.eyebrow', 'Etiqueta Próximos Pasos', 'text', data.nextSteps?.eyebrow || 'Involúcrate')}
               style={{ fontSize: '0.9rem', fontWeight: 700, color: '#000000', letterSpacing: '-0.01em', marginBottom: 20, ...ost('nextSteps.eyebrow') }}
             >
-              {data.nextSteps?.eyebrow || 'Get Involved'}
+              {data.nextSteps?.eyebrow || 'Involúcrate'}
             </div>
 
             <h2
               data-field="nextSteps.title"
               data-ovkey="nextSteps.title"
               className="editable-element"
-              onClick={(e) => handleEdit(e, 'nextSteps.title', 'Título Próximos Pasos', 'text', data.nextSteps?.title || 'Next Steps')}
+              onClick={(e) => handleEdit(e, 'nextSteps.title', 'Título Próximos Pasos', 'text', data.nextSteps?.title || 'Próximos Pasos')}
               style={{ fontSize: 'clamp(2.8rem, 5.5vw, 4.2rem)', fontWeight: 900, color: '#000000', margin: '0 0 24px', letterSpacing: '-0.03em', lineHeight: 1.05, ...ost('nextSteps.title') }}
             >
-              {data.nextSteps?.title || 'Next Steps'}
+              {data.nextSteps?.title || 'Próximos Pasos'}
             </h2>
 
             <p
               data-field="nextSteps.subtitle"
               data-ovkey="nextSteps.subtitle"
               className="editable-element"
-              onClick={(e) => handleEdit(e, 'nextSteps.subtitle', 'Subtítulo Próximos Pasos', 'textarea', data.nextSteps?.subtitle || 'Explore the life of our church including our vibrant ministries, upcoming events, and service opportunities.')}
+              onClick={(e) => handleEdit(e, 'nextSteps.subtitle', 'Subtítulo Próximos Pasos', 'textarea', data.nextSteps?.subtitle || 'Explora la vida de nuestra iglesia incluyendo ministerios activos, próximos eventos y oportunidades de servicio.')}
               style={{ fontSize: '1.15rem', lineHeight: 1.7, color: '#222222', margin: '0 0 40px', maxWidth: 520, fontFamily: 'Georgia, serif', ...ost('nextSteps.subtitle') }}
             >
-              {data.nextSteps?.subtitle || 'Explore the life of our church including our vibrant ministries, upcoming events, and service opportunities.'}
+              {data.nextSteps?.subtitle || 'Explora la vida de nuestra iglesia incluyendo ministerios activos, próximos eventos y oportunidades de servicio.'}
             </p>
 
             <a
               data-field="nextSteps.ctaText"
               data-ovkey="nextSteps.ctaText"
               href="#wp-contact"
-              onClick={(e) => handleNavClick(e, '#wp-contact', 'nextSteps.ctaText', 'Texto Botón Próximos Pasos', data.nextSteps?.ctaText || 'TAKE YOUR NEXT STEP')}
+              onClick={(e) => handleNavClick(e, '#wp-contact', 'nextSteps.ctaText', 'Texto Botón Próximos Pasos', data.nextSteps?.ctaText || 'DAR TU SIGUIENTE PASO')}
               className="poster-btn-primary editable-element"
               style={{ padding: '18px 40px', borderRadius: 8, textDecoration: 'none', fontSize: '0.85rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', ...ost('nextSteps.ctaText') }}
             >
-              {data.nextSteps?.ctaText || 'TAKE YOUR NEXT STEP'}
+              {data.nextSteps?.ctaText || 'DAR TU SIGUIENTE PASO'}
             </a>
           </div>
 
@@ -1176,10 +1176,10 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             <div>
               <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 20 }}>Visita & Comunidad</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: '0.95rem', color: '#A1A1AA' }}>
-                <div>Plan Your Visit</div>
-                <div>Leaders & Staff</div>
-                <div>Next Steps</div>
-                <div>Prayer Support</div>
+                <div>Planifica tu Visita</div>
+                <div>Pastores & Equipo</div>
+                <div>Próximos Pasos</div>
+                <div>Apoyo en Oración</div>
               </div>
             </div>
 

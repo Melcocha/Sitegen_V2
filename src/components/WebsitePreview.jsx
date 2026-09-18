@@ -1074,17 +1074,21 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
     || Boolean(data.sermons);
 
   if (isChurch) {
+    let churchContent = null;
     if (data.churchTemplateVariant === 'afiche' || data.churchTemplateVariant === 'noche_adoracion') {
-      return <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+      churchContent = <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+    } else if (data.churchTemplateVariant === 'poster') {
+      churchContent = <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+    } else if (data.churchTemplateVariant === 'mygateway') {
+      churchContent = <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+    } else {
+      churchContent = <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     }
-    if (data.churchTemplateVariant === 'poster') {
-      return <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
-    }
-    if (data.churchTemplateVariant === 'mygateway') {
-      return <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
-    }
-    // Default or 'nucleus' (Option 1 now):
-    return <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+    return (
+      <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+        {churchContent}
+      </div>
+    );
   }
 
   const heroV = data.variants?.hero || (lv === 2 ? 2 : lv === 3 ? 3 : lv === 4 ? 4 : 1);
@@ -2986,10 +2990,10 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
             </button>
             <div style={{ fontSize: '1.4rem', marginBottom: 4 }}>☀️</div>
             <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0284C7', marginBottom: 4 }}>
-              Plan A Visit
+              Planifica tu Visita
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748B', lineHeight: 1.4, marginBottom: 10 }}>
-              {data.planAVisit?.serviceTimes?.[0] || 'Join us on Sundays at 9AM or 11AM. Get directions, info, and more!'}
+              {data.planAVisit?.serviceTimes?.[0] || 'Acompáñanos este domingo a las 9:00 AM y 11:00 AM. ¡Te esperamos con alegría!'}
             </div>
             <a
               href="#wp-plan-visit"

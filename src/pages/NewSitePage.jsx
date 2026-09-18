@@ -478,7 +478,7 @@ export default function NewSitePage() {
             </div>
 
             {/* Preview */}
-            <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', border: '1.5px solid #E5E7EB', minWidth: 0, width: '100%' }}>
+            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', border: '1.5px solid #E5E7EB', minWidth: 0, width: '100%' }}>
               <WebsitePreview data={siteJson} />
             </div>
           </div>

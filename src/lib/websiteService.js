@@ -60,28 +60,33 @@ export async function getSites(userId) {
  * getSite — fetch a single website
  */
 export async function getSite(siteId, userId) {
-  // Check local first if siteId starts with site-local-
-  if (siteId?.startsWith('site-local-')) {
-    const local = getLocalSites()
-    return local.find(s => s.id === siteId) || null
-  }
+  if (!siteId) return null
 
+  // 1. Check local storage first (instant 0ms retrieval)
+  const local = getLocalSites()
+  const foundLocal = local.find(s => s.id === siteId)
+  if (foundLocal) return foundLocal
+
+  // 2. Query Supabase with a 3-second timeout so it NEVER hangs
   try {
-    const { data, error } = await supabase
+    const fetchPromise = supabase
       .from('websites')
       .select('*')
       .eq('id', siteId)
       .maybeSingle()
 
-    if (error || !data) {
-      const local = getLocalSites()
-      return local.find(s => s.id === siteId) || null
-    }
-    return data
-  } catch {
-    const local = getLocalSites()
-    return local.find(s => s.id === siteId) || null
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase timeout')), 3000)
+    )
+
+    const { data, error } = await Promise.race([fetchPromise, timeoutPromise])
+    if (!error && data) return data
+  } catch (e) {
+    console.warn('[getSite] Supabase fetch failed or timed out:', e.message)
   }
+
+  // 3. Fallback to check local again
+  return getLocalSites().find(s => s.id === siteId) || null
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -92,9 +97,10 @@ export async function getSite(siteId, userId) {
  * saveSite — create a new website row
  */
 export async function saveSite({ userId, name, prompt, siteJson, industry }) {
+  const effectiveUserId = userId || 'saasweb_dev_user'
   const newSite = {
     id: `site-local-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
-    user_id: userId || 'saasweb_dev_user',
+    user_id: effectiveUserId,
     name: name || siteJson?.businessName || 'Mi Sitio',
     prompt: prompt || '',
     site_json: siteJson,
@@ -105,8 +111,19 @@ export async function saveSite({ userId, name, prompt, siteJson, industry }) {
     updated_at: new Date().toISOString(),
   }
 
+  // 1. Always save locally immediately so editor opens in 0ms!
+  const local = getLocalSites()
+  local.unshift(newSite)
+  saveLocalSites(local)
+
+  // 2. If guest or dev user, don't wait for Supabase
+  if (!userId || userId === 'saasweb_dev_user' || String(userId).startsWith('dev-')) {
+    return newSite
+  }
+
+  // 3. For authenticated users, sync to Supabase with short timeout
   try {
-    const { data, error } = await supabase
+    const insertPromise = supabase
       .from('websites')
       .insert({
         user_id: userId,
@@ -120,17 +137,14 @@ export async function saveSite({ userId, name, prompt, siteJson, industry }) {
       .select()
       .single()
 
-    if (error || !data) {
-      const local = getLocalSites()
-      local.unshift(newSite)
-      saveLocalSites(local)
-      return newSite
-    }
-    return data
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 2500)
+    )
+
+    const { data, error } = await Promise.race([insertPromise, timeoutPromise])
+    if (!error && data) return data
+    return newSite
   } catch {
-    const local = getLocalSites()
-    local.unshift(newSite)
-    saveLocalSites(local)
     return newSite
   }
 }

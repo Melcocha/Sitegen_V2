@@ -166,7 +166,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
   const accentCyan = data.accentColor || '#00D8F6'
 
   return (
-    <div className={rootClassName} style={{ containerType: 'inline-size', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
+    <div className={rootClassName} style={{ position: 'relative', containerType: 'inline-size', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
       <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(activeFont.replace(/'/g, ''))}:wght@400;500;600;700;800;900&display=swap`} />
       
       <style>{`
@@ -589,11 +589,11 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         <div style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
           <a
             href="#wp-next-steps"
-            onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú Flotante Next Steps', 'Next Steps')}
+            onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú Flotante Próximos Pasos', 'Próximos Pasos')}
             style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.92)', color: '#000000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.4)', fontSize: '0.62rem', fontWeight: 900, lineHeight: 1.1 }}
           >
-            <span>Next</span>
-            <span>Steps</span>
+            <span>Próximos</span>
+            <span>Pasos</span>
           </a>
         </div>
       </section>
@@ -1244,16 +1244,16 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, paddingTop: 20 }}>
             <div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <a href="#wp-plan-visit" onClick={(e) => handleNavClick(e, '#wp-plan-visit', 'planAVisit.title', 'Menú Plan A Visit', 'Plan A Visit')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">Plan A Visit</a>
-                <a href="#wp-next-steps" onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú Next Steps', 'Next Steps')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">Next Steps</a>
+                <a href="#wp-plan-visit" onClick={(e) => handleNavClick(e, '#wp-plan-visit', 'planAVisit.title', 'Menú Planifica tu Visita', 'Planifica tu Visita')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">Planifica tu Visita</a>
+                <a href="#wp-next-steps" onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú Próximos Pasos', 'Próximos Pasos')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">Próximos Pasos</a>
               </div>
             </div>
 
             <div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <a href="#wp-next-steps" onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú About Us', 'About Us')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">About Us</a>
+                <a href="#wp-next-steps" onClick={(e) => handleNavClick(e, '#wp-next-steps', 'nextSteps.title', 'Menú Sobre Nosotros', 'Sobre Nosotros')} style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 800, fontSize: '1rem' }} className="editable-element">Sobre Nosotros</a>
                 <div>
-                  <div style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '1rem', marginBottom: 10 }}>Social Media</div>
+                  <div style={{ color: '#FFFFFF', fontWeight: 800, fontSize: '1rem', marginBottom: 10 }}>Redes Sociales</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <a href="#facebook" style={{ color: '#9CA3AF', textDecoration: 'underline', fontSize: '0.875rem' }}>Facebook</a>
                     <a href="#instagram" style={{ color: '#9CA3AF', textDecoration: 'underline', fontSize: '0.875rem' }}>Instagram</a>
