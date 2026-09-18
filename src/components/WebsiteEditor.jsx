@@ -601,12 +601,110 @@ function SermonsEditor({ sermons, title, subtitle, onChangeData }) {
 
 
 
+function EventsEditor({ events, onChangeData }) {
+  const eventsObj = events && typeof events === 'object' && !Array.isArray(events)
+    ? events
+    : { title: 'Lo Que Viene', eyebrow: 'PRÓXIMOS EVENTOS', allLinkText: 'Ver todos los eventos →', allLink: '#wp-contact', items: Array.isArray(events) ? events : [] }
+
+  const list = eventsObj.items && eventsObj.items.length > 0
+    ? eventsObj.items
+    : [
+        { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', btnText: 'Inscribirme →', link: '#wp-contact' },
+        { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', btnText: 'Inscribirme →', link: '#wp-contact' },
+        { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '01', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', btnText: 'Inscribirme →', link: '#wp-contact' },
+      ]
+
+  const updateHeader = (f, v) => {
+    onChangeData('events', { ...eventsObj, items: list, [f]: v })
+  }
+
+  const updateItem = (i, f, v) => {
+    const n = [...list]
+    n[i] = { ...n[i], [f]: v }
+    if (f === 'day') n[i].dateDay = v
+    if (f === 'month') n[i].dateMonth = v
+    if (f === 'description') n[i].desc = v
+    onChangeData('events', { ...eventsObj, items: n })
+  }
+
+  const removeItem = (i) => {
+    const n = list.filter((_, j) => j !== i)
+    onChangeData('events', { ...eventsObj, items: n })
+  }
+
+  const addItem = () => {
+    const newItem = {
+      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop',
+      day: '15',
+      month: 'DIC',
+      dateDay: '15',
+      dateMonth: 'DIC',
+      title: 'Nuevo Evento Especial',
+      time: '6:30 PM — Templo Principal',
+      location: 'Auditorio Central',
+      description: 'Te invitamos a ser parte de esta gran reunión especial para toda la familia.',
+      desc: 'Te invitamos a ser parte de esta gran reunión especial para toda la familia.',
+      btnText: 'Inscribirme →',
+      link: '#wp-contact'
+    }
+    onChangeData('events', { ...eventsObj, items: [...list, newItem] })
+  }
+
+  return (
+    <div>
+      <Field label="Etiqueta Superior (Eyebrow)" value={eventsObj.eyebrow} onChange={v => updateHeader('eyebrow', v)} placeholder="PRÓXIMOS EVENTOS" />
+      <Field label="Título de la Sección" value={eventsObj.title} onChange={v => updateHeader('title', v)} placeholder="Lo Que Viene" />
+      <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ flex: 1 }}>
+          <Field label="Texto Enlace Superior" value={eventsObj.allLinkText} onChange={v => updateHeader('allLinkText', v)} placeholder="Ver todos los eventos →" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Field label="Destino Enlace" value={eventsObj.allLink} onChange={v => updateHeader('allLink', v)} placeholder="#wp-contact" />
+        </div>
+      </div>
+      <div style={S.divider} />
+      <label style={S.label}>Tarjetas de Eventos ({list.length})</label>
+      {list.map((ev, i) => (
+        <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 11, padding: 13, marginBottom: 12, background: '#FAFAFA', position: 'relative' }}>
+          <button onClick={() => removeItem(i)} style={{ position: 'absolute', top: 8, right: 8, border: 'none', background: 'none', cursor: 'pointer', color: '#EF4444', padding: 3 }}>
+            <Trash2 size={12} />
+          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ width: 80 }}>
+              <Field label="Día" value={ev.day || ev.dateDay} onChange={v => updateItem(i, 'day', v)} placeholder="18" />
+            </div>
+            <div style={{ width: 80 }}>
+              <Field label="Mes" value={ev.month || ev.dateMonth} onChange={v => updateItem(i, 'month', v)} placeholder="OCT" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Field label="Horario" value={ev.time} onChange={v => updateItem(i, 'time', v)} placeholder="7:00 PM" />
+            </div>
+          </div>
+          <Field label="Título del Evento" value={ev.title} onChange={v => updateItem(i, 'title', v)} placeholder="Título del evento" />
+          <Field label="Lugar / Ubicación" value={ev.location} onChange={v => updateItem(i, 'location', v)} placeholder="Auditorio Principal" />
+          <Field label="Descripción" value={ev.description || ev.desc} onChange={v => updateItem(i, 'description', v)} multiline placeholder="Detalles del evento..." />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <Field label="Texto del Botón" value={ev.btnText} onChange={v => updateItem(i, 'btnText', v)} placeholder="Inscribirme →" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Field label="Enlace del Botón" value={ev.link} onChange={v => updateItem(i, 'link', v)} placeholder="#wp-contact" />
+            </div>
+          </div>
+          <ImageUploadBox label="Foto del Evento" imageUrl={ev.image} onUpload={url => updateItem(i, 'image', url)} onClear={() => updateItem(i, 'image', '')} />
+        </div>
+      ))}
+      <button onClick={addItem} style={S.addBtn}><Plus size={13} /> Agregar Evento</button>
+    </div>
+  )
+}
+
 function SectionsOrderEditor({ sectionOrder, sectionsVisibility, data, onChange }) {
   const [dragIdx, setDragIdx] = useState(null)
   const [overIdx, setOverIdx] = useState(null)
 
   const isChurch = data.industry?.toLowerCase().includes('iglesi') || data.industry?.toLowerCase().includes('church') || Boolean(data.planAVisit) || Boolean(data.ministries) || Boolean(data.sermons) || data.churchTemplateVariant
-  const CHURCH_ORDER = ['hero', 'missionBlock', 'welcome', 'planAVisit', 'nucleusColumns', 'values', 'ministries', 'nextSteps', 'sermons', 'donation', 'prayerRequest', 'about', 'testimonials', 'contact']
+  const CHURCH_ORDER = ['hero', 'missionBlock', 'welcome', 'planAVisit', 'nucleusColumns', 'values', 'ministries', 'nextSteps', 'sermons', 'events', 'donation', 'prayerRequest', 'about', 'testimonials', 'contact']
   const DEFAULT_ORDER = isChurch ? CHURCH_ORDER : ['hero', 'services', 'about', 'gallery', 'team', 'beforeAfter', 'testimonials', 'contact']
   const order = sectionOrder || DEFAULT_ORDER
   const visibility = sectionsVisibility || {}
@@ -621,6 +719,7 @@ function SectionsOrderEditor({ sectionOrder, sectionsVisibility, data, onChange 
     ministries: 'Ministerios & Familias',
     nextSteps: 'Próximos Pasos en la Fe',
     sermons: 'Sermones & Mensajes',
+    events: 'Eventos & Calendario',
     donation: 'Ofrendas / Donaciones',
     prayerRequest: 'Petición de Oración',
     services: 'Servicios',
@@ -882,11 +981,21 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
                   />
                 </Section>
 
+                {/* Eventos & Calendario */}
+                <Section title="Eventos & Calendario" icon={<Calendar size={14}/>} badge={`${((websiteData.events?.items || (Array.isArray(websiteData.events) ? websiteData.events : []))).length || 3}`} {...sec('events')}>
+                  <EventsEditor
+                    events={websiteData.events}
+                    onChangeData={(f,v)=>update(f,v)}
+                  />
+                </Section>
+
                 {/* Donaciones & Ofrendas */}
                 <Section title="Ofrendas & Donaciones" icon={<DollarSign size={14}/>} {...sec('donation')}>
+                  <Field label="Etiqueta Superior" value={websiteData.donation?.eyebrow} onChange={v=>update('donation.eyebrow',v)} placeholder="GENEROSIDAD" />
                   <Field label="Título" value={websiteData.donation?.title} onChange={v=>update('donation.title',v)} placeholder="Generosidad que Transforma Vidas" />
                   <Field label="Mensaje Motivacional" value={websiteData.donation?.subtitle} onChange={v=>update('donation.subtitle',v)} multiline />
                   <Field label="Texto del Botón CTA" value={websiteData.donation?.ctaText} onChange={v=>update('donation.ctaText',v)} placeholder="Ofrendar / Donar en Línea" />
+                  <Field label="Enlace del Botón CTA" value={websiteData.donation?.ctaLink} onChange={v=>update('donation.ctaLink',v)} placeholder="#wp-contact o https://..." />
                   <Field label="Nota de Seguridad / Transparencia" value={websiteData.donation?.note} onChange={v=>update('donation.note',v)} placeholder="Donaciones 100% seguras..." />
                 </Section>
 

@@ -1207,7 +1207,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
               {/* DYNAMIC SECTIONS LOOP */}
           {(() => {
-            const CHURCH_ORDER = ['hero', 'missionBlock', 'welcome', 'planAVisit', 'nucleusColumns', 'values', 'ministries', 'nextSteps', 'sermons', 'donation', 'prayerRequest', 'about', 'testimonials', 'contact']
+            const CHURCH_ORDER = ['hero', 'missionBlock', 'welcome', 'planAVisit', 'nucleusColumns', 'values', 'ministries', 'nextSteps', 'events', 'sermons', 'donation', 'prayerRequest', 'about', 'testimonials', 'contact']
             const DEFAULT_ORDER = isChurch ? CHURCH_ORDER : ['hero', 'services', 'about', 'gallery', 'team', 'beforeAfter', 'testimonials', 'contact']
             const order = data.sectionOrder || DEFAULT_ORDER
             const visibility = data.sectionsVisibility || {}
@@ -1220,6 +1220,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
               values: 'Valores & Fe',
               ministries: 'Ministerios',
               nextSteps: 'Próximos Pasos',
+              events: 'Eventos & Calendario',
               sermons: 'Sermones & Mensajes',
               donation: 'Ofrendas / Donaciones',
               prayerRequest: 'Petición de Oración',

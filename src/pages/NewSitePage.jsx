@@ -4,7 +4,7 @@
  * Genera el sitio y lo guarda directo a Supabase → redirige al editor.
  */
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { generateWebsiteJSON } from '../lib/aiGenerator'
 import { saveSite, checkSiteLimit } from '../lib/websiteService'
@@ -38,7 +38,7 @@ function LoadingSteps({ hasUrl }) {
   return (
     <div style={{ marginTop: 16 }}>
       <div style={{ height: 4, background: '#E5E7EB', borderRadius: 999, overflow: 'hidden', marginBottom: 10 }}>
-        <div style={{ height: '100%', background: 'linear-gradient(90deg,#00C896,#00A87A)', borderRadius: 999, width: `${((step + 1) / steps.length) * 100}%`, transition: 'width 0.8s ease' }} />
+        <div style={{ height: '100%', background: 'linear-gradient(90deg,#111827,#000000)', borderRadius: 999, width: `${((step + 1) / steps.length) * 100}%`, transition: 'width 0.8s ease' }} />
       </div>
       <p style={{ fontSize: '0.8125rem', color: '#6B7280', textAlign: 'center', fontWeight: 500 }}>{steps[step]}</p>
     </div>
@@ -48,9 +48,11 @@ function LoadingSteps({ hasUrl }) {
 export default function NewSitePage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const initialPrompt = searchParams.get('prompt') || ''
 
-  const [prompt,       setPrompt]       = useState('')
-  const [detectedUrl,  setDetectedUrl]  = useState('')
+  const [prompt,       setPrompt]       = useState(initialPrompt)
+  const [detectedUrl,  setDetectedUrl]  = useState(() => extractUrl(initialPrompt))
   const [generating,   setGenerating]   = useState(false)
   const [saving,       setSaving]       = useState(false)
   const [siteJson,     setSiteJson]     = useState(null)
@@ -58,7 +60,7 @@ export default function NewSitePage() {
   const [limitInfo,    setLimitInfo]    = useState(null)
   const textareaRef = useRef(null)
   const previewRef  = useRef(null)
-  const basePromptRef = useRef('')
+  const basePromptRef = useRef(initialPrompt)
 
   // Check plan limit on mount
   useEffect(() => {

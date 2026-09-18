@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { Sparkles, ArrowRight } from 'lucide-react'
 
-/* ─── Hero rediseñado — Paleta Negro & Blanco Cinematográfica ─────
-   Inspirado en: https://www.mygateway.life/
+/* ─── Hero rediseñado — Inspiración Wix AI & Figma AI (Blanco y Negro) ─────
    Colores: Negro puro #000000 · Blanco puro #FFFFFF · Plata #E5E5E5
-   ─────────────────────────────────────────────────────────────────── */
+   ───────────────────────────────────────────────────────────────────────── */
 
 const ROTATING_WORDS = [
   'Iglesias', 'Restaurantes', 'Dentistas', 'Arquitectos',
@@ -18,6 +18,8 @@ export default function Hero() {
   const [wIdx, setWIdx]   = useState(0)
   const [wOut, setWOut]   = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [heroPrompt, setHeroPrompt] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     setMounted(true)
@@ -27,6 +29,16 @@ export default function Hero() {
     }, 4000)
     return () => clearInterval(t)
   }, [])
+
+  const handlePromptSubmit = (e) => {
+    e.preventDefault()
+    const q = heroPrompt.trim()
+    if (q) {
+      navigate(`/app/new?prompt=${encodeURIComponent(q)}`)
+    } else {
+      navigate('/app/new')
+    }
+  }
 
   return (
     <>
@@ -205,26 +217,128 @@ export default function Hero() {
             el contenido profesional y el hosting con dominio propio en segundos.
           </p>
 
-          {/* ── CTAs: Blanco y Negro puros ── */}
+          {/* ── Prompt Studio (Inspiración Figma Make AI & Wix AI) ── */}
+          <form
+            onSubmit={handlePromptSubmit}
+            style={{
+              maxWidth: 680,
+              width: '100%',
+              marginBottom: 'clamp(20px, 2.6vh, 28px)',
+              opacity: mounted ? 1 : 0,
+              animation: mounted ? 'gatewayFadeUp 0.9s ease 0.24s forwards' : 'none',
+            }}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: 'rgba(255,255,255,0.07)',
+              backdropFilter: 'blur(20px)',
+              border: '1.5px solid rgba(255,255,255,0.22)',
+              borderRadius: 18,
+              padding: '6px 8px 6px 18px',
+              transition: 'border-color 0.2s, box-shadow 0.2s',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+            }}>
+              <Sparkles size={18} color="#FFFFFF" style={{ flexShrink: 0, marginRight: 12, opacity: 0.8 }} />
+              <input
+                type="text"
+                value={heroPrompt}
+                onChange={(e) => setHeroPrompt(e.target.value)}
+                placeholder="¿Qué sitio deseas crear? Ej: Iglesia con donaciones y sermones..."
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: '#FFFFFF',
+                  fontSize: '0.98rem',
+                  fontFamily: 'inherit',
+                }}
+              />
+              <button
+                type="submit"
+                className="gw-cta-primary"
+                style={{
+                  padding: '12px 24px',
+                  fontSize: '0.88rem',
+                  flexShrink: 0,
+                }}
+              >
+                Crear con IA →
+              </button>
+            </div>
+
+            {/* Quick Inspiration Pills */}
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              flexWrap: 'wrap',
+              marginTop: 12,
+              alignItems: 'center',
+            }}>
+              <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>
+                Prueba con:
+              </span>
+              {[
+                'Iglesia cristiana con eventos y donaciones',
+                'Estudio de arquitectura y portafolio',
+                'Restaurante y menú digital',
+                'Consultora legal y financiera',
+              ].map((pill) => (
+                <button
+                  key={pill}
+                  type="button"
+                  onClick={() => {
+                    setHeroPrompt(pill)
+                    navigate(`/app/new?prompt=${encodeURIComponent(pill)}`)
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 999,
+                    padding: '4px 12px',
+                    color: 'rgba(255,255,255,0.7)',
+                    fontSize: '0.75rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.15)'
+                    e.currentTarget.style.color = '#FFFFFF'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.7)'
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                  }}
+                >
+                  {pill}
+                </button>
+              ))}
+            </div>
+          </form>
+
+          {/* ── Action Buttons ── */}
           <div className="gw-hero-ctas" style={{
             display: 'flex', alignItems: 'center', gap: 14,
             marginBottom: 'clamp(20px, 3vh, 32px)',
             opacity: mounted ? 1 : 0,
-            animation: mounted ? 'gatewayFadeUp 0.9s ease 0.28s forwards' : 'none',
+            animation: mounted ? 'gatewayFadeUp 0.9s ease 0.3s forwards' : 'none',
           }}>
             <Link
               to="/app/new"
               className="gw-cta-primary"
               id="hero-create-site-cta"
             >
-              Crear mi página web con IA →
+              Explorar generador completo →
             </Link>
 
             <a
               href="#examples"
               className="gw-cta-secondary"
             >
-              Ver ejemplos
+              Ver maquetas en vivo
             </a>
           </div>
 

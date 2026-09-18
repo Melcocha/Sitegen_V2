@@ -67,13 +67,13 @@ function SaveModal({ onClose, onLogin, onRegister }) {
         {mode === 'choice' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#00C896,#00A87A)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                 <Save size={22} color="#fff" />
               </div>
               <h2 style={{ fontWeight: 800, fontSize: '1.25rem', color: '#111827', marginBottom: 6 }}>Guarda tu sitio web</h2>
               <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>Crea una cuenta gratuita para guardar y publicar tu sitio en segundos.</p>
             </div>
-            <button onClick={() => setMode('register')} style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 11, color: '#fff', fontWeight: 700, fontSize: '0.9375rem', cursor: 'pointer', marginBottom: 10, fontFamily: 'var(--font)' }}>
+            <button onClick={() => setMode('register')} style={{ width: '100%', padding: '12px', background: '#000000', border: 'none', borderRadius: 11, color: '#fff', fontWeight: 700, fontSize: '0.9375rem', cursor: 'pointer', marginBottom: 10, fontFamily: 'var(--font)' }}>
               Crear cuenta gratis
             </button>
             <button onClick={() => setMode('login')} style={{ width: '100%', padding: '11px', background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 11, color: '#374151', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer', fontFamily: 'var(--font)' }}>
@@ -93,7 +93,7 @@ function SaveModal({ onClose, onLogin, onRegister }) {
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" style={inp} />
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Contraseña" style={{ ...inp, marginBottom: 16 }} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
             {err && <p style={{ color: '#EF4444', fontSize: '0.8125rem', marginBottom: 10, fontWeight: 600 }}>{err}</p>}
-            <button onClick={handleSubmit} disabled={busy} style={{ width: '100%', padding: '12px', background: 'linear-gradient(135deg,#00C896,#00A87A)', border: 'none', borderRadius: 11, color: '#fff', fontWeight: 700, fontSize: '0.9375rem', cursor: busy ? 'wait' : 'pointer', fontFamily: 'var(--font)', marginBottom: 10 }}>
+            <button onClick={handleSubmit} disabled={busy} style={{ width: '100%', padding: '12px', background: '#000000', border: 'none', borderRadius: 11, color: '#fff', fontWeight: 700, fontSize: '0.9375rem', cursor: busy ? 'wait' : 'pointer', fontFamily: 'var(--font)', marginBottom: 10 }}>
               {busy ? 'Procesando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta y guardar'}
             </button>
             <button onClick={() => { setMode('choice'); setErr('') }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', fontSize: '0.8rem', fontFamily: 'var(--font)' }}>← Volver</button>

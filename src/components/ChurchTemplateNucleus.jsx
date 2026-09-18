@@ -968,8 +968,24 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
       <section id="wp-values" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>✦ FUNDAMENTOS ✦</div>
-            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: 0 }}>Nuestros Valores Core</h2>
+            <div
+              data-field="values.eyebrow"
+              data-ovkey="values.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'values.eyebrow', 'Etiqueta Valores', 'text', data.values?.eyebrow || '✦ FUNDAMENTOS ✦')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('values.eyebrow') }}
+            >
+              {data.values?.eyebrow || '✦ FUNDAMENTOS ✦'}
+            </div>
+            <h2
+              data-field="values.title"
+              data-ovkey="values.title"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'values.title', 'Título Valores', 'text', data.values?.title || 'Nuestros Valores Core')}
+              style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: 0, ...ost('values.title') }}
+            >
+              {data.values?.title || 'Nuestros Valores Core'}
+            </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
             {(data.values || [
@@ -998,7 +1014,15 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
       <section id="wp-ministries" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>✦ PARA TODA LA FAMILIA ✦</div>
+            <div
+              data-field="ministries.eyebrow"
+              data-ovkey="ministries.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'ministries.eyebrow', 'Etiqueta Ministerios', 'text', data.ministries?.eyebrow || '✦ PARA TODA LA FAMILIA ✦')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('ministries.eyebrow') }}
+            >
+              {data.ministries?.eyebrow || '✦ PARA TODA LA FAMILIA ✦'}
+            </div>
             <h2 data-field="ministriesTitle" data-ovkey="ministriesTitle" className="editable-element" onClick={(e) => handleEdit(e, 'ministriesTitle', 'Título Ministerios', 'text', data.ministriesTitle || 'Nuestros Ministerios')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('ministriesTitle') }}>
               {data.ministriesTitle || 'Nuestros Ministerios'}
             </h2>
@@ -1046,7 +1070,15 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
       <section id="wp-next-steps" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>✦ CRECIMIENTO ESPIRITUAL ✦</div>
+            <div
+              data-field="nextSteps.eyebrow"
+              data-ovkey="nextSteps.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'nextSteps.eyebrow', 'Etiqueta Próximos Pasos', 'text', data.nextSteps?.eyebrow || '✦ CRECIMIENTO ESPIRITUAL ✦')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('nextSteps.eyebrow') }}
+            >
+              {data.nextSteps?.eyebrow || '✦ CRECIMIENTO ESPIRITUAL ✦'}
+            </div>
             <h2 data-field="nextSteps.title" data-ovkey="nextSteps.title" className="editable-element" onClick={(e) => handleEdit(e, 'nextSteps.title', 'Título Próximos Pasos', 'text', data.nextSteps?.title || 'Tus Próximos Pasos en la Fe')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('nextSteps.title') }}>
               {data.nextSteps?.title || 'Tus Próximos Pasos en la Fe'}
             </h2>
@@ -1077,34 +1109,20 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
       </section>
       )}
 
-      {/* ── 11. OFRENDAS & DONACIONES ── */}
-      {data.sectionsVisibility?.donation !== false && (
-      <section id="wp-donations" style={{ width: '100%', background: '#0D0F17', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.3)', borderRadius: 24, padding: '50px 32px' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14 }}>✦ GENEROSIDAD ✦</div>
-          <h2 data-field="donation.title" data-ovkey="donation.title" className="editable-element" onClick={(e) => handleEdit(e, 'donation.title', 'Título Donaciones', 'text', data.donation?.title || 'Generosidad que Transforma Vidas')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('donation.title') }}>
-            {data.donation?.title || 'Generosidad que Transforma Vidas'}
-          </h2>
-          <p data-field="donation.subtitle" data-ovkey="donation.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'donation.subtitle', 'Subtítulo Donaciones', 'textarea', data.donation?.subtitle || 'Gracias a tu ofrenda y diezmo podemos seguir extendiendo el mensaje de esperanza e impactando a familias en nuestra ciudad.')} style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.7, margin: '0 0 32px', maxWidth: 700, marginLeft: 'auto', marginRight: 'auto', ...ost('donation.subtitle') }}>
-            {data.donation?.subtitle || 'Gracias a tu ofrenda y diezmo podemos seguir extendiendo el mensaje de esperanza e impactando a familias en nuestra ciudad.'}
-          </p>
-          <a data-field="donation.ctaText" data-ovkey="donation.ctaText" href="#wp-contact" className="afiche3-btn-gold editable-element" onClick={(e) => handleNavClick(e, '#wp-contact', 'donation.ctaText', 'Botón Donaciones', data.donation?.ctaText || 'Ofrendar / Donar en Línea')} style={{ padding: '16px 36px', borderRadius: 999, textDecoration: 'none', fontSize: '0.88rem', ...ost('donation.ctaText') }}>
-            {data.donation?.ctaText || 'Ofrendar / Donar en Línea'}
-          </a>
-          {data.donation?.note && (
-            <div data-field="donation.note" data-ovkey="donation.note" className="editable-element" onClick={(e) => handleEdit(e, 'donation.note', 'Nota Donaciones', 'text', data.donation.note)} style={{ marginTop: 20, fontSize: '0.8rem', color: '#64748B', ...ost('donation.note') }}>
-              🔒 {data.donation.note}
-            </div>
-          )}
-        </div>
-      </section>
-      )}
 
       {/* ── 12. PETICIÓN DE ORACIÓN ── */}
       {data.sectionsVisibility?.prayerRequest !== false && (
       <section id="wp-prayer" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14 }}>✦ ESTAMOS PARA TI ✦</div>
+          <div
+            data-field="prayerRequest.eyebrow"
+            data-ovkey="prayerRequest.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.eyebrow', 'Etiqueta Oración', 'text', data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦')}
+            style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14, ...ost('prayerRequest.eyebrow') }}
+          >
+            {data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦'}
+          </div>
           <h2 data-field="prayerRequest.title" data-ovkey="prayerRequest.title" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Petición de Oración', 'text', data.prayerRequest?.title || '¿Podemos Orar por Ti?')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('prayerRequest.title') }}>
             {data.prayerRequest?.title || '¿Podemos Orar por Ti?'}
           </h2>
@@ -1133,7 +1151,15 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         <section id="wp-about" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>✦ QUIÉNES SOMOS ✦</div>
+              <div
+                data-field="about.eyebrow"
+                data-ovkey="about.eyebrow"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'about.eyebrow', 'Etiqueta Sobre Nosotros', 'text', data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦')}
+                style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('about.eyebrow') }}
+              >
+                {data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦'}
+              </div>
               <h2 data-field="about.title" data-ovkey="about.title" className="editable-element" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about.title || 'Nuestra Historia')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 20px', ...ost('about.title') }}>
                 {data.about.title || 'Nuestra Historia'}
               </h2>
@@ -1171,7 +1197,14 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>PRÓXIMOS EVENTOS</div>
+              <div
+                data-field="events.eyebrow" data-ovkey="events.eyebrow"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'events.eyebrow', 'Etiqueta Sección Eventos', 'text', data.events?.eyebrow || 'PRÓXIMOS EVENTOS')}
+                style={{ fontSize: '0.75rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('events.eyebrow') }}
+              >
+                {data.events?.eyebrow || 'PRÓXIMOS EVENTOS'}
+              </div>
               <h2
                 data-field="events.title" data-ovkey="events.title"
                 className="editable-element"
@@ -1181,44 +1214,107 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
                 {data.events?.title || 'Lo Que Viene'}
               </h2>
             </div>
-            <a href={data.events?.allLink || '#wp-contact'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: accentGold, fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', opacity: 0.8, whiteSpace: 'nowrap' }}>
-              Ver todos los eventos →
+            <a
+              data-field="events.allLinkText" data-ovkey="events.allLinkText"
+              className="editable-element"
+              href={data.events?.allLink || '#wp-contact'}
+              onClick={(e) => handleEdit(e, 'events.allLinkText', 'Texto Enlace Eventos', 'text', data.events?.allLinkText || 'Ver todos los eventos →')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: accentGold, fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', opacity: 0.8, whiteSpace: 'nowrap', ...ost('events.allLinkText') }}
+            >
+              {data.events?.allLinkText || 'Ver todos los eventos →'}
             </a>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            {(data.events?.items || [
-              { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.' },
-              { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.' },
-              { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.' },
-            ]).map((ev, idx) => (
-              <div key={idx} style={{ background: '#0D0F16', border: '1px solid rgba(196,163,90,0.12)', borderRadius: 20, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = `rgba(196,163,90,0.35)`; e.currentTarget.style.transform = 'translateY(-4px)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(196,163,90,0.12)'; e.currentTarget.style.transform = 'translateY(0)' }}
-              >
-                <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
-                  <img src={ev.image} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display='none' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(13,15,22,0.9) 100%)' }} />
-                  <div style={{ position: 'absolute', top: 16, left: 16, background: accentGold, color: '#05070C', borderRadius: 10, padding: '8px 14px', textAlign: 'center', minWidth: 52 }}>
-                    <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1 }}>{ev.day}</div>
-                    <div style={{ fontWeight: 800, fontSize: '0.62rem', letterSpacing: '0.12em' }}>{ev.month}</div>
-                  </div>
-                </div>
-                <div style={{ padding: '20px 22px 24px' }}>
-                  <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 8px', letterSpacing: '-0.01em' }}>{ev.title}</h3>
-                  <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                    <span style={{ fontSize: '0.78rem', color: accentGold, fontWeight: 700 }}>⏰ {ev.time}</span>
-                    <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>📍 {ev.location}</span>
-                  </div>
-                  <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, margin: '0 0 18px' }}>{ev.description}</p>
-                  <a href={ev.link || '#wp-contact'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 999, border: `1px solid rgba(196,163,90,0.4)`, color: accentGold, fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = accentGold; e.currentTarget.style.color = '#05070C' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = accentGold }}
+            {(() => {
+              const evData = data.events || {}
+              const evList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
+                { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact', btnText: 'Inscribirme →' },
+              ])
+              const evPrefix = Array.isArray(evData) ? 'events' : 'events.items'
+              return evList.map((ev, idx) => (
+                <div key={idx} style={{ background: '#0D0F16', border: '1px solid rgba(196,163,90,0.12)', borderRadius: 20, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = `rgba(196,163,90,0.35)`; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(196,163,90,0.12)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div
+                    data-field={`${evPrefix}.${idx}.image`} data-ovkey={`${evPrefix}.${idx}.image`}
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                    style={{ position: 'relative', height: 200, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    Inscribirme →
-                  </a>
+                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display='none' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(13,15,22,0.9) 100%)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: 16, left: 16, background: accentGold, color: '#05070C', borderRadius: 10, padding: '8px 14px', textAlign: 'center', minWidth: 52 }}>
+                      <div
+                        data-field={`${evPrefix}.${idx}.day`} data-ovkey={`${evPrefix}.${idx}.day`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', ev.day || ev.dateDay) }}
+                        style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1, ...ost(`${evPrefix}.${idx}.day`) }}
+                      >
+                        {ev.day || ev.dateDay}
+                      </div>
+                      <div
+                        data-field={`${evPrefix}.${idx}.month`} data-ovkey={`${evPrefix}.${idx}.month`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.month`, `Mes Evento ${idx + 1}`, 'text', ev.month || ev.dateMonth) }}
+                        style={{ fontWeight: 800, fontSize: '0.62rem', letterSpacing: '0.12em', ...ost(`${evPrefix}.${idx}.month`) }}
+                      >
+                        {ev.month || ev.dateMonth}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding: '20px 22px 24px' }}>
+                    <h3
+                      data-field={`${evPrefix}.${idx}.title`} data-ovkey={`${evPrefix}.${idx}.title`}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
+                      style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 8px', letterSpacing: '-0.01em', ...ost(`${evPrefix}.${idx}.title`) }}
+                    >
+                      {ev.title}
+                    </h3>
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
+                      <span
+                        data-field={`${evPrefix}.${idx}.time`} data-ovkey={`${evPrefix}.${idx}.time`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
+                        style={{ fontSize: '0.78rem', color: accentGold, fontWeight: 700, ...ost(`${evPrefix}.${idx}.time`) }}
+                      >
+                        ⏰ {ev.time}
+                      </span>
+                      <span
+                        data-field={`${evPrefix}.${idx}.location`} data-ovkey={`${evPrefix}.${idx}.location`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.location`, `Ubicación Evento ${idx + 1}`, 'text', ev.location)}
+                        style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500, ...ost(`${evPrefix}.${idx}.location`) }}
+                      >
+                        📍 {ev.location}
+                      </span>
+                    </div>
+                    <p
+                      data-field={`${evPrefix}.${idx}.description`} data-ovkey={`${evPrefix}.${idx}.description`}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.description`, `Descripción Evento ${idx + 1}`, 'textarea', ev.description || ev.desc)}
+                      style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.65, margin: '0 0 18px', ...ost(`${evPrefix}.${idx}.description`) }}
+                    >
+                      {ev.description || ev.desc}
+                    </p>
+                    <a
+                      data-field={`${evPrefix}.${idx}.btnText`} data-ovkey={`${evPrefix}.${idx}.btnText`}
+                      href={ev.link || '#wp-contact'}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.btnText`, `Botón Evento ${idx + 1}`, 'text', ev.btnText || 'Inscribirme →')}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 20px', borderRadius: 999, border: `1px solid rgba(196,163,90,0.4)`, color: accentGold, fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s', ...ost(`${evPrefix}.${idx}.btnText`) }}
+                      onMouseEnter={e => { e.currentTarget.style.background = accentGold; e.currentTarget.style.color = '#05070C' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = accentGold }}
+                    >
+                      {ev.btnText || 'Inscribirme →'}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            })()}
           </div>
         </div>
       </section>
@@ -1234,7 +1330,14 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           borderRadius: 28, padding: '60px 40px',
           boxShadow: '0 0 80px rgba(196,163,90,0.05)',
         }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16 }}>GENEROSIDAD</div>
+          <div
+            data-field="donation.eyebrow" data-ovkey="donation.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.eyebrow', 'Etiqueta Donaciones', 'text', data.donation?.eyebrow || '✦ GENEROSIDAD ✦')}
+            style={{ fontSize: '0.78rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16, ...ost('donation.eyebrow') }}
+          >
+            {data.donation?.eyebrow || '✦ GENEROSIDAD ✦'}
+          </div>
           <h2
             data-field="donation.title" data-ovkey="donation.title"
             className="editable-element"
@@ -1270,6 +1373,16 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             {data.donation?.ctaText || 'Ofrendar en Línea'}
           </a>
+          {data.donation?.note && (
+            <div
+              data-field="donation.note" data-ovkey="donation.note"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'donation.note', 'Nota Donaciones', 'text', data.donation.note)}
+              style={{ marginTop: 24, fontSize: '0.8rem', color: '#64748B', ...ost('donation.note') }}
+            >
+              🔒 {data.donation.note}
+            </div>
+          )}
         </div>
       </section>
       )}
@@ -1291,19 +1404,46 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ) : (
               <h3 data-field="businessName" data-ovkey="businessName" className="editable-element" onClick={(e) => handleEdit(e, 'businessName', 'Nombre Iglesia Footer', 'text', businessName)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.8rem', fontWeight: 900, margin: '0 0 16px', color: '#FFFFFF', ...ost('businessName') }}>{businessName}</h3>
             )}
-            <p style={{ color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: 360, margin: '0 0 28px' }}>
-              Reuniones: Domingos 10:30 a.m. | Oración: Jueves 7:00 p.m.
+            <p
+              data-field="contact.scheduleSummary"
+              data-ovkey="contact.scheduleSummary"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.scheduleSummary', 'Resumen de Cultos', 'text', data.contact?.scheduleSummary || 'Reuniones: Domingos 10:30 a.m. | Oración: Jueves 7:00 p.m.')}
+              style={{ color: '#94A3B8', fontSize: '0.95rem', lineHeight: 1.7, maxWidth: 360, margin: '0 0 28px', ...ost('contact.scheduleSummary') }}
+            >
+              {data.contact?.scheduleSummary || 'Reuniones: Domingos 10:30 a.m. | Oración: Jueves 7:00 p.m.'}
             </p>
           </div>
           <div>
-            <div style={{ color: accentGold, fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>SERVICIOS</div>
-            <p style={{ color: '#E2E8F0', fontSize: '0.95rem', lineHeight: 1.8, margin: 0 }}>
-              • Domingos: 10:30 AM (Servicio Central)<br />
-              • Jueves: 7:00 PM (Reunión de Oración)
+            <div
+              data-field="contact.servicesTitle"
+              data-ovkey="contact.servicesTitle"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.servicesTitle', 'Título Servicios Footer', 'text', data.contact?.servicesTitle || 'SERVICIOS')}
+              style={{ color: accentGold, fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, ...ost('contact.servicesTitle') }}
+            >
+              {data.contact?.servicesTitle || 'SERVICIOS'}
+            </div>
+            <p
+              data-field="contact.scheduleDetails"
+              data-ovkey="contact.scheduleDetails"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.scheduleDetails', 'Detalle de Horarios', 'textarea', data.contact?.scheduleDetails || '• Domingos: 10:30 AM (Servicio Central)\n• Jueves: 7:00 PM (Reunión de Oración)')}
+              style={{ color: '#E2E8F0', fontSize: '0.95rem', lineHeight: 1.8, margin: 0, whiteSpace: 'pre-line', ...ost('contact.scheduleDetails') }}
+            >
+              {data.contact?.scheduleDetails || '• Domingos: 10:30 AM (Servicio Central)\n• Jueves: 7:00 PM (Reunión de Oración)'}
             </p>
           </div>
           <div>
-            <div style={{ color: accentGold, fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16 }}>CONTACTO</div>
+            <div
+              data-field="contact.contactTitle"
+              data-ovkey="contact.contactTitle"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.contactTitle', 'Título Contacto Footer', 'text', data.contact?.contactTitle || 'CONTACTO')}
+              style={{ color: accentGold, fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, ...ost('contact.contactTitle') }}
+            >
+              {data.contact?.contactTitle || 'CONTACTO'}
+            </div>
             <p style={{ color: '#E2E8F0', fontSize: '0.95rem', lineHeight: 1.8, margin: 0 }}>
               📍 <span data-field="contact.address" data-ovkey="contact.address" className="editable-element" onClick={(e) => handleEdit(e, 'contact.address', 'Dirección de Contacto', 'text', data.contact?.address || 'Sede Principal')} style={ost('contact.address')}>{data.contact?.address || 'Sede Principal'}</span><br />
               📞 <span data-field="contact.phone" data-ovkey="contact.phone" className="editable-element" onClick={(e) => handleEdit(e, 'contact.phone', 'Teléfono de Contacto', 'text', data.contact?.phone || '+1 (555) 123-4567')} style={ost('contact.phone')}>{data.contact?.phone || '+1 (555) 123-4567'}</span>

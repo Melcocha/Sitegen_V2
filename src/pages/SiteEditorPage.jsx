@@ -357,6 +357,14 @@ export default function SiteEditorPage() {
       }
       const lastKey = keys[keys.length - 1]
       obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
+      // Sync aliases for cross-template compatibility
+      if (lastKey === 'day') obj.dateDay = value
+      if (lastKey === 'dateDay') obj.day = value
+      if (lastKey === 'month') obj.dateMonth = value
+      if (lastKey === 'dateMonth') obj.month = value
+      if (lastKey === 'description') obj.desc = value
+      if (lastKey === 'desc') obj.description = value
+
       pushHistory(d)
       clearTimeout(autoSaveRef.current)
       autoSaveRef.current = setTimeout(() => _saveDraft(d), 2500)
@@ -382,6 +390,12 @@ export default function SiteEditorPage() {
         }
         const lastKey = keys[keys.length - 1]
         obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
+        if (lastKey === 'day') obj.dateDay = value
+        if (lastKey === 'dateDay') obj.day = value
+        if (lastKey === 'month') obj.dateMonth = value
+        if (lastKey === 'dateMonth') obj.month = value
+        if (lastKey === 'description') obj.desc = value
+        if (lastKey === 'desc') obj.description = value
       }
       pushHistory(d)
       clearTimeout(autoSaveRef.current)

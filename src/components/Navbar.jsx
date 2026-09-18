@@ -14,6 +14,7 @@ export default function Navbar() {
     { label: 'Ejemplos', href: '#examples' },
     { label: 'Cómo funciona', href: '#how-it-works' },
     { label: 'Precios', href: '#pricing' },
+    { label: 'FAQ', href: '#faq' },
   ]
 
   const handleSignOut = async () => {

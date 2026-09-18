@@ -1093,7 +1093,14 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 52, flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <div className="afiche-script-font" style={{ color: accentColor, fontSize: '1.6rem', marginBottom: -4 }}>Agenda</div>
+              <div
+                data-field="events.script" data-ovkey="events.script"
+                className="afiche-script-font editable-element"
+                onClick={(e) => handleEdit(e, 'events.script', 'Subtítulo Sección Eventos', 'text', data.events?.script || 'Agenda')}
+                style={{ color: accentColor, fontSize: '1.6rem', marginBottom: -4, ...ost('events.script') }}
+              >
+                {data.events?.script || 'Agenda'}
+              </div>
               <h2
                 data-field="events.title" data-ovkey="events.title"
                 className="afiche-title-font editable-element"
@@ -1103,59 +1110,106 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                 {data.events?.title || 'PRÓXIMOS EVENTOS'}
               </h2>
             </div>
-            <a href={data.events?.allLink || '#wp-plan-visit'} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: accentColor, fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
-              Ver agenda completa →
+            <a
+              data-field="events.allLinkText" data-ovkey="events.allLinkText"
+              className="editable-element"
+              href={data.events?.allLink || '#wp-plan-visit'}
+              onClick={(e) => handleEdit(e, 'events.allLinkText', 'Texto Enlace Eventos', 'text', data.events?.allLinkText || 'Ver agenda completa →')}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: accentColor, fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap', ...ost('events.allLinkText') }}
+            >
+              {data.events?.allLinkText || 'Ver agenda completa →'}
             </a>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
-            {(data.events?.items || [
-              { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.' },
-              { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.' },
-              { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.' },
-            ]).map((ev, idx) => (
-              <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(250,204,21,0.1)`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.35)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.1)'; e.currentTarget.style.transform = 'translateY(0)' }}
-              >
-                <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
-                  <img src={ev.image} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 35%, rgba(9,11,16,0.95) 100%)' }} />
-                  <div style={{ position: 'absolute', top: 16, left: 16, background: accentColor, color: '#06070A', padding: '8px 12px', borderRadius: 8, textAlign: 'center', minWidth: 48, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    <div style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1 }}>{ev.day}</div>
-                    <div style={{ fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.12em' }}>{ev.month}</div>
+            {(() => {
+              const evData = data.events || {}
+              const evList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
+                { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-plan-visit', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-plan-visit', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-plan-visit', btnText: 'Inscribirme →' },
+              ])
+              const evPrefix = Array.isArray(evData) ? 'events' : 'events.items'
+              return evList.map((ev, idx) => (
+                <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid rgba(250,204,21,0.1)`, borderRadius: 16, overflow: 'hidden', transition: 'border-color 0.2s, transform 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.35)'; e.currentTarget.style.transform = 'translateY(-4px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(250,204,21,0.1)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                >
+                  <div
+                    data-field={`${evPrefix}.${idx}.image`} data-ovkey={`${evPrefix}.${idx}.image`}
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                    style={{ position: 'relative', height: 200, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
+                  >
+                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 35%, rgba(9,11,16,0.95) 100%)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: 16, left: 16, background: accentColor, color: '#06070A', padding: '8px 12px', borderRadius: 8, textAlign: 'center', minWidth: 48, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      <div
+                        data-field={`${evPrefix}.${idx}.day`} data-ovkey={`${evPrefix}.${idx}.day`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', ev.day || ev.dateDay) }}
+                        style={{ fontWeight: 900, fontSize: '1.4rem', lineHeight: 1, ...ost(`${evPrefix}.${idx}.day`) }}
+                      >
+                        {ev.day || ev.dateDay}
+                      </div>
+                      <div
+                        data-field={`${evPrefix}.${idx}.month`} data-ovkey={`${evPrefix}.${idx}.month`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.month`, `Mes Evento ${idx + 1}`, 'text', ev.month || ev.dateMonth) }}
+                        style={{ fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.12em', ...ost(`${evPrefix}.${idx}.month`) }}
+                      >
+                        {ev.month || ev.dateMonth}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding: '20px 22px 24px' }}>
+                    <h3
+                      data-field={`${evPrefix}.${idx}.title`} data-ovkey={`${evPrefix}.${idx}.title`}
+                      className="afiche-title-font editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
+                      style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`${evPrefix}.${idx}.title`) }}
+                    >
+                      {ev.title}
+                    </h3>
+                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
+                      <span
+                        data-field={`${evPrefix}.${idx}.time`} data-ovkey={`${evPrefix}.${idx}.time`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
+                        style={{ fontSize: '0.78rem', color: accentColor, fontWeight: 700, ...ost(`${evPrefix}.${idx}.time`) }}
+                      >
+                        ⏰ {ev.time}
+                      </span>
+                      <span
+                        data-field={`${evPrefix}.${idx}.location`} data-ovkey={`${evPrefix}.${idx}.location`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.location`, `Ubicación Evento ${idx + 1}`, 'text', ev.location)}
+                        style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', ...ost(`${evPrefix}.${idx}.location`) }}
+                      >
+                        📍 {ev.location}
+                      </span>
+                    </div>
+                    <p
+                      data-field={`${evPrefix}.${idx}.description`} data-ovkey={`${evPrefix}.${idx}.description`}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.description`, `Descripción Evento ${idx + 1}`, 'textarea', ev.description || ev.desc)}
+                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 18px', ...ost(`${evPrefix}.${idx}.description`) }}
+                    >
+                      {ev.description || ev.desc}
+                    </p>
+                    <a
+                      data-field={`${evPrefix}.${idx}.btnText`} data-ovkey={`${evPrefix}.${idx}.btnText`}
+                      href={ev.link || '#wp-plan-visit'}
+                      className="afiche-glow-btn editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.btnText`, `Botón Evento ${idx + 1}`, 'text', ev.btnText || 'Inscribirme →')}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 22px', borderRadius: 999, background: accentColor, color: '#06070A', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif", ...ost(`${evPrefix}.${idx}.btnText`) }}
+                    >
+                      {ev.btnText || 'Inscribirme →'}
+                    </a>
                   </div>
                 </div>
-                <div style={{ padding: '20px 22px 24px' }}>
-                  <h3 className="afiche-title-font" style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px' }}>{ev.title}</h3>
-                  <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', gap: 16, marginBottom: 12 }}>
-                    <span style={{ fontSize: '0.78rem', color: accentColor, fontWeight: 700 }}>⏰ {ev.time}</span>
-                    <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>📍 {ev.location}</span>
-                  </div>
-                  <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.875rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: '0 0 18px' }}>{ev.description}</p>
-                  <a href={ev.link || '#wp-plan-visit'} className="afiche-glow-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 22px', borderRadius: 999, background: accentColor, color: '#06070A', fontSize: '0.8rem', fontWeight: 900, textDecoration: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                    Inscribirme →
-                  </a>
-                </div>
-              </div>
-            ))}
+              ))
+            })()}
           </div>
-        </div>
-      </section>
-      )}
-
-      {/* ── DONACIONES ── */}
-      {data.sectionsVisibility?.donation !== false && (
-      <section id="wp-donations" style={{ padding: '100px 6%', background: '#090B10' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(250,204,21,0.3)', borderRadius: 24, padding: 48 }}>
-          <h2 className="afiche-title-font" data-field="donation.title" data-ovkey="donation.title" onClick={(e) => handleEdit(e, 'donation.title', 'Título Donaciones', 'text', data.donation?.title || 'GENEROSIDAD')} style={{ fontSize: '3rem', color: '#FFFFFF', margin: '0 0 16px', ...ost('donation.title') }}>
-            {data.donation?.title || 'GENEROSIDAD'}
-          </h2>
-          <p data-field="donation.subtitle" data-ovkey="donation.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'donation.subtitle', 'Subtítulo Donaciones', 'textarea', data.donation?.subtitle || 'Gracias a tu ofrenda podemos seguir extendiendo el mensaje.')} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1rem', color: 'rgba(255,255,255,0.75)', margin: '0 0 28px', ...ost('donation.subtitle') }}>
-            {data.donation?.subtitle || 'Gracias a tu ofrenda podemos seguir extendiendo el mensaje.'}
-          </p>
-          <a data-field="donation.ctaText" data-ovkey="donation.ctaText" href="#wp-contact" className="afiche-glow-btn editable-element" onClick={(e) => handleNavClick(e, '#wp-contact', 'donation.ctaText', 'Botón Donaciones', data.donation?.ctaText || 'Ofrendar en Línea')} style={{ padding: '14px 32px', borderRadius: 999, textDecoration: 'none', fontSize: '0.85rem', ...ost('donation.ctaText') }}>
-            {data.donation?.ctaText || 'Ofrendar en Línea'}
-          </a>
         </div>
       </section>
       )}
@@ -1227,7 +1281,14 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           border: '1px solid rgba(250,204,21,0.15)',
           borderRadius: 28, padding: '60px 40px',
         }}>
-          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.75rem', fontWeight: 800, color: accentColor, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16 }}>GENEROSIDAD</div>
+          <div
+            data-field="donation.eyebrow" data-ovkey="donation.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.eyebrow', 'Etiqueta Donaciones', 'text', data.donation?.eyebrow || 'GENEROSIDAD')}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.75rem', fontWeight: 800, color: accentColor, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16, ...ost('donation.eyebrow') }}
+          >
+            {data.donation?.eyebrow || 'GENEROSIDAD'}
+          </div>
           <h2
             data-field="donation.title" data-ovkey="donation.title"
             className="afiche-title-font editable-element"
@@ -1264,6 +1325,16 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             {data.donation?.ctaText || 'Ofrendar en Línea'}
           </a>
+          {data.donation?.note && (
+            <div
+              data-field="donation.note" data-ovkey="donation.note"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'donation.note', 'Nota Donaciones', 'text', data.donation.note)}
+              style={{ marginTop: 24, fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', ...ost('donation.note') }}
+            >
+              🔒 {data.donation.note}
+            </div>
+          )}
         </div>
       </section>
       )}

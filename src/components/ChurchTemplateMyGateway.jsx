@@ -69,32 +69,48 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
     ctaSecondaryLink: '#wp-next-steps'
   }
 
-  const events = data.events || [
-    {
-      dateDay: '15',
-      dateMonth: 'SEP',
-      title: 'Conferencia de Jóvenes: "Fuego & Fe"',
-      time: '6:30 PM — Auditorio Central',
-      desc: 'Una noche inmersiva de adoración, palabra y conexión para jóvenes de 12 a 28 años.',
-      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'
-    },
-    {
-      dateDay: '22',
-      dateMonth: 'SEP',
-      title: 'Noche Especial de Oración & Adoración',
-      time: '7:00 PM — Templo Principal',
-      desc: 'Nos unimos como una sola voz para clamar por nuestras familias, ciudad y país.',
-      image: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=85&fit=crop'
-    },
-    {
-      dateDay: '05',
-      dateMonth: 'OCT',
-      title: 'Taller para Matrimonios & Parejas',
-      time: '9:00 AM — Salón de Eventos',
-      desc: 'Herramientas prácticas y principios bíblicos para fortalecer la comunicación y el amor en el hogar.',
-      image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=85&fit=crop'
-    }
-  ]
+  const eventsRaw = data.events || {}
+  const events = Array.isArray(eventsRaw)
+    ? eventsRaw
+    : (Array.isArray(eventsRaw.items) ? eventsRaw.items : [
+        {
+          dateDay: '15',
+          day: '15',
+          dateMonth: 'SEP',
+          month: 'SEP',
+          title: 'Conferencia de Jóvenes: "Fuego & Fe"',
+          time: '6:30 PM — Auditorio Central',
+          desc: 'Una noche inmersiva de adoración, palabra y conexión para jóvenes de 12 a 28 años.',
+          description: 'Una noche inmersiva de adoración, palabra y conexión para jóvenes de 12 a 28 años.',
+          btnText: 'Inscribirme al Evento',
+          image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'
+        },
+        {
+          dateDay: '22',
+          day: '22',
+          dateMonth: 'SEP',
+          month: 'SEP',
+          title: 'Noche Especial de Oración & Adoración',
+          time: '7:00 PM — Templo Principal',
+          desc: 'Nos unimos como una sola voz para clamar por nuestras familias, ciudad y país.',
+          description: 'Nos unimos como una sola voz para clamar por nuestras familias, ciudad y país.',
+          btnText: 'Inscribirme al Evento',
+          image: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=85&fit=crop'
+        },
+        {
+          dateDay: '05',
+          day: '05',
+          dateMonth: 'OCT',
+          month: 'OCT',
+          title: 'Taller para Matrimonios & Parejas',
+          time: '9:00 AM — Salón de Eventos',
+          desc: 'Herramientas prácticas y principios bíblicos para fortalecer la comunicación y el amor en el hogar.',
+          description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.',
+          btnText: 'Inscribirme al Evento',
+          image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=85&fit=crop'
+        }
+      ])
+  const evPrefix = Array.isArray(eventsRaw) ? 'events' : 'events.items'
 
   const testimonials = data.testimonials || [
     {
@@ -543,6 +559,17 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         </div>
 
         <div style={{ position: 'relative', zIndex: 5, maxWidth: 640, width: '100%', margin: '40px 0 20px', justifySelf: 'start' }}>
+          {hero.eyebrow && (
+            <div
+              data-field="hero.eyebrow"
+              data-ovkey="hero.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'hero.eyebrow', 'Etiqueta Hero', 'text', hero.eyebrow)}
+              style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: accentCyan, marginBottom: 12, ...ost('hero.eyebrow') }}
+            >
+              {hero.eyebrow}
+            </div>
+          )}
           <h1
             data-field="hero.headline"
             data-ovkey="hero.headline"
@@ -680,22 +707,22 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 70px' }}>
             <div
-              data-field="eventsHeader.eyebrow"
-              data-ovkey="eventsHeader.eyebrow"
+              data-field="events.eyebrow"
+              data-ovkey="events.eyebrow"
               className="editable-element"
-              onClick={(e) => handleEdit(e, 'eventsHeader.eyebrow', 'Etiqueta Sección Eventos', 'text', data.eventsHeader?.eyebrow || 'CALENDARIO DE ACTIVIDADES')}
-              style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#E11D48', marginBottom: 12, ...ost('eventsHeader.eyebrow') }}
+              onClick={(e) => handleEdit(e, 'events.eyebrow', 'Etiqueta Sección Eventos', 'text', data.events?.eyebrow || data.eventsHeader?.eyebrow || 'CALENDARIO DE ACTIVIDADES')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#E11D48', marginBottom: 12, ...ost('events.eyebrow') }}
             >
-              {data.eventsHeader?.eyebrow || 'CALENDARIO DE ACTIVIDADES'}
+              {data.events?.eyebrow || data.eventsHeader?.eyebrow || 'CALENDARIO DE ACTIVIDADES'}
             </div>
             <h2
-              data-field="eventsHeader.title"
-              data-ovkey="eventsHeader.title"
+              data-field="events.title"
+              data-ovkey="events.title"
               className="editable-element"
-              onClick={(e) => handleEdit(e, 'eventsHeader.title', 'Título Sección Eventos', 'text', data.eventsHeader?.title || 'Próximos Eventos & Reuniones')}
-              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.5rem)', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.03em', ...ost('eventsHeader.title') }}
+              onClick={(e) => handleEdit(e, 'events.title', 'Título Sección Eventos', 'text', data.events?.title || data.eventsHeader?.title || 'Próximos Eventos & Reuniones')}
+              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.5rem)', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.03em', ...ost('events.title') }}
             >
-              {data.eventsHeader?.title || 'Próximos Eventos & Reuniones'}
+              {data.events?.title || data.eventsHeader?.title || 'Próximos Eventos & Reuniones'}
             </h2>
           </div>
 
@@ -784,15 +811,20 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
           `}</style>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
-            {events.map((ev, idx) => (
+            {events.map((ev, idx) => {
+              const dayVal = ev.day || ev.dateDay || '15'
+              const monthVal = ev.month || ev.dateMonth || 'SEP'
+              const descVal = ev.description || ev.desc || ''
+              const btnVal = ev.btnText || 'Inscribirme al Evento'
+              return (
               <div key={idx} className="mg-event-card">
                 {/* Image with date badge overlay */}
                 <div
                   className="mg-event-img-wrap editable-element"
-                  data-field={`events.${idx}.image`}
-                  data-ovkey={`events.${idx}.image`}
-                  onClick={(e) => handleEdit(e, `events.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
-                  style={{ cursor: editMode ? 'pointer' : 'default', ...ost(`events.${idx}.image`) }}
+                  data-field={`${evPrefix}.${idx}.image`}
+                  data-ovkey={`${evPrefix}.${idx}.image`}
+                  onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                  style={{ cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                 >
                   <img
                     src={ev.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=85&fit=crop'}
@@ -807,18 +839,18 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                   <div className="mg-event-date-badge">
                     <span
                       className="day editable-element"
-                      data-field={`events.${idx}.dateDay`}
-                      data-ovkey={`events.${idx}.dateDay`}
-                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `events.${idx}.dateDay`, `Día Evento ${idx + 1}`, 'text', ev.dateDay) }}
-                      style={ost(`events.${idx}.dateDay`)}
-                    >{ev.dateDay}</span>
+                      data-field={`${evPrefix}.${idx}.day`}
+                      data-ovkey={`${evPrefix}.${idx}.day`}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', dayVal) }}
+                      style={ost(`${evPrefix}.${idx}.day`)}
+                    >{dayVal}</span>
                     <span
                       className="month editable-element"
-                      data-field={`events.${idx}.dateMonth`}
-                      data-ovkey={`events.${idx}.dateMonth`}
-                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `events.${idx}.dateMonth`, `Mes Evento ${idx + 1}`, 'text', ev.dateMonth) }}
-                      style={ost(`events.${idx}.dateMonth`)}
-                    >{ev.dateMonth}</span>
+                      data-field={`${evPrefix}.${idx}.month`}
+                      data-ovkey={`${evPrefix}.${idx}.month`}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.month`, `Mes Evento ${idx + 1}`, 'text', monthVal) }}
+                      style={ost(`${evPrefix}.${idx}.month`)}
+                    >{monthVal}</span>
                   </div>
                 </div>
 
@@ -826,43 +858,53 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                 <div className="mg-event-body">
                   <div
                     className="mg-event-time editable-element"
-                    data-field={`events.${idx}.time`}
-                    data-ovkey={`events.${idx}.time`}
-                    onClick={(e) => handleEdit(e, `events.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
-                    style={ost(`events.${idx}.time`)}
+                    data-field={`${evPrefix}.${idx}.time`}
+                    data-ovkey={`${evPrefix}.${idx}.time`}
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
+                    style={ost(`${evPrefix}.${idx}.time`)}
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     {ev.time}
                   </div>
                   <h3
-                    data-field={`events.${idx}.title`}
-                    data-ovkey={`events.${idx}.title`}
+                    data-field={`${evPrefix}.${idx}.title`}
+                    data-ovkey={`${evPrefix}.${idx}.title`}
                     className="editable-element"
-                    onClick={(e) => handleEdit(e, `events.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
-                    style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F172A', margin: '0 0 10px', lineHeight: 1.25, ...ost(`events.${idx}.title`) }}
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
+                    style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0F172A', margin: '0 0 10px', lineHeight: 1.25, ...ost(`${evPrefix}.${idx}.title`) }}
                   >
                     {ev.title}
                   </h3>
                   <p
-                    data-field={`events.${idx}.desc`}
-                    data-ovkey={`events.${idx}.desc`}
+                    data-field={`${evPrefix}.${idx}.description`}
+                    data-ovkey={`${evPrefix}.${idx}.description`}
                     className="editable-element"
-                    onClick={(e) => handleEdit(e, `events.${idx}.desc`, `Descripción Evento ${idx + 1}`, 'textarea', ev.desc)}
-                    style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.65, margin: 0, ...ost(`events.${idx}.desc`) }}
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.description`, `Descripción Evento ${idx + 1}`, 'textarea', descVal)}
+                    style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.65, margin: 0, ...ost(`${evPrefix}.${idx}.description`) }}
                   >
-                    {ev.desc}
+                    {descVal}
                   </p>
                   <a
                     href="#wp-contact"
-                    className="mg-event-cta"
-                    onClick={(e) => handleNavClick(e, '#wp-contact', `events.${idx}.title`, `Inscripción Evento ${idx + 1}`, ev.title)}
+                    className="mg-event-cta editable-element"
+                    data-field={`${evPrefix}.${idx}.btnText`}
+                    data-ovkey={`${evPrefix}.${idx}.btnText`}
+                    onClick={(e) => {
+                      if (editMode) {
+                        e.preventDefault()
+                        handleEdit(e, `${evPrefix}.${idx}.btnText`, `Botón Evento ${idx + 1}`, 'text', btnVal)
+                      } else {
+                        handleNavClick(e, '#wp-contact', `${evPrefix}.${idx}.title`, `Inscripción Evento ${idx + 1}`, ev.title)
+                      }
+                    }}
+                    style={ost(`${evPrefix}.${idx}.btnText`)}
                   >
-                    Inscribirme al Evento
+                    {btnVal}
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                   </a>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </section>
@@ -998,8 +1040,24 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
       <section id="wp-values" style={{ width: '100%', background: '#F8FAFC', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>FUNDAMENTOS DE FE</div>
-            <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.03em' }}>Nuestros Valores</h2>
+            <div
+              data-field="values.eyebrow"
+              data-ovkey="values.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'values.eyebrow', 'Etiqueta Valores', 'text', data.values?.eyebrow || 'FUNDAMENTOS DE FE')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12, ...ost('values.eyebrow') }}
+            >
+              {data.values?.eyebrow || 'FUNDAMENTOS DE FE'}
+            </div>
+            <h2
+              data-field="values.title"
+              data-ovkey="values.title"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'values.title', 'Título Valores', 'text', data.values?.title || 'Nuestros Valores')}
+              style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.03em', ...ost('values.title') }}
+            >
+              {data.values?.title || 'Nuestros Valores'}
+            </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
             {(data.values || [
@@ -1028,7 +1086,15 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
       <section id="wp-ministries" style={{ width: '100%', background: '#FFFFFF', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>MINISTERIOS Y FAMILIAS</div>
+            <div
+              data-field="ministries.eyebrow"
+              data-ovkey="ministries.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'ministries.eyebrow', 'Etiqueta Ministerios', 'text', data.ministries?.eyebrow || 'MINISTERIOS Y FAMILIAS')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12, ...ost('ministries.eyebrow') }}
+            >
+              {data.ministries?.eyebrow || 'MINISTERIOS Y FAMILIAS'}
+            </div>
             <h2 data-field="ministriesTitle" data-ovkey="ministriesTitle" className="editable-element" onClick={(e) => handleEdit(e, 'ministriesTitle', 'Título Ministerios', 'text', data.ministriesTitle || 'Nuestros Ministerios')} style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: '0 0 16px', letterSpacing: '-0.03em', ...ost('ministriesTitle') }}>
               {data.ministriesTitle || 'Nuestros Ministerios'}
             </h2>
@@ -1076,7 +1142,15 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
       <section id="wp-sermons" style={{ width: '100%', background: '#F8FAFC', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>ENSEÑANZA Y MENSAJES</div>
+            <div
+              data-field="sermons.eyebrow"
+              data-ovkey="sermons.eyebrow"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'sermons.eyebrow', 'Etiqueta Prédicas', 'text', data.sermons?.eyebrow || 'ENSEÑANZA Y MENSAJES')}
+              style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12, ...ost('sermons.eyebrow') }}
+            >
+              {data.sermons?.eyebrow || 'ENSEÑANZA Y MENSAJES'}
+            </div>
             <h2 data-field="sermonsTitle" data-ovkey="sermonsTitle" className="editable-element" onClick={(e) => handleEdit(e, 'sermonsTitle', 'Título Prédicas', 'text', data.sermonsTitle || 'Mensajes Recientes')} style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: '0 0 16px', letterSpacing: '-0.03em', ...ost('sermonsTitle') }}>
               {data.sermonsTitle || 'Mensajes Recientes'}
             </h2>
@@ -1112,16 +1186,33 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
       {data.sectionsVisibility?.donation !== false && (
       <section id="wp-donations" style={{ width: '100%', background: '#FFFFFF', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 24, padding: '50px 32px' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14 }}>GENEROSIDAD</div>
+          <div
+            data-field="donation.eyebrow"
+            data-ovkey="donation.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.eyebrow', 'Etiqueta Donaciones', 'text', data.donation?.eyebrow || 'GENEROSIDAD')}
+            style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14, ...ost('donation.eyebrow') }}
+          >
+            {data.donation?.eyebrow || 'GENEROSIDAD'}
+          </div>
           <h2 data-field="donation.title" data-ovkey="donation.title" className="editable-element" onClick={(e) => handleEdit(e, 'donation.title', 'Título Donaciones', 'text', data.donation?.title || 'Generosidad que Transforma Vidas')} style={{ fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: '0 0 16px', letterSpacing: '-0.03em', ...ost('donation.title') }}>
             {data.donation?.title || 'Generosidad que Transforma Vidas'}
           </h2>
           <p data-field="donation.subtitle" data-ovkey="donation.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'donation.subtitle', 'Subtítulo Donaciones', 'textarea', data.donation?.subtitle || 'Gracias a tu ofrenda podemos seguir extendiendo el mensaje de esperanza.')} style={{ fontSize: '1.05rem', color: '#64748B', lineHeight: 1.7, margin: '0 0 32px', maxWidth: 700, marginLeft: 'auto', marginRight: 'auto', ...ost('donation.subtitle') }}>
             {data.donation?.subtitle || 'Gracias a tu ofrenda podemos seguir extendiendo el mensaje de esperanza.'}
           </p>
-          <a data-field="donation.ctaText" data-ovkey="donation.ctaText" href="#wp-contact" className="northside-btn-vibrant editable-element" onClick={(e) => handleNavClick(e, '#wp-contact', 'donation.ctaText', 'Botón Donaciones', data.donation?.ctaText || 'Ofrendar en Línea')} style={{ padding: '16px 36px', borderRadius: 999, textDecoration: 'none', fontSize: '0.9rem', ...ost('donation.ctaText') }}>
+          <a data-field="donation.ctaText" data-ovkey="donation.ctaText" href={data.donation?.ctaLink || '#wp-contact'} className="northside-btn-vibrant editable-element" onClick={(e) => handleNavClick(e, data.donation?.ctaLink || '#wp-contact', 'donation.ctaText', 'Botón Donaciones', data.donation?.ctaText || 'Ofrendar en Línea')} style={{ padding: '16px 36px', borderRadius: 999, textDecoration: 'none', fontSize: '0.9rem', ...ost('donation.ctaText') }}>
             {data.donation?.ctaText || 'Ofrendar en Línea'}
           </a>
+          <div
+            data-field="donation.note"
+            data-ovkey="donation.note"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.note', 'Nota Donaciones', 'text', data.donation?.note || 'Todas las donaciones son procesadas de manera segura y confidencial.')}
+            style={{ marginTop: 24, fontSize: '0.8rem', color: '#64748B', ...ost('donation.note') }}
+          >
+            🔒 {data.donation?.note || 'Todas las donaciones son procesadas de manera segura y confidencial.'}
+          </div>
         </div>
       </section>
       )}
@@ -1130,7 +1221,15 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
       {data.sectionsVisibility?.prayerRequest !== false && (
       <section id="wp-prayer" style={{ width: '100%', background: '#F8FAFC', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14 }}>ESTAMOS PARA TI</div>
+          <div
+            data-field="prayerRequest.eyebrow"
+            data-ovkey="prayerRequest.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.eyebrow', 'Etiqueta Oración', 'text', data.prayerRequest?.eyebrow || 'ESTAMOS PARA TI')}
+            style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 14, ...ost('prayerRequest.eyebrow') }}
+          >
+            {data.prayerRequest?.eyebrow || 'ESTAMOS PARA TI'}
+          </div>
           <h2 data-field="prayerRequest.title" data-ovkey="prayerRequest.title" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Oración', 'text', data.prayerRequest?.title || '¿Podemos Orar por Ti?')} style={{ fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: '0 0 16px', letterSpacing: '-0.03em', ...ost('prayerRequest.title') }}>
             {data.prayerRequest?.title || '¿Podemos Orar por Ti?'}
           </h2>
@@ -1159,7 +1258,15 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         <section id="wp-about" style={{ width: '100%', background: '#FFFFFF', padding: '100px 8%', boxSizing: 'border-box' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>QUIÉNES SOMOS</div>
+              <div
+                data-field="about.eyebrow"
+                data-ovkey="about.eyebrow"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'about.eyebrow', 'Etiqueta Sobre Nosotros', 'text', data.about?.eyebrow || 'QUIÉNES SOMOS')}
+                style={{ fontSize: '0.8rem', fontWeight: 800, color: accentCyan, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12, ...ost('about.eyebrow') }}
+              >
+                {data.about?.eyebrow || 'QUIÉNES SOMOS'}
+              </div>
               <h2 data-field="about.title" data-ovkey="about.title" className="editable-element" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about.title || 'Nuestra Historia')} style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)', fontWeight: 900, color: '#0F172A', margin: '0 0 20px', letterSpacing: '-0.03em', ...ost('about.title') }}>
                 {data.about.title || 'Nuestra Historia'}
               </h2>
@@ -1225,11 +1332,23 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
               )}
             </div>
 
-            <p style={{ color: '#D1D5DB', fontSize: '0.95rem', margin: '0 0 8px', fontWeight: 600 }}>
-              Services at 9 and 11 AM on Sundays.
+            <p
+              data-field="contact.schedule"
+              data-ovkey="contact.schedule"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.schedule', 'Horarios de Servicios', 'text', data.contact?.schedule || 'Cultos los Domingos a las 9:00 AM y 11:00 AM.')}
+              style={{ color: '#D1D5DB', fontSize: '0.95rem', margin: '0 0 8px', fontWeight: 600, ...ost('contact.schedule') }}
+            >
+              {data.contact?.schedule || 'Cultos los Domingos a las 9:00 AM y 11:00 AM.'}
             </p>
-            <p style={{ color: '#9CA3AF', fontSize: '0.875rem', margin: '0 0 28px' }}>
-              Office Hours: Monday – Thursday, 9am – 5pm.
+            <p
+              data-field="contact.officeHours"
+              data-ovkey="contact.officeHours"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'contact.officeHours', 'Horario de Oficina', 'text', data.contact?.officeHours || 'Atención Pastoral: Lunes a Viernes, 9:00 AM – 5:00 PM.')}
+              style={{ color: '#9CA3AF', fontSize: '0.875rem', margin: '0 0 28px', ...ost('contact.officeHours') }}
+            >
+              {data.contact?.officeHours || 'Atención Pastoral: Lunes a Viernes, 9:00 AM – 5:00 PM.'}
             </p>
 
             <div style={{ color: '#FFFFFF', fontSize: '0.9rem', lineHeight: 1.8 }}>
@@ -1265,7 +1384,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
         </div>
 
         <div style={{ maxWidth: 1320, margin: '70px auto 0', paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.1)', color: '#6B7280', fontSize: '0.8rem' }}>
-          Copyright © {new Date().getFullYear()} {businessName}. All Rights Reserved.
+          Copyright © {new Date().getFullYear()} {businessName}. Todos los derechos reservados.
         </div>
       </footer>
       )}

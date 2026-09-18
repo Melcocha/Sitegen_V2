@@ -993,7 +993,14 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 56, flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#71717A', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14 }}>PRÓXIMOS EVENTOS</div>
+              <div
+                data-field="events.eyebrow" data-ovkey="events.eyebrow"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'events.eyebrow', 'Etiqueta Sección Eventos', 'text', data.events?.eyebrow || 'PRÓXIMOS EVENTOS')}
+                style={{ fontSize: '0.72rem', fontWeight: 800, color: '#71717A', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 14, ...ost('events.eyebrow') }}
+              >
+                {data.events?.eyebrow || 'PRÓXIMOS EVENTOS'}
+              </div>
               <h2
                 data-field="events.title" data-ovkey="events.title"
                 className="editable-element"
@@ -1003,44 +1010,107 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                 {data.events?.title || 'Lo Que Viene'}
               </h2>
             </div>
-            <a href={data.events?.allLink || '#wp-contact'} style={{ color: '#71717A', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-              Ver todos los eventos →
+            <a
+              data-field="events.allLinkText" data-ovkey="events.allLinkText"
+              className="editable-element"
+              href={data.events?.allLink || '#wp-contact'}
+              onClick={(e) => handleEdit(e, 'events.allLinkText', 'Texto Enlace Eventos', 'text', data.events?.allLinkText || 'Ver todos los eventos →')}
+              style={{ color: '#71717A', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', whiteSpace: 'nowrap', ...ost('events.allLinkText') }}
+            >
+              {data.events?.allLinkText || 'Ver todos los eventos →'}
             </a>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
-            {(data.events?.items || [
-              { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.' },
-              { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.' },
-              { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.' },
-            ]).map((ev, idx) => (
-              <div key={idx} style={{ background: '#0A0A0A', border: '1px solid #1A1A1A', overflow: 'hidden', transition: 'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#111'}
-                onMouseLeave={e => e.currentTarget.style.background = '#0A0A0A'}
-              >
-                <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
-                  <img src={ev.image} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.95) 100%)' }} />
-                  <div style={{ position: 'absolute', top: 20, left: 20, background: '#FFFFFF', color: '#000000', padding: '10px 14px', textAlign: 'center', minWidth: 52 }}>
-                    <div style={{ fontWeight: 900, fontSize: '1.5rem', lineHeight: 1 }}>{ev.day}</div>
-                    <div style={{ fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.14em', marginTop: 2 }}>{ev.month}</div>
-                  </div>
-                </div>
-                <div style={{ padding: '24px 28px 28px' }}>
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px', letterSpacing: '-0.02em' }}>{ev.title}</h3>
-                  <div style={{ display: 'flex', gap: 18, marginBottom: 14 }}>
-                    <span style={{ fontSize: '0.78rem', color: '#FFFFFF', fontWeight: 700 }}>⏰ {ev.time}</span>
-                    <span style={{ fontSize: '0.78rem', color: '#52525B' }}>📍 {ev.location}</span>
-                  </div>
-                  <p style={{ fontSize: '0.9rem', color: '#52525B', lineHeight: 1.65, margin: '0 0 20px', fontFamily: 'Georgia, serif' }}>{ev.description}</p>
-                  <a href={ev.link || '#wp-contact'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 22px', background: '#FFFFFF', color: '#000000', fontSize: '0.82rem', fontWeight: 900, textDecoration: 'none', transition: 'background 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = '#E5E5E5'}
-                    onMouseLeave={e => e.currentTarget.style.background = '#FFFFFF'}
+            {(() => {
+              const evData = data.events || {}
+              const evList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
+                { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact', btnText: 'Inscribirme →' },
+                { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact', btnText: 'Inscribirme →' },
+              ])
+              const evPrefix = Array.isArray(evData) ? 'events' : 'events.items'
+              return evList.map((ev, idx) => (
+                <div key={idx} style={{ background: '#0A0A0A', border: '1px solid #1A1A1A', overflow: 'hidden', transition: 'background 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#111'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#0A0A0A'}
+                >
+                  <div
+                    data-field={`${evPrefix}.${idx}.image`} data-ovkey={`${evPrefix}.${idx}.image`}
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                    style={{ position: 'relative', height: 220, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    Inscribirme →
-                  </a>
+                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.95) 100%)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: 20, left: 20, background: '#FFFFFF', color: '#000000', padding: '10px 14px', textAlign: 'center', minWidth: 52 }}>
+                      <div
+                        data-field={`${evPrefix}.${idx}.day`} data-ovkey={`${evPrefix}.${idx}.day`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', ev.day || ev.dateDay) }}
+                        style={{ fontWeight: 900, fontSize: '1.5rem', lineHeight: 1, ...ost(`${evPrefix}.${idx}.day`) }}
+                      >
+                        {ev.day || ev.dateDay}
+                      </div>
+                      <div
+                        data-field={`${evPrefix}.${idx}.month`} data-ovkey={`${evPrefix}.${idx}.month`}
+                        className="editable-element"
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.month`, `Mes Evento ${idx + 1}`, 'text', ev.month || ev.dateMonth) }}
+                        style={{ fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.14em', marginTop: 2, ...ost(`${evPrefix}.${idx}.month`) }}
+                      >
+                        {ev.month || ev.dateMonth}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding: '24px 28px 28px' }}>
+                    <h3
+                      data-field={`${evPrefix}.${idx}.title`} data-ovkey={`${evPrefix}.${idx}.title`}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.title`, `Título Evento ${idx + 1}`, 'text', ev.title)}
+                      style={{ fontSize: '1.3rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px', letterSpacing: '-0.02em', ...ost(`${evPrefix}.${idx}.title`) }}
+                    >
+                      {ev.title}
+                    </h3>
+                    <div style={{ display: 'flex', gap: 18, marginBottom: 14, flexWrap: 'wrap' }}>
+                      <span
+                        data-field={`${evPrefix}.${idx}.time`} data-ovkey={`${evPrefix}.${idx}.time`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.time`, `Horario Evento ${idx + 1}`, 'text', ev.time)}
+                        style={{ fontSize: '0.78rem', color: '#FFFFFF', fontWeight: 700, ...ost(`${evPrefix}.${idx}.time`) }}
+                      >
+                        ⏰ {ev.time}
+                      </span>
+                      <span
+                        data-field={`${evPrefix}.${idx}.location`} data-ovkey={`${evPrefix}.${idx}.location`}
+                        className="editable-element"
+                        onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.location`, `Ubicación Evento ${idx + 1}`, 'text', ev.location)}
+                        style={{ fontSize: '0.78rem', color: '#52525B', ...ost(`${evPrefix}.${idx}.location`) }}
+                      >
+                        📍 {ev.location}
+                      </span>
+                    </div>
+                    <p
+                      data-field={`${evPrefix}.${idx}.description`} data-ovkey={`${evPrefix}.${idx}.description`}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.description`, `Descripción Evento ${idx + 1}`, 'textarea', ev.description || ev.desc)}
+                      style={{ fontSize: '0.9rem', color: '#71717A', lineHeight: 1.65, margin: '0 0 20px', fontFamily: 'Georgia, serif', ...ost(`${evPrefix}.${idx}.description`) }}
+                    >
+                      {ev.description || ev.desc}
+                    </p>
+                    <a
+                      data-field={`${evPrefix}.${idx}.btnText`} data-ovkey={`${evPrefix}.${idx}.btnText`}
+                      href={ev.link || '#wp-contact'}
+                      className="editable-element"
+                      onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.btnText`, `Botón Evento ${idx + 1}`, 'text', ev.btnText || 'Inscribirme →')}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 22px', background: '#FFFFFF', color: '#000000', fontSize: '0.82rem', fontWeight: 900, textDecoration: 'none', transition: 'background 0.2s', ...ost(`${evPrefix}.${idx}.btnText`) }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#E5E5E5'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#FFFFFF'}
+                    >
+                      {ev.btnText || 'Inscribirme →'}
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            })()}
           </div>
         </div>
       </section>
@@ -1055,7 +1125,14 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           border: '1px solid #1F1F1F',
           borderRadius: 24, padding: '64px 48px',
         }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#71717A', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16 }}>GENEROSIDAD</div>
+          <div
+            data-field="donation.eyebrow" data-ovkey="donation.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'donation.eyebrow', 'Etiqueta Donaciones', 'text', data.donation?.eyebrow || 'GENEROSIDAD')}
+            style={{ fontSize: '0.75rem', fontWeight: 800, color: '#71717A', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16, ...ost('donation.eyebrow') }}
+          >
+            {data.donation?.eyebrow || 'GENEROSIDAD'}
+          </div>
           <h2
             data-field="donation.title" data-ovkey="donation.title"
             className="editable-element"
@@ -1091,6 +1168,66 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             {data.donation?.ctaText || 'Ofrendar en Línea'}
           </a>
+          {data.donation?.note && (
+            <div
+              data-field="donation.note" data-ovkey="donation.note"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'donation.note', 'Nota Donaciones', 'text', data.donation.note)}
+              style={{ marginTop: 24, fontSize: '0.8rem', color: '#52525B', ...ost('donation.note') }}
+            >
+              🔒 {data.donation.note}
+            </div>
+          )}
+        </div>
+      </section>
+      )}
+
+      {/* ── 6.8. PETICIÓN DE ORACIÓN ── */}
+      {data.sectionsVisibility?.prayerRequest !== false && (
+      <section id="wp-prayer" style={{ width: '100%', background: '#050505', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #1A1A1A' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
+          <div
+            data-field="prayerRequest.eyebrow" data-ovkey="prayerRequest.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.eyebrow', 'Etiqueta Oración', 'text', data.prayerRequest?.eyebrow || 'ESTAMOS PARA TI')}
+            style={{ fontSize: '0.75rem', fontWeight: 800, color: '#71717A', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14, ...ost('prayerRequest.eyebrow') }}
+          >
+            {data.prayerRequest?.eyebrow || 'ESTAMOS PARA TI'}
+          </div>
+          <h2
+            data-field="prayerRequest.title" data-ovkey="prayerRequest.title"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Petición de Oración', 'text', data.prayerRequest?.title || '¿Podemos Orar por Ti?')}
+            style={{ fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 16px', letterSpacing: '-0.03em', ...ost('prayerRequest.title') }}
+          >
+            {data.prayerRequest?.title || '¿Podemos Orar por Ti?'}
+          </h2>
+          <p
+            data-field="prayerRequest.subtitle" data-ovkey="prayerRequest.subtitle"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.subtitle', 'Subtítulo Petición de Oración', 'textarea', data.prayerRequest?.subtitle || 'Nuestro equipo pastoral ora confidencialmente cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.')}
+            style={{ fontSize: '1.05rem', color: '#71717A', lineHeight: 1.7, margin: '0 0 36px', maxWidth: 640, marginLeft: 'auto', marginRight: 'auto', fontFamily: 'Georgia, serif', ...ost('prayerRequest.subtitle') }}
+          >
+            {data.prayerRequest?.subtitle || 'Nuestro equipo pastoral ora confidencialmente cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.'}
+          </p>
+          <div style={{ background: '#0A0A0A', border: '1px solid #1F1F1F', borderRadius: 20, padding: 36, textAlign: 'left' }}>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#A1A1AA', fontWeight: 700, marginBottom: 6 }}>Tu Nombre</label>
+              <input type="text" placeholder="Ej: Juan Pérez" style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#000000', border: '1px solid #27272A', color: '#FFF', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#A1A1AA', fontWeight: 700, marginBottom: 6 }}>Tu Motivo de Oración</label>
+              <textarea rows={4} placeholder="Escribe tu motivo aquí..." style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#000000', border: '1px solid #27272A', color: '#FFF', fontSize: '0.9rem', resize: 'vertical', boxSizing: 'border-box' }} />
+            </div>
+            <button
+              data-field="prayerRequest.ctaText" data-ovkey="prayerRequest.ctaText"
+              className="editable-element"
+              onClick={(e) => handleEdit(e, 'prayerRequest.ctaText', 'Texto Botón Oración', 'text', data.prayerRequest?.ctaText || 'Enviar Petición de Oración')}
+              style={{ width: '100%', padding: '16px', borderRadius: 999, border: 'none', background: '#FFFFFF', color: '#000000', fontWeight: 900, cursor: 'pointer', fontSize: '0.9rem', ...ost('prayerRequest.ctaText') }}
+            >
+              {data.prayerRequest?.ctaText || 'Enviar Petición de Oración'}
+            </button>
+          </div>
         </div>
       </section>
       )}
@@ -1174,22 +1311,38 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           {/* Right Links Column */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 40, alignItems: 'flex-start' }}>
             <div>
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 20 }}>Visita & Comunidad</h4>
+              <h4
+                data-field="contact.col1Title"
+                data-ovkey="contact.col1Title"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'contact.col1Title', 'Título Columna 1 Footer', 'text', data.contact?.col1Title || 'Visita & Comunidad')}
+                style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 20, ...ost('contact.col1Title') }}
+              >
+                {data.contact?.col1Title || 'Visita & Comunidad'}
+              </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: '0.95rem', color: '#A1A1AA' }}>
-                <div>Planifica tu Visita</div>
-                <div>Pastores & Equipo</div>
-                <div>Próximos Pasos</div>
-                <div>Apoyo en Oración</div>
+                <a href="#wp-plan-visit" onClick={(e) => handleNavClick(e, '#wp-plan-visit', 'planAVisit.title', 'Menú Planifica tu Visita', 'Planifica tu Visita')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Planifica tu Visita</a>
+                <a href="#wp-columns" onClick={(e) => handleNavClick(e, '#wp-columns', 'columns.title', 'Menú Pastores & Equipo', 'Pastores & Equipo')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Pastores & Equipo</a>
+                <a href="#wp-next-steps-split" onClick={(e) => handleNavClick(e, '#wp-next-steps-split', 'nextSteps.title', 'Menú Próximos Pasos', 'Próximos Pasos')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Próximos Pasos</a>
+                <a href="#wp-prayer" onClick={(e) => handleNavClick(e, '#wp-prayer', 'prayerRequest.title', 'Menú Apoyo en Oración', 'Apoyo en Oración')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Apoyo en Oración</a>
               </div>
             </div>
 
             <div>
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 20 }}>Recursos & Redes</h4>
+              <h4
+                data-field="contact.col2Title"
+                data-ovkey="contact.col2Title"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'contact.col2Title', 'Título Columna 2 Footer', 'text', data.contact?.col2Title || 'Recursos & Redes')}
+                style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 20, ...ost('contact.col2Title') }}
+              >
+                {data.contact?.col2Title || 'Recursos & Redes'}
+              </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: '0.95rem', color: '#A1A1AA' }}>
-                <div>Sermones</div>
-                <div>Calendario</div>
-                <div>Instagram</div>
-                <div>YouTube</div>
+                <a href="#wp-columns" onClick={(e) => handleNavClick(e, '#wp-columns', 'columns.title', 'Menú Mensajes', 'Sermones')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Sermones</a>
+                <a href="#wp-events" onClick={(e) => handleNavClick(e, '#wp-events', 'events.title', 'Menú Calendario', 'Calendario')} style={{ color: '#A1A1AA', textDecoration: 'none' }} className="editable-element">Calendario</a>
+                <a href="#instagram" style={{ color: '#A1A1AA', textDecoration: 'none' }}>Instagram</a>
+                <a href="#youtube" style={{ color: '#A1A1AA', textDecoration: 'none' }}>YouTube</a>
               </div>
             </div>
           </div>

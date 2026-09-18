@@ -15,6 +15,7 @@ import HowItWorks from './components/HowItWorks'
 import AIGenerator from './components/AIGenerator'
 import DomainSearch from './components/DomainSearch'
 import Pricing from './components/Pricing'
+import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 
 // ── Auth Pages
@@ -64,7 +65,7 @@ class ErrorBoundary extends Component {
             onClick={() => this.setState({ hasError: false, error: null })}
             style={{
               marginTop: 16, padding: '10px 24px',
-              background: '#00C896', color: '#080F0C',
+              background: '#111827', color: '#FFFFFF',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'Inter, sans-serif', fontWeight: 700,
             }}
@@ -84,11 +85,12 @@ function SuccessToast({ plan, onClose }) {
     <div
       style={{
         position: 'fixed', bottom: 28, right: 28, zIndex: 1001,
-        background: 'linear-gradient(135deg, #10B981, #059669)',
+        background: '#111827',
         color: '#fff', borderRadius: 14,
         padding: '14px 22px',
         display: 'flex', alignItems: 'center', gap: 10,
-        boxShadow: '0 8px 32px rgba(16,185,129,0.4)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        boxShadow: '0 12px 36px rgba(0,0,0,0.5)',
         fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.9375rem',
         animation: 'slideToast 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
         cursor: 'pointer',
@@ -123,6 +125,7 @@ function LandingPage({ onCheckout }) {
         <AIGenerator scrollRef={previewRef} />
         <DomainSearch />
         <Pricing onCheckout={onCheckout} />
+        <FAQ />
         <Footer />
       </div>
     </ThemeProvider>
