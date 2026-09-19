@@ -1701,11 +1701,11 @@ function SiteStatsModal({ site, onClose, onOpenDomain }) {
             <span style={{ fontSize: '0.75rem', color: '#9CA3AF', fontWeight: 600 }}>Visitas diarias</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, height: 110, paddingBottom: 10, borderBottom: '1px solid #F3F4F6' }}>
-            {days.map(d => (
-              <div key={d.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280' }}>{d.visits}</span>
-                <div style={{ width: '100%', maxWidth: 36, height: `${d.height}%`, background: 'linear-gradient(180deg, #00C896, #00A87A)', borderRadius: 6, transition: 'height 0.4s ease' }} />
-                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9CA3AF' }}>{d.day}</span>
+            {(days || []).filter(Boolean).map((d, i) => (
+              <div key={d?.day || i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280' }}>{d?.visits}</span>
+                <div style={{ width: '100%', maxWidth: 36, height: `${d?.height || 0}%`, background: 'linear-gradient(180deg, #00C896, #00A87A)', borderRadius: 6, transition: 'height 0.4s ease' }} />
+                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9CA3AF' }}>{d?.day}</span>
               </div>
             ))}
           </div>

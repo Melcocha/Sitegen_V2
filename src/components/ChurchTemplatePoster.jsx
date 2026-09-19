@@ -1636,11 +1636,12 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
             {(() => {
               const evData = data.events || {}
-              const evList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
+              const rawList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
                 { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', link: '#wp-contact', btnText: 'Inscribirme →' },
                 { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', link: '#wp-contact', btnText: 'Inscribirme →' },
                 { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '1', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', link: '#wp-contact', btnText: 'Inscribirme →' },
               ])
+              const evList = (rawList || []).filter(Boolean)
               const evPrefix = Array.isArray(evData) ? 'events' : 'events.items'
               return evList.map((ev, idx) => (
                 <div key={idx} style={{ background: '#0A0A0A', border: '1px solid #1A1A1A', overflow: 'hidden', transition: 'background 0.2s' }}
@@ -1650,23 +1651,23 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                   <div
                     data-field={`${evPrefix}.${idx}.image`} data-ovkey={`${evPrefix}.${idx}.image`}
                     className="editable-element"
-                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
+                    onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev?.image)}
                     style={{ position: 'relative', height: 220, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    {isVideoUrl(ev.image) ? (
-                      <video src={ev.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                    {isVideoUrl(ev?.image) ? (
+                      <video src={ev?.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
                     ) : (
-                      <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                      <img src={ev?.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev?.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
                     )}
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.95) 100%)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', top: 20, left: 20, background: '#FFFFFF', color: '#000000', padding: '10px 14px', textAlign: 'center', minWidth: 52 }}>
                       <div
                         data-field={`${evPrefix}.${idx}.day`} data-ovkey={`${evPrefix}.${idx}.day`}
                         className="editable-element"
-                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', ev.day || ev.dateDay) }}
+                        onClick={(e) => { e.stopPropagation(); handleEdit(e, `${evPrefix}.${idx}.day`, `Día Evento ${idx + 1}`, 'text', ev?.day || ev?.dateDay) }}
                         style={{ fontWeight: 900, fontSize: '1.5rem', lineHeight: 1, ...ost(`${evPrefix}.${idx}.day`) }}
                       >
-                        {ev.day || ev.dateDay}
+                        {ev?.day || ev?.dateDay || '18'}
                       </div>
                       <div
                         data-field={`${evPrefix}.${idx}.month`} data-ovkey={`${evPrefix}.${idx}.month`}

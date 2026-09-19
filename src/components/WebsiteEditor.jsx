@@ -735,13 +735,14 @@ function EventsEditor({ events, onChangeData }) {
     ? events
     : { title: 'Lo Que Viene', eyebrow: 'PRÓXIMOS EVENTOS', allLinkText: 'Ver todos los eventos →', allLink: '#wp-contact', items: Array.isArray(events) ? events : [] }
 
-  const list = eventsObj.items && eventsObj.items.length > 0
+  const rawList = eventsObj.items && eventsObj.items.length > 0
     ? eventsObj.items
     : [
         { image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop', day: '18', month: 'OCT', dateDay: '18', dateMonth: 'OCT', title: 'Noche de Adoración', time: '7:00 PM', location: 'Auditorio Principal', description: 'Una noche especial de adoración colectiva. Ven con tu familia.', desc: 'Una noche especial de adoración colectiva. Ven con tu familia.', btnText: 'Inscribirme →', link: '#wp-contact' },
         { image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop', day: '25', month: 'OCT', dateDay: '25', dateMonth: 'OCT', title: 'Conferencia de Familias', time: '9:00 AM', location: 'Sede Norte', description: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', desc: 'Herramientas prácticas para fortalecer el hogar y el matrimonio.', btnText: 'Inscribirme →', link: '#wp-contact' },
         { image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop', day: '01', month: 'NOV', dateDay: '01', dateMonth: 'NOV', title: 'Retiro Juvenil', time: '8:00 AM', location: 'Campo Retiro El Pedregal', description: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', desc: 'Un fin de semana de conexión, aventura y crecimiento espiritual.', btnText: 'Inscribirme →', link: '#wp-contact' },
       ]
+  const list = (rawList || []).filter(Boolean)
 
   const updateHeader = (f, v) => {
     onChangeData('events', { ...eventsObj, items: list, [f]: v })
@@ -749,6 +750,7 @@ function EventsEditor({ events, onChangeData }) {
 
   const updateItem = (i, f, v) => {
     const n = [...list]
+    if (!n[i]) return
     n[i] = { ...n[i], [f]: v }
     if (f === 'day') n[i].dateDay = v
     if (f === 'month') n[i].dateMonth = v
@@ -800,27 +802,27 @@ function EventsEditor({ events, onChangeData }) {
           </button>
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ width: 80 }}>
-              <Field label="Día" value={ev.day || ev.dateDay} onChange={v => updateItem(i, 'day', v)} placeholder="18" />
+              <Field label="Día" value={ev?.day || ev?.dateDay} onChange={v => updateItem(i, 'day', v)} placeholder="18" />
             </div>
             <div style={{ width: 80 }}>
-              <Field label="Mes" value={ev.month || ev.dateMonth} onChange={v => updateItem(i, 'month', v)} placeholder="OCT" />
+              <Field label="Mes" value={ev?.month || ev?.dateMonth} onChange={v => updateItem(i, 'month', v)} placeholder="OCT" />
             </div>
             <div style={{ flex: 1 }}>
-              <Field label="Horario" value={ev.time} onChange={v => updateItem(i, 'time', v)} placeholder="7:00 PM" />
+              <Field label="Horario" value={ev?.time} onChange={v => updateItem(i, 'time', v)} placeholder="7:00 PM" />
             </div>
           </div>
-          <Field label="Título del Evento" value={ev.title} onChange={v => updateItem(i, 'title', v)} placeholder="Título del evento" />
-          <Field label="Lugar / Ubicación" value={ev.location} onChange={v => updateItem(i, 'location', v)} placeholder="Auditorio Principal" />
-          <Field label="Descripción" value={ev.description || ev.desc} onChange={v => updateItem(i, 'description', v)} multiline placeholder="Detalles del evento..." />
+          <Field label="Título del Evento" value={ev?.title} onChange={v => updateItem(i, 'title', v)} placeholder="Título del evento" />
+          <Field label="Lugar / Ubicación" value={ev?.location} onChange={v => updateItem(i, 'location', v)} placeholder="Auditorio Principal" />
+          <Field label="Descripción" value={ev?.description || ev?.desc} onChange={v => updateItem(i, 'description', v)} multiline placeholder="Detalles del evento..." />
           <div style={{ display: 'flex', gap: 8 }}>
             <div style={{ flex: 1 }}>
-              <Field label="Texto del Botón" value={ev.btnText} onChange={v => updateItem(i, 'btnText', v)} placeholder="Inscribirme →" />
+              <Field label="Texto del Botón" value={ev?.btnText} onChange={v => updateItem(i, 'btnText', v)} placeholder="Inscribirme →" />
             </div>
             <div style={{ flex: 1 }}>
-              <Field label="Enlace del Botón" value={ev.link} onChange={v => updateItem(i, 'link', v)} placeholder="#wp-contact" />
+              <Field label="Enlace del Botón" value={ev?.link} onChange={v => updateItem(i, 'link', v)} placeholder="#wp-contact" />
             </div>
           </div>
-          <ImageUploadBox label="Foto del Evento" imageUrl={ev.image} onUpload={url => updateItem(i, 'image', url)} onClear={() => updateItem(i, 'image', '')} />
+          <ImageUploadBox label="Foto del Evento" imageUrl={ev?.image} onUpload={url => updateItem(i, 'image', url)} onClear={() => updateItem(i, 'image', '')} />
         </div>
       ))}
       <button onClick={addItem} style={S.addBtn}><Plus size={13} /> Agregar Evento</button>

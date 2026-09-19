@@ -2626,23 +2626,23 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                             <div>
                               <div style={{ fontSize: '.75rem', textTransform: 'uppercase', color: a, fontWeight: 700, marginBottom: 8, letterSpacing: '.05em' }}>Vías rápidas</div>
                               <div style={{ fontSize: '.9rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                <div>📞 {data.contact.phone}</div>
-                                {data.contact.whatsapp && <div>🟢 WhatsApp: {data.contact.whatsapp}</div>}
-                                <div>✉️ {data.contact.email}</div>
+                                <div>📞 {data.contact?.phone}</div>
+                                {data.contact?.whatsapp && <div>🟢 WhatsApp: {data.contact.whatsapp}</div>}
+                                <div>✉️ {data.contact?.email}</div>
                               </div>
                             </div>
                             <div>
                               <div style={{ fontSize: '.75rem', textTransform: 'uppercase', color: a, fontWeight: 700, marginBottom: 8, letterSpacing: '.05em' }}>Horario comercial</div>
-                              {(data.contact.businessHours||[]).slice(0, 3).map((h, i) => (
+                              {(data.contact?.businessHours || []).filter(Boolean).slice(0, 3).map((h, i) => (
                                 <div key={i} style={{ fontSize: '.8rem', display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                  <span>{h.day}</span>
-                                  <span style={{ fontWeight: 'bold' }}>{h.hours}</span>
+                                  <span>{h?.day}</span>
+                                  <span style={{ fontWeight: 'bold' }}>{h?.hours}</span>
                                 </div>
                               ))}
                             </div>
                             <div>
                               <div style={{ fontSize: '.75rem', textTransform: 'uppercase', color: a, fontWeight: 700, marginBottom: 8, letterSpacing: '.05em' }}>Acción Directa</div>
-                              <a href={`tel:${data.contact.phone}`} className="wp-btn-c" style={{ width: '100%', textAlign: 'center', display: 'block', padding: '10px 0' }}>Llamar ahora</a>
+                              <a href={`tel:${data.contact?.phone || ''}`} className="wp-btn-c" style={{ width: '100%', textAlign: 'center', display: 'block', padding: '10px 0' }}>Llamar ahora</a>
                             </div>
                           </div>
                         </div>
@@ -2657,10 +2657,10 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                           </div>
                           <div className="wp-ccards">
                             {[
-                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.71a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.63a16 16 0 006.29 6.29l1.45-1.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>, label:'Teléfono', val:data.contact.phone },
-                              data.contact.whatsapp && { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>, label:'WhatsApp', val:data.contact.whatsapp },
-                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>, label:'Email', val:data.contact.email },
-                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>, label:'Dirección', val:data.contact.address },
+                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.71a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.63a16 16 0 006.29 6.29l1.45-1.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>, label:'Teléfono', val:data.contact?.phone },
+                              data.contact?.whatsapp && { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>, label:'WhatsApp', val:data.contact?.whatsapp },
+                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>, label:'Email', val:data.contact?.email },
+                              { svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>, label:'Dirección', val:data.contact?.address },
                             ].filter(Boolean).filter(c=>c.val).map(c=>(
                               <div className="wp-ccard" key={c.label}>
                                 <div className="wp-cicon">{c.svg}</div>
@@ -2672,16 +2672,16 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                             ))}
                           </div>
 
-                          {(data.contact.businessHours||[]).length > 0 && (
+                          {(data.contact?.businessHours || []).filter(Boolean).length > 0 && (
                             <div style={{ margin:'0 auto 28px', maxWidth:480, background:'rgba(255,255,255,.08)', border:'1px solid rgba(255,255,255,.15)', borderRadius:14, overflow:'hidden' }}>
                               <div style={{ padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,.1)', fontSize:'.72rem', fontWeight:700, color:'rgba(255,255,255,.7)', textTransform:'uppercase', letterSpacing:'.07em', display:'flex', alignItems:'center', gap:7 }}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 Horario de atención
                               </div>
-                              {(data.contact.businessHours).map((h,i)=>(
+                              {(data.contact?.businessHours || []).filter(Boolean).map((h,i)=>(
                                 <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'9px 16px', borderBottom: i < data.contact.businessHours.length-1 ? '1px solid rgba(255,255,255,.07)' : 'none' }}>
-                                  <span style={{ fontSize:'.79rem', color:'rgba(255,255,255,.8)', fontWeight:500 }}>{h.day}</span>
-                                  <span style={{ fontSize:'.79rem', color: h.hours?.toLowerCase()==='cerrado'?'#F87171':'rgba(255,255,255,.95)', fontWeight:700 }}>{h.hours}</span>
+                                  <span style={{ fontSize:'.79rem', color:'rgba(255,255,255,.8)', fontWeight:500 }}>{h?.day}</span>
+                                  <span style={{ fontSize:'.79rem', color: h?.hours?.toLowerCase()==='cerrado'?'#F87171':'rgba(255,255,255,.95)', fontWeight:700 }}>{h?.hours}</span>
                                 </div>
                               ))}
                             </div>

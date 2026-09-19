@@ -364,14 +364,16 @@ export default function SiteEditorPage() {
         obj = obj[k]
       }
       const lastKey = keys[keys.length - 1]
-      obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
-      // Sync aliases for cross-template compatibility
-      if (lastKey === 'day') obj.dateDay = value
-      if (lastKey === 'dateDay') obj.day = value
-      if (lastKey === 'month') obj.dateMonth = value
-      if (lastKey === 'dateMonth') obj.month = value
-      if (lastKey === 'description') obj.desc = value
-      if (lastKey === 'desc') obj.description = value
+      if (obj && typeof obj === 'object') {
+        obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
+        // Sync aliases for cross-template compatibility
+        if (lastKey === 'day') obj.dateDay = value
+        if (lastKey === 'dateDay') obj.day = value
+        if (lastKey === 'month') obj.dateMonth = value
+        if (lastKey === 'dateMonth') obj.month = value
+        if (lastKey === 'description') obj.desc = value
+        if (lastKey === 'desc') obj.description = value
+      }
 
       pushHistory(d)
       clearTimeout(autoSaveRef.current)
@@ -397,13 +399,15 @@ export default function SiteEditorPage() {
           obj = obj[k]
         }
         const lastKey = keys[keys.length - 1]
-        obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
-        if (lastKey === 'day') obj.dateDay = value
-        if (lastKey === 'dateDay') obj.day = value
-        if (lastKey === 'month') obj.dateMonth = value
-        if (lastKey === 'dateMonth') obj.month = value
-        if (lastKey === 'description') obj.desc = value
-        if (lastKey === 'desc') obj.description = value
+        if (obj && typeof obj === 'object') {
+          obj[/^\d+$/.test(lastKey) ? Number(lastKey) : lastKey] = value
+          if (lastKey === 'day') obj.dateDay = value
+          if (lastKey === 'dateDay') obj.day = value
+          if (lastKey === 'month') obj.dateMonth = value
+          if (lastKey === 'dateMonth') obj.month = value
+          if (lastKey === 'description') obj.desc = value
+          if (lastKey === 'desc') obj.description = value
+        }
       }
       pushHistory(d)
       clearTimeout(autoSaveRef.current)

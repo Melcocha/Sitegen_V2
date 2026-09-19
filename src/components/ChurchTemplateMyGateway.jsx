@@ -1045,11 +1045,11 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
           `}</style>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
-            {events.map((ev, idx) => {
-              const dayVal = ev.day || ev.dateDay || '15'
-              const monthVal = ev.month || ev.dateMonth || 'SEP'
-              const descVal = ev.description || ev.desc || ''
-              const btnVal = ev.btnText || 'Inscribirme al Evento'
+            {(events || []).filter(Boolean).map((ev, idx) => {
+              const dayVal = ev?.day || ev?.dateDay || '15'
+              const monthVal = ev?.month || ev?.dateMonth || 'SEP'
+              const descVal = ev?.description || ev?.desc || ''
+              const btnVal = ev?.btnText || 'Inscribirme al Evento'
               return (
               <div key={idx} className="mg-event-card">
                 {/* Image with date badge overlay */}

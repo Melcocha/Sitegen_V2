@@ -560,11 +560,12 @@ export function EventsVisualLayout({
   font = 'inherit'
 }) {
   const evData = data.events || {}
-  const list = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
+  const rawList = Array.isArray(evData) ? evData : (Array.isArray(evData.items) ? evData.items : [
     { title: 'Noche de Adoración', dateDay: '18', dateMonth: 'OCT', image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop' },
     { title: 'Conferencia de Familias', dateDay: '25', dateMonth: 'OCT', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop' },
     { title: 'Retiro Juvenil', dateDay: '01', dateMonth: 'NOV', image: 'https://images.unsplash.com/photo-1510936111840-65e151ad71bb?w=800&q=85&fit=crop' },
   ])
+  const list = (rawList || []).filter(Boolean)
 
   return (
     <section id="wp-events" style={{ width: '100%', background: primaryBg, color: '#FFFFFF', padding: '100px 6%', boxSizing: 'border-box', fontFamily: font }}>
@@ -586,7 +587,7 @@ export function EventsVisualLayout({
               data-field={`events.${idx}.image`}
               data-ovkey={`events.${idx}.image`}
               className="editable-element"
-              onClick={(e) => handleEdit && handleEdit(e, `events.${idx}.image`, `Afiche Evento ${idx + 1}`, 'image', ev.image)}
+              onClick={(e) => handleEdit && handleEdit(e, `events.${idx}.image`, `Afiche Evento ${idx + 1}`, 'image', ev?.image)}
               style={{
                 position: 'relative',
                 height: 420,
@@ -597,13 +598,13 @@ export function EventsVisualLayout({
                 border: '1px solid rgba(255,255,255,0.15)'
               }}
             >
-              <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={ev?.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev?.title || 'Evento'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.92) 100%)' }} />
 
               {/* Floating Date Badge Sticker */}
               <div style={{ position: 'absolute', top: 20, left: 20, background: '#FFFFFF', color: '#000000', padding: '8px 14px', borderRadius: 12, textAlign: 'center', boxShadow: '0 8px 20px rgba(0,0,0,0.4)' }}>
-                <div style={{ fontSize: '1.3rem', fontWeight: 900, lineHeight: 1 }}>{ev.day || ev.dateDay || '18'}</div>
-                <div style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.08em', color: '#666' }}>{ev.month || ev.dateMonth || 'OCT'}</div>
+                <div style={{ fontSize: '1.3rem', fontWeight: 900, lineHeight: 1 }}>{ev?.day || ev?.dateDay || '18'}</div>
+                <div style={{ fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.08em', color: '#666' }}>{ev?.month || ev?.dateMonth || 'OCT'}</div>
               </div>
 
               {/* Event Bottom Content */}
@@ -703,10 +704,10 @@ export function VisitVisualLayout({
   font = 'inherit'
 }) {
   const bgImg = planAVisit.image || data.heroImage || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&q=85&fit=crop'
-  const serviceTimes = planAVisit.serviceTimes || [
+  const serviceTimes = (planAVisit.serviceTimes || [
     { name: 'Servicio Principal', day: 'Domingo', time: '10:30 AM' },
     { name: 'Noche de Oración', day: 'Miércoles', time: '7:30 PM' }
-  ]
+  ]).filter(Boolean)
 
   return (
     <section id="wp-plan-visit" style={{ width: '100%', background: primaryBg, color: '#FFFFFF', padding: '100px 6%', boxSizing: 'border-box', fontFamily: font }}>
@@ -732,8 +733,8 @@ export function VisitVisualLayout({
                   <div key={i} style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ color: accentColor, fontSize: '0.9rem' }}>⏰</span>
                     <div>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#FFFFFF' }}>{st.name || 'Servicio'}</div>
-                      <div style={{ fontSize: '0.7rem', color: accentColor, fontWeight: 700 }}>{st.day} · {st.time}</div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#FFFFFF' }}>{st?.name || 'Servicio'}</div>
+                      <div style={{ fontSize: '0.7rem', color: accentColor, fontWeight: 700 }}>{st?.day} · {st?.time}</div>
                     </div>
                   </div>
                 ))}
@@ -1533,11 +1534,12 @@ export function EventsCardsLayout({
   font = 'inherit'
 }) {
   const evList = (eventsProp?.items || (Array.isArray(eventsProp) ? eventsProp : (data.events?.items || (Array.isArray(data.events) ? data.events : []))))
-  const defaultEvents = evList.length > 0 ? evList : [
+  const rawEvents = evList.length > 0 ? evList : [
     { title: 'Noche de Alabanza & Clamor', day: '24', month: 'OCT', time: '7:30 PM', location: 'Templo Central', description: 'Una velada de intimidad con Dios y adoración en vivo con todo el equipo musical.' },
     { title: 'Conferencia de Familias Fuertes', day: '12', month: 'NOV', time: '9:00 AM', location: 'Salón Comunitario', description: 'Pláticas prácticas y principios bíblicos para fortalecer tu matrimonio e hijos.' },
     { title: 'Bautismos & Fiesta en la Playa', day: '05', month: 'DIC', time: '2:00 PM', location: 'Costa del Sol', description: 'Celebremos juntos el nuevo nacimiento de hermanos en la fe.' }
   ]
+  const defaultEvents = (rawEvents || []).filter(Boolean)
 
   return (
     <section id="wp-events" style={{ width: '100%', background: primaryBg, color: '#FFFFFF', padding: '100px 6%', boxSizing: 'border-box', fontFamily: font, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -1573,10 +1575,10 @@ export function EventsCardsLayout({
                 {/* Date Badge */}
                 <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', background: accentColor, color: '#000000', borderRadius: 16, padding: '8px 18px', marginBottom: 20, boxShadow: '0 6px 18px rgba(0,0,0,0.3)' }}>
                   <span style={{ fontSize: '0.72rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {ev.month || 'MES'}
+                    {ev?.month || 'MES'}
                   </span>
                   <span style={{ fontSize: '1.8rem', fontWeight: 900, lineHeight: 1 }}>
-                    {ev.day || (idx + 15)}
+                    {ev?.day || (idx + 15)}
                   </span>
                 </div>
 
