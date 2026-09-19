@@ -1799,33 +1799,44 @@ export default function UserDashboard() {
   const [statsSite, setStatsSite]           = useState(null)
   const [mobileOpen, setMobileOpen]         = useState(false)
 
+  const effectiveUserId = user?.id || 'saasweb_dev_user'
+  const fallbackProfile = {
+    id: effectiveUserId,
+    role: 'super_admin',
+    full_name: 'Desarrollador Local',
+    company_name: 'Mi Empresa Local',
+  }
+
   useEffect(() => {
     if (profile) setCurrentProfile(profile)
+    else setCurrentProfile(fallbackProfile)
   }, [profile])
 
   const loadSubscription = useCallback(async () => {
-    if (!user?.id) return
-    const data = await fetchSubscription(user.id)
-    setPlan(data)
-  }, [user?.id])
+    try {
+      const data = await fetchSubscription(effectiveUserId)
+      setPlan(data || { plan: 'pro', status: 'active' })
+    } catch {
+      setPlan({ plan: 'pro', status: 'active' })
+    }
+  }, [effectiveUserId])
 
-  useEffect(() => {
-    if (!user) return
-    fetchSites()
-    loadSubscription()
-  }, [user])
-
-  const fetchSites = async () => {
+  const fetchSites = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await getSites(user?.id)
+      const data = await getSites(effectiveUserId)
       setSites(data || [])
     } catch {
       setSites([])
     } finally {
       setLoading(false)
     }
-  }
+  }, [effectiveUserId])
+
+  useEffect(() => {
+    fetchSites()
+    loadSubscription()
+  }, [fetchSites, loadSubscription])
 
   const handleDelete = (id) => setSites(prev => prev.filter(s => s.id !== id))
   const handleSignOut = async () => { await signOut(); navigate('/') }

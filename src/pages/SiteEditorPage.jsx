@@ -252,9 +252,15 @@ export default function SiteEditorPage() {
     }
   }
 
-  // Keyboard shortcut listener (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z)
+  // Keyboard shortcut listener (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z, Escape)
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowSuccessModal(false)
+        setShowPublishModal(false)
+        setShowTemplates(false)
+        return
+      }
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         if (e.shiftKey) {
@@ -1216,7 +1222,12 @@ export default function SiteEditorPage() {
 
       {/* ── MODAL: ELEGIR DOMINIO & PUBLICAR ── */}
       {showPublishModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowPublishModal(false)
+          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        >
           <div style={{ background: '#FFFFFF', borderRadius: 20, width: '100%', maxWidth: 720, padding: '28px 36px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', border: '1px solid #E2E8F0', position: 'relative' }}>
             <button onClick={() => setShowPublishModal(false)} style={{ position: 'absolute', top: 18, right: 18, background: '#F1F5F9', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', cursor: 'pointer' }}>
               <X size={18} />
@@ -1385,7 +1396,12 @@ export default function SiteEditorPage() {
 
       {/* ── MODAL DEDICADA DE ÉXITO DE PUBLICACIÓN ── */}
       {showSuccessModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowSuccessModal(false)
+          }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        >
           <div style={{ background: '#FFFFFF', borderRadius: 24, width: 520, maxWidth: '95vw', padding: '36px 32px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', border: '1px solid #E2E8F0', textAlign: 'center', position: 'relative' }}>
             <button onClick={() => setShowSuccessModal(false)} style={{ position: 'absolute', top: 18, right: 18, border: 'none', background: '#F1F5F9', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', cursor: 'pointer' }}>
               <X size={18} />

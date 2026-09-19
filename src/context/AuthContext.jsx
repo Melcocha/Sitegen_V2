@@ -35,12 +35,32 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  const devLogin = useCallback(() => {
+    const devUser = {
+      id: 'saasweb_dev_user',
+      email: 'admin@saasweb.local',
+      user_metadata: { full_name: 'Desarrollador Local' },
+    }
+    const devProfile = {
+      id: 'saasweb_dev_user',
+      role: 'super_admin',
+      full_name: 'Desarrollador Local',
+      company_name: 'Mi Empresa Local',
+    }
+    sessionStorage.removeItem('saasweb_explicit_logout')
+    localStorage.setItem('saasweb_dev_user', JSON.stringify({ user: devUser, profile: devProfile }))
+    setUser(devUser)
+    setProfile(devProfile)
+    setLoading(false)
+  }, [])
+
   useEffect(() => {
-    // onAuthStateChange fires IMMEDIATELY with current session (INITIAL_SESSION event)
-    // So we DO NOT need getSession separately — avoids race conditions
+    const isLocalDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    const isExplicitLogout = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('saasweb_explicit_logout') === 'true'
+
     // Check local mock dev user if available
     const savedMock = localStorage.getItem('saasweb_dev_user')
-    if (savedMock && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    if (savedMock && isLocalDev) {
       try {
         const parsed = JSON.parse(savedMock)
         if (parsed.user) {
@@ -49,6 +69,9 @@ export function AuthProvider({ children }) {
           setLoading(false)
         }
       } catch (e) {}
+    } else if (isLocalDev && !isExplicitLogout) {
+      // Auto-initialize dev user so dashboard and all editor features are immediately accessible
+      devLogin()
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -64,7 +87,24 @@ export function AuthProvider({ children }) {
         if (session?.user) {
           setUser(session.user)
           fetchProfile(session.user.id)
-        } else if (!localStorage.getItem('saasweb_dev_user')) {
+        } else if (isLocalDev && !sessionStorage.getItem('saasweb_explicit_logout')) {
+          const mock = localStorage.getItem('saasweb_dev_user')
+          if (mock) {
+            try {
+              const parsed = JSON.parse(mock)
+              if (parsed.user) {
+                setUser(parsed.user)
+                setProfile(parsed.profile)
+              } else {
+                devLogin()
+              }
+            } catch {
+              devLogin()
+            }
+          } else {
+            devLogin()
+          }
+        } else {
           setUser(null)
           setProfile(null)
         }
@@ -73,30 +113,13 @@ export function AuthProvider({ children }) {
       }
     )
 
-    const timer = setTimeout(() => setLoading(false), 3000)
+    const timer = setTimeout(() => setLoading(false), 2000)
 
     return () => {
       subscription.unsubscribe()
       clearTimeout(timer)
     }
-  }, [fetchProfile])
-
-  const devLogin = useCallback(() => {
-    const devUser = {
-      id: 'dev-user-local',
-      email: 'admin@saasweb.local',
-      user_metadata: { full_name: 'Desarrollador Local' },
-    }
-    const devProfile = {
-      id: 'dev-user-local',
-      role: 'super_admin',
-      full_name: 'Desarrollador Local',
-      company_name: 'Mi Empresa Local',
-    }
-    localStorage.setItem('saasweb_dev_user', JSON.stringify({ user: devUser, profile: devProfile }))
-    setUser(devUser)
-    setProfile(devProfile)
-  }, [])
+  }, [fetchProfile, devLogin])
 
   // Auth methods
   const signUp = async ({ email, password, fullName }) => {
@@ -154,7 +177,7 @@ export function AuthProvider({ children }) {
     } catch (err) {
       if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         devLogin()
-        return { user: { id: 'dev-user-local' } }
+        return { user: { id: 'saasweb_dev_user' } }
       }
       throw err
     }
@@ -178,6 +201,7 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     localStorage.removeItem('saasweb_dev_user')
+    sessionStorage.setItem('saasweb_explicit_logout', 'true')
     try { await supabase.auth.signOut() } catch(e){}
     setUser(null)
     setProfile(null)

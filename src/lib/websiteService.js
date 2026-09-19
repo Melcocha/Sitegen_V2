@@ -38,7 +38,15 @@ function saveLocalSites(sites) {
  * getSites — fetch all websites for a user, newest first
  */
 export async function getSites(userId) {
-  const local = getLocalSites().filter(s => !userId || s.user_id === userId)
+  const local = getLocalSites().filter(s => {
+    if (!userId) return true
+    if (s.user_id === userId) return true
+    if ((userId === 'saasweb_dev_user' || userId === 'dev-user-local') &&
+        (s.user_id === 'saasweb_dev_user' || s.user_id === 'dev-user-local' || !s.user_id)) {
+      return true
+    }
+    return false
+  })
   try {
     const { data, error } = await supabase
       .from('websites')
