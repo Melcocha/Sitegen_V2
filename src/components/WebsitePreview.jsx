@@ -178,6 +178,7 @@ const EMOJI_TO_ICON = {
   '🏢': 'users',  '🔁': 'tool',   '📪': 'globe',  '📰': 'book',
 }
 function getIcon(sv) {
+  if (!sv) return SVGICONS.star
   // Priority 1: explicit iconId from editor
   if (sv.iconId && SVGICONS[sv.iconId]) return SVGICONS[sv.iconId]
   // Priority 2: icon field is a keyword like 'chart'
@@ -203,7 +204,7 @@ function getIcon(sv) {
 
 // Flexible industry match: exact first, then partial keyword
 function hPhoto(ind) {
-  if (!ind) return INDUSTRY_HERO.default
+  if (!ind || typeof ind !== 'string') return INDUSTRY_HERO.default
   if (INDUSTRY_HERO[ind]) return INDUSTRY_HERO[ind]
   const lower = ind.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   const keywords = [
@@ -1148,9 +1149,9 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
               )}
             </div>
             <div className="wp-nav-lks">
-              {(data.navLinks||(isChurch ? ['Inicio','Planifica tu Visita','Ministerios','Sermones','Próximos Pasos','Contacto'] : ['Inicio','Servicios','Nosotros','Testimonios','Contacto'])).map((l,i)=>{
-                const label = typeof l === 'string' ? l : l.label
-                const href  = typeof l === 'string' ? `#${l.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-')}` : (l.href||'#')
+              {(data.navLinks||(isChurch ? ['Inicio','Planifica tu Visita','Ministerios','Sermones','Próximos Pasos','Contacto'] : ['Inicio','Servicios','Nosotros','Testimonios','Contacto'])).filter(Boolean).map((l,i)=>{
+                const label = typeof l === 'string' ? l : (l?.label || '')
+                const href  = typeof l === 'string' ? `#${l.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'-')}` : (l?.href||'#')
                 return <a href={href} key={i} onClick={e=>scrollToSection(href,e)} style={isChurch ? { color: '#FFFFFF', fontWeight: 700 } : {}}>{label}</a>
               })}
             </div>
@@ -1550,27 +1551,27 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         </p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, textAlign: 'left' }}>
-                          {minList.map((min, idx) => (
+                          {(minList || []).filter(Boolean).map((min, idx) => (
                             <div key={idx} style={{ background: isDark ? '#0F172A' : '#F8FAFC', borderRadius: 20, overflow: 'hidden', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`, boxShadow: '0 6px 24px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column' }}>
                               <div style={{ height: 220, position: 'relative', overflow: 'hidden' }}>
                                 <img
-                                  src={min.image || (idx === 0 ? 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80&fit=crop')}
-                                  alt={min.name}
+                                  src={min?.image || (idx === 0 ? 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80&fit=crop')}
+                                  alt={min?.name || ''}
                                   className={editMode ? 'wp-editable' : ''}
-                                  onClick={editMode ? e => ec(e, { field: `ministries.${idx}.image`, label: `Foto Ministerio: ${min.name || idx+1}`, value: min.image, type: 'image' }) : undefined}
+                                  onClick={editMode ? e => ec(e, { field: `ministries.${idx}.image`, label: `Foto Ministerio: ${min?.name || idx+1}`, value: min?.image, type: 'image' }) : undefined}
                                   style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
                                 />
                               </div>
                               <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 14 }}>
                                 <div>
-                                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: isDark ? '#FFF' : '#0F172A', margin: '0 0 8px' }}>{min.name}</h3>
+                                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: isDark ? '#FFF' : '#0F172A', margin: '0 0 8px' }}>{min?.name}</h3>
                                   <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.55, color: isDark ? '#94A3B8' : '#64748B' }}>
-                                    {min.description}
+                                    {min?.description}
                                   </p>
                                 </div>
                                 <a href="#wp-contact" onClick={e => scrollToSection('#wp-contact', e)}
                                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.86rem', fontWeight: 800, color: a, textDecoration: 'none' }}>
-                                  {min.ctaText || 'Conoce más'} →
+                                  {min?.ctaText || 'Conoce más'} →
                                 </a>
                               </div>
                             </div>
@@ -1595,13 +1596,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                             { icon: 'users', title: 'Comunidad Auténtica', text: 'Crecemos juntos a través de grupos de amistad y apoyo mutuo.' },
                             { icon: 'book', title: 'Verdad Bíblica', text: 'Enseñanza práctica basada en la Palabra de Dios para la vida diaria.' },
                             { icon: 'globe', title: 'Impacto y Misión', text: 'Servimos con generosidad a nuestra ciudad y a los más necesitados.' },
-                          ]).map((val, idx) => (
+                          ]).filter(Boolean).map((val, idx) => (
                             <div key={idx} style={{ background: isDark ? '#0F172A' : '#F8FAFC', padding: 28, borderRadius: 20, border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`, transition: 'transform 0.2s', display: 'flex', flexDirection: 'column', gap: 12 }}>
                               <div style={{ width: 48, height: 48, borderRadius: 14, background: `${a}18`, color: a, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
-                                {getIcon({ iconId: val.icon, icon: val.icon, _idx: idx })}
+                                {getIcon({ iconId: val?.icon, icon: val?.icon, _idx: idx })}
                               </div>
-                              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: isDark ? '#FFF' : p, margin: 0 }}>{val.title}</h3>
-                              <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: isDark ? '#94A3B8' : '#64748B', margin: 0 }}>{val.text}</p>
+                              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: isDark ? '#FFF' : p, margin: 0 }}>{val?.title}</h3>
+                              <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: isDark ? '#94A3B8' : '#64748B', margin: 0 }}>{val?.text}</p>
                             </div>
                           ))}
                         </div>
@@ -1629,13 +1630,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         <p className="wp-sec-sub" style={{ margin: '0 auto 48px', maxWidth: 680 }}>{ns.subtitle || 'Un camino claro y guiado para crecer en tu fe.'}</p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, textAlign: 'left' }}>
-                          {(ns.steps || []).map((st, idx) => (
+                          {(ns.steps || []).filter(Boolean).map((st, idx) => (
                             <div key={idx} style={{ background: isDark ? '#1E293B' : '#F8FAFC', padding: 32, borderRadius: 24, border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`, position: 'relative', overflow: 'hidden' }}>
                               <div style={{ width: 44, height: 44, borderRadius: 12, background: a, color: isDark ? '#000' : '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 900, marginBottom: 18 }}>
-                                {st.step || (idx + 1)}
+                                {st?.step || (idx + 1)}
                               </div>
-                              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: isDark ? '#FFF' : p, marginBottom: 10 }}>{st.title}</h3>
-                              <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: isDark ? '#94A3B8' : '#64748B', margin: 0 }}>{st.description}</p>
+                              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: isDark ? '#FFF' : p, marginBottom: 10 }}>{st?.title}</h3>
+                              <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: isDark ? '#94A3B8' : '#64748B', margin: 0 }}>{st?.description}</p>
                             </div>
                           ))}
                         </div>
@@ -1663,13 +1664,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         </p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28, textAlign: 'left' }}>
-                          {sermonsList.map((sermon, idx) => (
+                          {(sermonsList || []).filter(Boolean).map((sermon, idx) => (
                             <div key={idx} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column' }}>
                               <div style={{ height: 180, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-                                onClick={editMode ? e => ec(e, { field: `sermons.${idx}.image`, label: `Portada Prédica: ${sermon.title || idx+1}`, value: sermon.image, type: 'image' }) : () => setActiveVideoModal({ title: sermon.title, url: sermon.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}>
+                                onClick={editMode ? e => ec(e, { field: `sermons.${idx}.image`, label: `Portada Prédica: ${sermon?.title || idx+1}`, value: sermon?.image, type: 'image' }) : () => setActiveVideoModal({ title: sermon?.title, url: sermon?.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}>
                                 <img
-                                  src={sermon.image || (idx === 0 ? 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80&fit=crop')}
-                                  alt={sermon.title}
+                                  src={sermon?.image || (idx === 0 ? 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80&fit=crop')}
+                                  alt={sermon?.title || ''}
                                   className={editMode ? 'wp-editable' : ''}
                                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
@@ -1679,9 +1680,9 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                                   </div>
                                 </div>
                                 <span style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: 6, textTransform: 'uppercase' }}>
-                                  {sermon.series || 'Serie Dominical'}
+                                  {sermon?.series || 'Serie Dominical'}
                                 </span>
-                                {sermon.duration && (
+                                {sermon?.duration && (
                                   <span style={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4 }}>
                                     {sermon.duration}
                                   </span>
@@ -1689,13 +1690,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                               </div>
                               <div style={{ padding: 22, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                 <div>
-                                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', margin: '0 0 8px', lineHeight: 1.3 }}>{sermon.title}</h3>
+                                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', margin: '0 0 8px', lineHeight: 1.3 }}>{sermon?.title}</h3>
                                   <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>
-                                    {sermon.speaker || 'Pastor'} • {sermon.date || 'Reciente'}
+                                    {sermon?.speaker || 'Pastor'} • {sermon?.date || 'Reciente'}
                                   </div>
                                 </div>
                                 <button
-                                  onClick={() => setActiveVideoModal({ title: sermon.title, url: sermon.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}
+                                  onClick={() => setActiveVideoModal({ title: sermon?.title, url: sermon?.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}
                                   style={{ marginTop: 16, background: 'transparent', border: 'none', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', fontWeight: 800, color: a, cursor: 'pointer', textAlign: 'left' }}>
                                   Ver prédica en video →
                                 </button>
@@ -2085,8 +2086,8 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                                 </a>
                               </div>
                               <div className="wp-stats">
-                                {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).map((st, i) => (
-                                  <div key={i}><div className="wp-stat-v">{st.value}</div><div className="wp-stat-l">{st.label}</div></div>
+                                {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).filter(Boolean).map((st, i) => (
+                                  <div key={i}><div className="wp-stat-v">{st?.value}</div><div className="wp-stat-l">{st?.label}</div></div>
                                 ))}
                               </div>
                             </div>
@@ -2130,8 +2131,8 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                             </div>
                             {(heroV === 2 || heroV === 3) && (
                               <div className="wp-stats">
-                                {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).map((st, i) => (
-                                  <div key={i}><div className="wp-stat-v">{st.value}</div><div className="wp-stat-l">{st.label}</div></div>
+                                {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).filter(Boolean).map((st, i) => (
+                                  <div key={i}><div className="wp-stat-v">{st?.value}</div><div className="wp-stat-l">{st?.label}</div></div>
                                 ))}
                               </div>
                             )}
@@ -2146,8 +2147,8 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         {heroV === 1 && (
                           <div className="wp-hero-content" style={{ marginTop: '-40px' }}>
                             <div className="wp-stats" style={{ width: '100%' }}>
-                              {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).map((st, i) => (
-                                <div key={i}><div className="wp-stat-v">{st.value}</div><div className="wp-stat-l">{st.label}</div></div>
+                              {(data.stats || [{ value: '500+', label: 'Clientes' },{ value: '98%',  label: 'Satisfacción' }]).filter(Boolean).map((st, i) => (
+                                <div key={i}><div className="wp-stat-v">{st?.value}</div><div className="wp-stat-l">{st?.label}</div></div>
                               ))}
                             </div>
                           </div>
@@ -2172,15 +2173,15 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                       {servicesV === 4 ? (
                         <div className="wp-grid.v4-outer">
                           <div className="wp-grid v4">
-                            {(data.services||[]).map((sv,i)=>(
+                            {(data.services||[]).filter(Boolean).map((sv,i)=>(
                               <div className="wp-scard" key={i}>
                                 <div className="wp-sicon-wrap-col">
                                   <div className="wp-sicon-wrap">{getIcon({...sv,_idx:i})}</div>
                                 </div>
                                 <div className="wp-stext-col">
-                                  <h3 className="wp-s-h3">{sv.title}</h3>
-                                  <p className="wp-s-p">{sv.description}</p>
-                                  <div className="wp-s-more">{sv.cta||'Saber más'} &rarr;</div>
+                                  <h3 className="wp-s-h3">{sv?.title}</h3>
+                                  <p className="wp-s-p">{sv?.description}</p>
+                                  <div className="wp-s-more">{sv?.cta||'Saber más'} &rarr;</div>
                                 </div>
                               </div>
                             ))}
@@ -2188,7 +2189,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         </div>
                       ) : (
                         <div className={`wp-grid v${servicesV}`}>
-                          {(data.services||[]).map((sv,i)=>{
+                          {(data.services||[]).filter(Boolean).map((sv,i)=>{
                             const tKey = `service_${i}_title`
                             const dKey = `service_${i}_desc`
                             return (
@@ -2198,15 +2199,15 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                                 </div>
                                 {servicesV === 2 ? (
                                   <div>
-                                    <h3 className={editMode?'wp-s-h3 wp-editable':'wp-s-h3'} onClick={editMode?e=>ec(e,{ovKey:tKey,field:`services.${i}.title`,label:`Servicio ${i+1}: Título`,value:sv.title,type:'text',textColor:ov(tKey).textColor||p,bgColor:ov(tKey).bgColor,fontWeight:ov(tKey).fontWeight||800}):undefined} style={ost(tKey)}>{sv.title}</h3>
-                                    <p className={editMode?'wp-s-p wp-editable':'wp-s-p'} onClick={editMode?e=>ec(e,{ovKey:dKey,field:`services.${i}.description`,label:`Servicio ${i+1}: Descripción`,value:sv.description,type:'textarea',textColor:ov(dKey).textColor||'#6B7280',bgColor:ov(dKey).bgColor,fontWeight:ov(dKey).fontWeight||400}):undefined} style={ost(dKey)}>{sv.description}</p>
-                                    <div className="wp-s-more">{sv.cta||'Saber más'} &rarr;</div>
+                                    <h3 className={editMode?'wp-s-h3 wp-editable':'wp-s-h3'} onClick={editMode?e=>ec(e,{ovKey:tKey,field:`services.${i}.title`,label:`Servicio ${i+1}: Título`,value:sv?.title,type:'text',textColor:ov(tKey).textColor||p,bgColor:ov(tKey).bgColor,fontWeight:ov(tKey).fontWeight||800}):undefined} style={ost(tKey)}>{sv?.title}</h3>
+                                    <p className={editMode?'wp-s-p wp-editable':'wp-s-p'} onClick={editMode?e=>ec(e,{ovKey:dKey,field:`services.${i}.description`,label:`Servicio ${i+1}: Descripción`,value:sv?.description,type:'textarea',textColor:ov(dKey).textColor||'#6B7280',bgColor:ov(dKey).bgColor,fontWeight:ov(dKey).fontWeight||400}):undefined} style={ost(dKey)}>{sv?.description}</p>
+                                    <div className="wp-s-more">{sv?.cta||'Saber más'} &rarr;</div>
                                   </div>
                                 ) : (
                                   <>
-                                    <h3 className={editMode?'wp-s-h3 wp-editable':'wp-s-h3'} onClick={editMode?e=>ec(e,{ovKey:tKey,field:`services.${i}.title`,label:`Servicio ${i+1}: Título`,value:sv.title,type:'text',textColor:ov(tKey).textColor||p,bgColor:ov(tKey).bgColor,fontWeight:ov(tKey).fontWeight||800}):undefined} style={ost(tKey)}>{sv.title}</h3>
-                                    <p className={editMode?'wp-s-p wp-editable':'wp-s-p'} onClick={editMode?e=>ec(e,{ovKey:dKey,field:`services.${i}.description`,label:`Servicio ${i+1}: Descripción`,value:sv.description,type:'textarea',textColor:ov(dKey).textColor||'#6B7280',bgColor:ov(dKey).bgColor,fontWeight:ov(dKey).fontWeight||400}):undefined} style={ost(dKey)}>{sv.description}</p>
-                                    <div className="wp-s-more">{sv.cta||'Saber más'} &rarr;</div>
+                                    <h3 className={editMode?'wp-s-h3 wp-editable':'wp-s-h3'} onClick={editMode?e=>ec(e,{ovKey:tKey,field:`services.${i}.title`,label:`Servicio ${i+1}: Título`,value:sv?.title,type:'text',textColor:ov(tKey).textColor||p,bgColor:ov(tKey).bgColor,fontWeight:ov(tKey).fontWeight||800}):undefined} style={ost(tKey)}>{sv?.title}</h3>
+                                    <p className={editMode?'wp-s-p wp-editable':'wp-s-p'} onClick={editMode?e=>ec(e,{ovKey:dKey,field:`services.${i}.description`,label:`Servicio ${i+1}: Descripción`,value:sv?.description,type:'textarea',textColor:ov(dKey).textColor||'#6B7280',bgColor:ov(dKey).bgColor,fontWeight:ov(dKey).fontWeight||400}):undefined} style={ost(dKey)}>{sv?.description}</p>
+                                    <div className="wp-s-more">{sv?.cta||'Saber más'} &rarr;</div>
                                   </>
                                 )}
                               </div>
@@ -2404,14 +2405,14 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                       <div className="wp-sec-lbl">Nuestro Equipo</div>
                       <h2 className="wp-h2">{data.teamTitle||'Conoce a nuestros Especialistas'}</h2>
                       <div className="wp-team-grid">
-                        {data.team.map((mbr,i)=>(
+                        {(data.team || []).filter(Boolean).map((mbr,i)=>(
                           <div key={i} className="wp-team-card">
-                            <div className="wp-team-ic">{mbr.icon || '👨‍🦱'}</div>
-                            <div style={{ fontSize:'1.4rem', fontWeight:800, marginBottom:8 }}>{mbr.name}</div>
-                            <div style={{ fontSize:'.95rem', opacity:0.8, marginBottom:32, fontWeight:500, letterSpacing:'0.03em', textTransform:'uppercase' }}>{mbr.role}</div>
-                            {mbr.ctaLink && (
+                            <div className="wp-team-ic">{mbr?.icon || '👨‍🦱'}</div>
+                            <div style={{ fontSize:'1.4rem', fontWeight:800, marginBottom:8 }}>{mbr?.name}</div>
+                            <div style={{ fontSize:'.95rem', opacity:0.8, marginBottom:32, fontWeight:500, letterSpacing:'0.03em', textTransform:'uppercase' }}>{mbr?.role}</div>
+                            {mbr?.ctaLink && (
                               <a href={mbr.ctaLink} target="_blank" rel="noopener noreferrer" className="wp-btn-p" style={{ width:'100%', padding:'16px' }}>
-                                {mbr.ctaText || 'Reservar Cita'}
+                                {mbr?.ctaText || 'Reservar Cita'}
                               </a>
                             )}
                           </div>
@@ -2427,19 +2428,19 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                       <h2 className="wp-h2">{data.beforeAfterTitle||'Antes y Después'}</h2>
                       <p className="wp-sec-sub" style={{marginBottom:48}}>{data.beforeAfterSubtitle||'Resultados reales de nuestros clientes.'}</p>
                       <div className="wp-ba-grid">
-                        {data.beforeAfter.map((ba,i)=>(
+                        {(data.beforeAfter || []).filter(Boolean).map((ba,i)=>(
                           <div key={i} className="wp-ba-card">
                             <div style={{ display:'flex', height:280 }}>
                               <div style={{ flex:1, position:'relative', borderRight:`2px solid ${isDark?'#333':'#fff'}` }}>
                                 <div style={{ position:'absolute', top:12, left:12, background:'rgba(0,0,0,.7)', color:'#fff', padding:'4px 12px', borderRadius:8, fontSize:'.7rem', fontWeight:800, backdropFilter:'blur(4px)', zIndex:2 }}>Antes</div>
-                                <img src={ba.before} alt="Antes" loading="lazy" className={editMode?'wp-editable':''} onClick={editMode?e=>ec(e,{field:`beforeAfter.${i}.before`,label:`Antes - Foto ${i+1}`,value:ba.before,type:'image'}):undefined} style={{ width:'100%', height:'100%', objectFit:'cover', filter:'grayscale(30%)' }} />
+                                <img src={ba?.before} alt="Antes" loading="lazy" className={editMode?'wp-editable':''} onClick={editMode?e=>ec(e,{field:`beforeAfter.${i}.before`,label:`Antes - Foto ${i+1}`,value:ba?.before,type:'image'}):undefined} style={{ width:'100%', height:'100%', objectFit:'cover', filter:'grayscale(30%)' }} />
                               </div>
                               <div style={{ flex:1, position:'relative' }}>
                                 <div style={{ position:'absolute', top:12, right:12, background:a, color:isDark?'#000':'#fff', padding:'4px 12px', borderRadius:8, fontSize:'.7rem', fontWeight:900, boxShadow:'0 4px 12px rgba(0,0,0,.3)', zIndex:2 }}>Después</div>
-                                <img src={ba.after} alt="Después" loading="lazy" className={editMode?'wp-editable':''} onClick={editMode?e=>ec(e,{field:`beforeAfter.${i}.after`,label:`Después - Foto ${i+1}`,value:ba.after,type:'image'}):undefined} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                                <img src={ba?.after} alt="Después" loading="lazy" className={editMode?'wp-editable':''} onClick={editMode?e=>ec(e,{field:`beforeAfter.${i}.after`,label:`Después - Foto ${i+1}`,value:ba?.after,type:'image'}):undefined} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
                               </div>
                             </div>
-                            {ba.caption && <div style={{ padding:'16px 20px', fontSize:'.95rem', fontWeight:600, textAlign:'center' }}>{ba.caption}</div>}
+                            {ba?.caption && <div style={{ padding:'16px 20px', fontSize:'.95rem', fontWeight:600, textAlign:'center' }}>{ba.caption}</div>}
                           </div>
                         ))}
                       </div>
@@ -2448,11 +2449,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
                 case 'testimonials':
                   return data.testimonials?.length > 0 ? (() => {
+                    const validTestimonials = (data.testimonials || []).filter(Boolean)
+                    if (!validTestimonials.length) return null
                     const PER_PAGE = testimonialsV === 2 ? 1 : 3
-                    const total = data.testimonials.length
+                    const total = validTestimonials.length
                     const pages = Math.ceil(total / PER_PAGE)
                     const safePage = Math.min(testPage, pages - 1)
-                    const slice = data.testimonials.slice(safePage * PER_PAGE, (safePage + 1) * PER_PAGE)
+                    const slice = validTestimonials.slice(safePage * PER_PAGE, (safePage + 1) * PER_PAGE)
 
                     return wrapSection('testimonials', testimonialsV, (
                       <section key="testimonials" className="wp-sec" id="wp-testimonios" style={{ textAlign:'center', position: 'relative' }}>
@@ -2464,15 +2467,15 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                           <div style={{ maxWidth: 800, margin: '36px auto 0', padding: '0 24px' }}>
                             <div style={{ fontSize: '4.5rem', color: a, lineHeight: 0.1, fontFamily: 'serif', marginBottom: 12 }}>“</div>
                             <p style={{ fontSize: '1.4rem', fontWeight: 500, fontStyle: 'italic', lineHeight: 1.7, color: isDark ? '#FFF' : p, marginBottom: 28 }}>
-                              {slice[0].text}
+                              {slice[0]?.text}
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                               <div style={{ width: 44, height: 44, borderRadius: '50%', background: avGrads[safePage % 3], display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fff' }}>
-                                {(slice[0].name||'C')[0]}
+                                {(slice[0]?.name||'C')[0]}
                               </div>
                               <div style={{ textAlign: 'left' }}>
-                                <div style={{ fontWeight: 800, color: isDark ? '#fff' : '#111827', fontSize: '.95rem' }}>{slice[0].name}</div>
-                                <div style={{ fontSize: '.75rem', color: '#888', fontWeight: 600 }}>{slice[0].role}</div>
+                                <div style={{ fontWeight: 800, color: isDark ? '#fff' : '#111827', fontSize: '.95rem' }}>{slice[0]?.name}</div>
+                                <div style={{ fontSize: '.75rem', color: '#888', fontWeight: 600 }}>{slice[0]?.role}</div>
                               </div>
                             </div>
                           </div>
@@ -2487,13 +2490,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                             <div className="wp-tgrid" style={{ gridTemplateColumns: '1fr' }}>
                               {slice.map((t,i)=>(
                                 <div className="wp-tcard" key={i} style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.06)' }}>
-                                  <div className="wp-stars" style={{ color: a }}>{'★'.repeat(t.rating||5)}</div>
-                                  <p style={{ margin: '12px 0 16px', fontSize: '.92rem', lineHeight: 1.6, fontStyle: 'italic' }}>"{t.text}"</p>
+                                  <div className="wp-stars" style={{ color: a }}>{'★'.repeat(t?.rating||5)}</div>
+                                  <p style={{ margin: '12px 0 16px', fontSize: '.92rem', lineHeight: 1.6, fontStyle: 'italic' }}>"{t?.text}"</p>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    <div className="wp-tav" style={{ background: avGrads[i%3], width: 32, height: 32, fontSize: '.8rem' }}>{(t.name||'C')[0]}</div>
+                                    <div className="wp-tav" style={{ background: avGrads[i%3], width: 32, height: 32, fontSize: '.8rem' }}>{(t?.name||'C')[0]}</div>
                                     <div>
-                                      <div style={{ fontWeight: 800, fontSize: '.85rem' }}>{t.name}</div>
-                                      <div style={{ fontSize: '.7rem', color: '#888' }}>{t.role}</div>
+                                      <div style={{ fontWeight: 800, fontSize: '.85rem' }}>{t?.name}</div>
+                                      <div style={{ fontSize: '.7rem', color: '#888' }}>{t?.role}</div>
                                     </div>
                                   </div>
                                 </div>
@@ -2508,15 +2511,15 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                               <div key={i} style={{ padding: '24px 0', borderBottom: i < slice.length - 1 ? '1.5px solid rgba(0,0,0,0.06)' : 'none' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    <div className="wp-tav" style={{ background: avGrads[i%3], width: 36, height: 36 }}>{(t.name||'C')[0]}</div>
+                                    <div className="wp-tav" style={{ background: avGrads[i%3], width: 36, height: 36 }}>{(t?.name||'C')[0]}</div>
                                     <div>
-                                      <div style={{ fontWeight: 800, fontSize: '.9rem', color: p }}>{t.name}</div>
-                                      <div style={{ fontSize: '.75rem', color: '#888' }}>{t.role}</div>
+                                      <div style={{ fontWeight: 800, fontSize: '.9rem', color: p }}>{t?.name}</div>
+                                      <div style={{ fontSize: '.75rem', color: '#888' }}>{t?.role}</div>
                                     </div>
                                   </div>
-                                  <div className="wp-stars" style={{ color: a, fontSize: '.9rem' }}>{'★'.repeat(t.rating||5)}</div>
+                                  <div className="wp-stars" style={{ color: a, fontSize: '.9rem' }}>{'★'.repeat(t?.rating||5)}</div>
                                 </div>
-                                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: '#4B5563', fontStyle: 'italic' }}>"{t.text}"</p>
+                                <p style={{ fontSize: '1rem', lineHeight: 1.7, color: '#4B5563', fontStyle: 'italic' }}>"{t?.text}"</p>
                               </div>
                             ))}
                           </div>
@@ -2526,11 +2529,11 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                           <div className="wp-tgrid">
                             {slice.map((t,i)=>(
                               <div className="wp-tcard" key={i} style={{ textAlign:'left' }}>
-                                <div className="wp-stars">{'★'.repeat(t.rating||5)}</div>
-                                <p className="wp-ttxt">"{t.text}"</p>
+                                <div className="wp-stars">{'★'.repeat(t?.rating||5)}</div>
+                                <p className="wp-ttxt">"{t?.text}"</p>
                                 <div className="wp-tav-row">
-                                  <div className="wp-tav" style={{ background:avGrads[(safePage*PER_PAGE+i)%3] }}>{(t.name||'C')[0]}</div>
-                                  <div><div className="wp-tn">{t.name}</div><div className="wp-tr">{t.role}</div></div>
+                                  <div className="wp-tav" style={{ background:avGrads[(safePage*PER_PAGE+i)%3] }}>{(t?.name||'C')[0]}</div>
+                                  <div><div className="wp-tn">{t?.name}</div><div className="wp-tr">{t?.role}</div></div>
                                 </div>
                               </div>
                             ))}

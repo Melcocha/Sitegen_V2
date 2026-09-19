@@ -1077,13 +1077,13 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                     </h2>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
-                    {values.map((val, idx) => (
+                    {(values || []).filter(Boolean).map((val, idx) => (
                       <div key={idx} style={{ background: '#0D0D0E', border: '1px solid #27272A', borderRadius: 12, padding: 32 }}>
                         <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 12, fontFamily: 'Georgia, serif' }}>
-                          {val.title}
+                          {val?.title}
                         </div>
                         <div style={{ fontSize: '0.95rem', color: '#A1A1AA', lineHeight: 1.7, fontFamily: 'Georgia, serif' }}>
-                          {val.text}
+                          {val?.text}
                         </div>
                       </div>
                     ))}
@@ -1135,11 +1135,11 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                     </h2>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 40 }}>
-                    {ministriesList.map((min, idx) => (
+                    {(ministriesList || []).filter(Boolean).map((min, idx) => (
                       <div key={idx} style={{ background: '#000000', border: '1px solid #27272A', borderRadius: 12, overflow: 'hidden' }}>
                         {min.image && (
                           <div style={{ height: 220, overflow: 'hidden' }}>
-                            <img src={min.image} alt={min.name || min.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={min.image} alt={min?.name || min?.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         )}
                         <div style={{ padding: 28 }}>
@@ -1147,7 +1147,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                             {min.name || min.title}
                           </h3>
                           <p style={{ fontSize: '0.92rem', color: '#A1A1AA', lineHeight: 1.6, margin: 0, fontFamily: 'Georgia, serif' }}>
-                            {min.description || min.desc}
+                            {min?.description || min?.desc}
                           </p>
                         </div>
                       </div>
@@ -1202,11 +1202,11 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                     </h2>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 36 }}>
-                    {sermonsList.map((sermon, idx) => (
+                    {(sermonsList || []).filter(Boolean).map((sermon, idx) => (
                       <div key={idx} style={{ background: '#0D0D0E', border: '1px solid #27272A', borderRadius: 12, overflow: 'hidden' }}>
                         {sermon.image && (
                           <div style={{ height: 200, overflow: 'hidden' }}>
-                            <img src={sermon.image} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={sermon.image} alt={sermon?.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         )}
                         <div style={{ padding: 24 }}>
@@ -1876,7 +1876,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             </h2>
 
             <div style={{ fontSize: '1.1rem', color: '#A1A1AA', marginBottom: 36, display: 'flex', flexDirection: 'column', gap: 10, fontFamily: 'Georgia, serif' }}>
-              {meetingTimes.map((timeStr, idx) => (
+              {(meetingTimes || []).filter(Boolean).map((timeStr, idx) => (
                 <div
                   key={idx}
                   data-field={`contact.meetingTimes.${idx}`}

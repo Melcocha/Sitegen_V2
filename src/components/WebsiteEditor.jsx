@@ -521,20 +521,20 @@ function ServiceEditor({ services, onChange }) {
 
   return (
     <div>
-      {(services||[]).map((sv,i) => (
+      {(services||[]).filter(Boolean).map((sv,i) => (
         <div key={i} style={{ border:'1.5px solid #E5E7EB', borderRadius:11, padding:13, marginBottom:10, background:'#FAFAFA', position:'relative' }}>
           <button onClick={()=>remove(i)} style={{ position:'absolute', top:8, right:8, border:'none', background:'none', cursor:'pointer', color:'#EF4444', padding:3, display:'flex', alignItems:'center' }}><Trash2 size={12} /></button>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
             <div style={{ width:34, height:34, borderRadius:8, background:'#EEF2FF', display:'flex', alignItems:'center', justifyContent:'center', color:'#6366F1', flexShrink:0 }}>
-              {sv.iconId ? svgForId(sv.iconId) : svgForId('star')}
+              {sv?.iconId ? svgForId(sv.iconId) : svgForId('star')}
             </div>
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{ fontSize:'.68rem', fontWeight:700, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'.04em', marginBottom:3 }}>Ícono</div>
-              <IconPicker value={sv.iconId||'star'} onChange={v=>update(i,'iconId',v)} />
+              <IconPicker value={sv?.iconId||'star'} onChange={v=>update(i,'iconId',v)} />
             </div>
           </div>
-          <Field label="Título" value={sv.title} onChange={v=>update(i,'title',v)} placeholder="Nombre del servicio" />
-          <Field label="Descripción" value={sv.description} onChange={v=>update(i,'description',v)} multiline placeholder="Breve descripción..." />
+          <Field label="Título" value={sv?.title} onChange={v=>update(i,'title',v)} placeholder="Nombre del servicio" />
+          <Field label="Descripción" value={sv?.description} onChange={v=>update(i,'description',v)} multiline placeholder="Breve descripción..." />
         </div>
       ))}
       <button onClick={add} style={S.addBtn}><Plus size={13} /> Agregar Servicio</button>
@@ -549,18 +549,18 @@ function TestimonialsEditor({ testimonials, onChange }) {
 
   return (
     <div>
-      {(testimonials||[]).map((t,i) => (
+      {(testimonials||[]).filter(Boolean).map((t,i) => (
         <div key={i} style={{ border:'1.5px solid #E5E7EB', borderRadius:11, padding:13, marginBottom:10, background:'#FAFAFA', position:'relative' }}>
           <button onClick={()=>remove(i)} style={{ position:'absolute', top:8, right:8, border:'none', background:'none', cursor:'pointer', color:'#EF4444', padding:3, display:'flex', alignItems:'center' }}><Trash2 size={12} /></button>
-          <Field label="Nombre" value={t.name} onChange={v=>update(i,'name',v)} />
-          <Field label="Detalle / Rol" value={t.role} onChange={v=>update(i,'role',v)} />
-          <Field label="Testimonio" value={t.text} onChange={v=>update(i,'text',v)} multiline />
+          <Field label="Nombre" value={t?.name} onChange={v=>update(i,'name',v)} />
+          <Field label="Detalle / Rol" value={t?.role} onChange={v=>update(i,'role',v)} />
+          <Field label="Testimonio" value={t?.text} onChange={v=>update(i,'text',v)} multiline />
           <div style={S.row}>
             <label style={S.label}>Calificación</label>
             <div style={{ display:'flex', gap:4 }}>
               {[1,2,3,4,5].map(s => (
                 <button key={s} onClick={()=>update(i,'rating',s)}
-                  style={{ border:'none', background:'none', cursor:'pointer', fontSize:'1.1rem', color: s<=(t.rating||5)?'#F59E0B':'#D1D5DB', padding:0 }}>★</button>
+                  style={{ border:'none', background:'none', cursor:'pointer', fontSize:'1.1rem', color: s<=(t?.rating||5)?'#F59E0B':'#D1D5DB', padding:0 }}>★</button>
               ))}
             </div>
           </div>
@@ -617,13 +617,13 @@ function ValuesEditor({ values, onChange }) {
 
   return (
     <div>
-      {list.map((val, i) => (
+      {(list || []).filter(Boolean).map((val, i) => (
         <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 11, padding: 12, marginBottom: 10, background: '#FAFAFA', position: 'relative' }}>
           <button onClick={() => remove(i)} style={{ position: 'absolute', top: 8, right: 8, border: 'none', background: 'none', cursor: 'pointer', color: '#EF4444', padding: 3 }}>
             <Trash2 size={12} />
           </button>
-          <Field label="Título del Valor" value={val.title} onChange={v => update(i, 'title', v)} placeholder="Ej: Amor Incondicional" />
-          <Field label="Descripción" value={val.text} onChange={v => update(i, 'text', v)} multiline placeholder="Descripción del valor..." />
+          <Field label="Título del Valor" value={val?.title} onChange={v => update(i, 'title', v)} placeholder="Ej: Amor Incondicional" />
+          <Field label="Descripción" value={val?.text} onChange={v => update(i, 'text', v)} multiline placeholder="Descripción del valor..." />
         </div>
       ))}
       {list.length < 8 && (
@@ -644,16 +644,16 @@ function MinistriesEditor({ ministries, onChange }) {
 
   return (
     <div>
-      {list.map((m, i) => (
+      {(list || []).filter(Boolean).map((m, i) => (
         <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 11, padding: 13, marginBottom: 12, background: '#FAFAFA', position: 'relative' }}>
           <button onClick={() => remove(i)} style={{ position: 'absolute', top: 8, right: 8, border: 'none', background: 'none', cursor: 'pointer', color: '#EF4444', padding: 3 }}>
             <Trash2 size={12} />
           </button>
-          <Field label="Nombre del Ministerio" value={m.name} onChange={v => update(i, 'name', v)} placeholder="Ej: KidZone (Niños)" />
-          <Field label="Rango de Edad / Categoría" value={m.ageRange} onChange={v => update(i, 'ageRange', v)} placeholder="Ej: 0 a 12 años" />
-          <Field label="Descripción" value={m.description} onChange={v => update(i, 'description', v)} multiline placeholder="Breve descripción..." />
-          <Field label="Texto del Botón CTA" value={m.ctaText} onChange={v => update(i, 'ctaText', v)} placeholder="Ej: Más Información" />
-          <ImageUploadBox label="Foto del Ministerio" imageUrl={m.image} onUpload={url => update(i, 'image', url)} onClear={() => update(i, 'image', '')} />
+          <Field label="Nombre del Ministerio" value={m?.name} onChange={v => update(i, 'name', v)} placeholder="Ej: KidZone (Niños)" />
+          <Field label="Rango de Edad / Categoría" value={m?.ageRange} onChange={v => update(i, 'ageRange', v)} placeholder="Ej: 0 a 12 años" />
+          <Field label="Descripción" value={m?.description} onChange={v => update(i, 'description', v)} multiline placeholder="Breve descripción..." />
+          <Field label="Texto del Botón CTA" value={m?.ctaText} onChange={v => update(i, 'ctaText', v)} placeholder="Ej: Más Información" />
+          <ImageUploadBox label="Foto del Ministerio" imageUrl={m?.image} onUpload={url => update(i, 'image', url)} onClear={() => update(i, 'image', '')} />
         </div>
       ))}
       <button onClick={add} style={S.addBtn}><Plus size={13} /> Agregar Ministerio</button>
@@ -680,14 +680,14 @@ function NextStepsEditor({ nextSteps, onChange }) {
 
   return (
     <div>
-      <Field label="Título de la Sección" value={ns.title} onChange={v => updateMain('title', v)} placeholder="Tus Próximos Pasos en la Fe" />
-      <Field label="Subtítulo" value={ns.subtitle} onChange={v => updateMain('subtitle', v)} multiline placeholder="Descripción introductoria..." />
-      <ImageUploadBox label="Foto de la Sección" imageUrl={ns.image} onUpload={url => updateMain('image', url)} onClear={() => updateMain('image', '')} />
+      <Field label="Título de la Sección" value={ns?.title} onChange={v => updateMain('title', v)} placeholder="Tus Próximos Pasos en la Fe" />
+      <Field label="Subtítulo" value={ns?.subtitle} onChange={v => updateMain('subtitle', v)} multiline placeholder="Descripción introductoria..." />
+      <ImageUploadBox label="Foto de la Sección" imageUrl={ns?.image} onUpload={url => updateMain('image', url)} onClear={() => updateMain('image', '')} />
       <div style={S.divider} />
-      {(ns.steps || []).map((st, i) => (
+      {(ns.steps || []).filter(Boolean).map((st, i) => (
         <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 10, padding: 10, marginBottom: 10, background: '#FAFAFA' }}>
-          <Field label={`Paso ${i + 1} - Título`} value={st.title} onChange={v => updateStep(i, 'title', v)} placeholder={`Paso ${i + 1}`} />
-          <Field label="Descripción" value={st.description} onChange={v => updateStep(i, 'description', v)} multiline />
+          <Field label={`Paso ${i + 1} - Título`} value={st?.title} onChange={v => updateStep(i, 'title', v)} placeholder={`Paso ${i + 1}`} />
+          <Field label="Descripción" value={st?.description} onChange={v => updateStep(i, 'description', v)} multiline />
         </div>
       ))}
     </div>
@@ -707,20 +707,20 @@ function SermonsEditor({ sermons, title, subtitle, onChangeData }) {
       <Field label="Título de la Sección" value={title} onChange={v => onChangeData('sermonsTitle', v)} placeholder="Mensajes & Prédicas Recientes" />
       <Field label="Subtítulo" value={subtitle} onChange={v => onChangeData('sermonsSubtitle', v)} multiline placeholder="Descripción de los mensajes..." />
       <div style={S.divider} />
-      {list.map((sermon, i) => (
+      {(list || []).filter(Boolean).map((sermon, i) => (
         <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 11, padding: 13, marginBottom: 12, background: '#FAFAFA', position: 'relative' }}>
           <button onClick={() => remove(i)} style={{ position: 'absolute', top: 8, right: 8, border: 'none', background: 'none', cursor: 'pointer', color: '#EF4444', padding: 3 }}>
             <Trash2 size={12} />
           </button>
-          <Field label="Título de la Prédica" value={sermon.title} onChange={v => update(i, 'title', v)} placeholder="Título del mensaje" />
-          <Field label="Serie" value={sermon.series} onChange={v => update(i, 'series', v)} placeholder="Ej: Serie: Imparables" />
-          <Field label="Predicador / Orador" value={sermon.speaker} onChange={v => update(i, 'speaker', v)} placeholder="Ej: Pastor Principal" />
+          <Field label="Título de la Prédica" value={sermon?.title} onChange={v => update(i, 'title', v)} placeholder="Título del mensaje" />
+          <Field label="Serie" value={sermon?.series} onChange={v => update(i, 'series', v)} placeholder="Ej: Serie: Imparables" />
+          <Field label="Predicador / Orador" value={sermon?.speaker} onChange={v => update(i, 'speaker', v)} placeholder="Ej: Pastor Principal" />
           <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ flex: 1 }}><Field label="Fecha" value={sermon.date} onChange={v => update(i, 'date', v)} placeholder="Ej: 24 Ago 2026" /></div>
-            <div style={{ flex: 1 }}><Field label="Duración" value={sermon.duration} onChange={v => update(i, 'duration', v)} placeholder="Ej: 38 min" /></div>
+            <div style={{ flex: 1 }}><Field label="Fecha" value={sermon?.date} onChange={v => update(i, 'date', v)} placeholder="Ej: 24 Ago 2026" /></div>
+            <div style={{ flex: 1 }}><Field label="Duración" value={sermon?.duration} onChange={v => update(i, 'duration', v)} placeholder="Ej: 38 min" /></div>
           </div>
-          <Field label="Link de YouTube (Video)" value={sermon.videoUrl} onChange={v => update(i, 'videoUrl', v)} placeholder="https://www.youtube.com/watch?v=..." />
-          <ImageUploadBox label="Thumbnail / Portada del Video" imageUrl={sermon.image} onUpload={url => update(i, 'image', url)} onClear={() => update(i, 'image', '')} />
+          <Field label="Link de YouTube (Video)" value={sermon?.videoUrl} onChange={v => update(i, 'videoUrl', v)} placeholder="https://www.youtube.com/watch?v=..." />
+          <ImageUploadBox label="Thumbnail / Portada del Video" imageUrl={sermon?.image} onUpload={url => update(i, 'image', url)} onClear={() => update(i, 'image', '')} />
         </div>
       ))}
       <button onClick={add} style={S.addBtn}><Plus size={13} /> Agregar Prédica / Sermón</button>

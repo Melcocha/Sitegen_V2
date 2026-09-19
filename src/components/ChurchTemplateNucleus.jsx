@@ -918,24 +918,24 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           case 'panoramas':
             return wrap(
               <section id="wp-panoramas" style={{ width: '100%', margin: 0, padding: 0 }}>
-        {panoramas.map((pano, idx) => (
+        {(panoramas || []).filter(Boolean).map((pano, idx) => (
           <div key={idx}
             data-field={`panoramas.${idx}.image`}
             data-ovkey={`panoramas.${idx}.image`}
             className="editable-element"
-            onClick={(e) => handleEdit(e, `panoramas.${idx}.image`, `Foto Panorama ${idx + 1}`, 'image', pano.image)}
+            onClick={(e) => handleEdit(e, `panoramas.${idx}.image`, `Foto Panorama ${idx + 1}`, 'image', pano?.image)}
             style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`panoramas.${idx}.image`) }}
           >
             {isVideoUrl(pano.image) ? (
               <video
-                src={pano.image}
+                src={pano?.image}
                 autoPlay loop muted playsInline
                 style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.55)' }}
               />
             ) : (
               <img
                 src={pano.image}
-                alt={pano.title}
+                alt={pano?.title || ''}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.55)' }}
               />
             )}
@@ -949,7 +949,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
                 onClick={(e) => handleEdit(e, `panoramas.${idx}.title`, `Título Panorama ${idx + 1}`, 'text', pano.title)}
                 style={{ fontFamily: 'Playfair Display, serif', fontSize: '3rem', fontWeight: 900, margin: '0 0 10px', color: '#FFFFFF', pointerEvents: 'auto', ...ost(`panoramas.${idx}.title`) }}
               >
-                {pano.title}
+                {pano?.title}
               </h3>
               <p
                 data-field={`panoramas.${idx}.subtitle`}
@@ -1026,25 +1026,25 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 48 }}>
-            {sermons.map((sermon, idx) => (
+            {(sermons || []).filter(Boolean).map((sermon, idx) => (
               <div key={idx} style={{ background: 'transparent', display: 'flex', flexDirection: 'column' }}>
                 <div
                   data-field={`sermons.${idx}.image`}
                   data-ovkey={`sermons.${idx}.image`}
                   className="editable-element"
-                  onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx + 1}`, 'image', sermon.image)}
+                  onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx + 1}`, 'image', sermon?.image)}
                   style={{ position: 'relative', height: 240, overflow: 'hidden', marginBottom: 24, cursor: editMode ? 'pointer' : 'default', ...ost(`sermons.${idx}.image`) }}
                 >
                   {isVideoUrl(sermon.image) ? (
                     <video
-                      src={sermon.image}
+                      src={sermon?.image}
                       autoPlay loop muted playsInline
                       style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75)' }}
                     />
                   ) : (
                     <img
                       src={sermon.image}
-                      alt={sermon.title}
+                      alt={sermon?.title || ''}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75)' }}
                     />
                   )}
@@ -1072,7 +1072,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
                     onClick={(e) => handleEdit(e, `sermons.${idx}.title`, `Título Prédica ${idx + 1}`, 'text', sermon.title)}
                     style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.45rem', color: '#FFFFFF', margin: '0 0 12px', lineHeight: 1.3, ...ost(`sermons.${idx}.title`) }}
                   >
-                    {sermon.title}
+                    {sermon?.title}
                   </h4>
                   <div
                     data-field={`sermons.${idx}.speaker`}
@@ -1313,14 +1313,14 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
               { icon: 'users', title: 'Comunidad Auténtica', text: 'Crecemos juntos a través de grupos de amistad.' },
               { icon: 'book', title: 'Verdad Bíblica', text: 'Enseñanza práctica basada en la Palabra de Dios.' },
               { icon: 'globe', title: 'Impacto y Misión', text: 'Servimos con generosidad a nuestra ciudad.' }
-            ]).map((val, idx) => (
+            ]).filter(Boolean).map((val, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, padding: '32px 24px' }}>
                 <div style={{ color: accentGold, fontSize: '1.8rem', marginBottom: 16 }}>✦</div>
-                <h3 data-field={`values.${idx}.title`} data-ovkey={`values.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.title`, `Título Valor ${idx+1}`, 'text', val.title)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', color: '#FFFFFF', margin: '0 0 12px', ...ost(`values.${idx}.title`) }}>
-                  {val.title}
+                <h3 data-field={`values.${idx}.title`} data-ovkey={`values.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.title`, `Título Valor ${idx+1}`, 'text', val?.title)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', color: '#FFFFFF', margin: '0 0 12px', ...ost(`values.${idx}.title`) }}>
+                  {val?.title}
                 </h3>
-                <p data-field={`values.${idx}.text`} data-ovkey={`values.${idx}.text`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.text`, `Texto Valor ${idx+1}`, 'textarea', val.text)} style={{ fontSize: '0.95rem', color: '#94A3B8', lineHeight: 1.6, margin: 0, ...ost(`values.${idx}.text`) }}>
-                  {val.text}
+                <p data-field={`values.${idx}.text`} data-ovkey={`values.${idx}.text`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.text`, `Texto Valor ${idx+1}`, 'textarea', val?.text)} style={{ fontSize: '0.95rem', color: '#94A3B8', lineHeight: 1.6, margin: 0, ...ost(`values.${idx}.text`) }}>
+                  {val?.text}
                 </p>
               </div>
             ))}
@@ -1387,22 +1387,22 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
               { name: 'KidZone (Niños)', ageRange: '0 a 12 años', description: 'Espacio seguro y divertido para los más pequeños.', ctaText: 'Conoce KidZone', image: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?w=800&q=85&fit=crop' },
               { name: 'Jóvenes & Estudiantes', ageRange: '13 a 25 años', description: 'Comunidad vibrante con reuniones semanales y música en vivo.', ctaText: 'Únete a Jóvenes', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop' },
               { name: 'Matrimonios & Familias', ageRange: 'Todas las edades', description: 'Talleres y actividades para fortalecer el hogar.', ctaText: 'Saber Más', image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop' }
-            ]).map((m, idx) => (
+            ]).filter(Boolean).map((m, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div data-field={`ministries.${idx}.image`} data-ovkey={`ministries.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio ${idx+1}`, 'image', m.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`ministries.${idx}.image`) }}>
+                <div data-field={`ministries.${idx}.image`} data-ovkey={`ministries.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio ${idx+1}`, 'image', m?.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`ministries.${idx}.image`) }}>
                   {isVideoUrl(m.image) ? (
                     <video src={m.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m.name || m.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={m?.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m?.name || m?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                 </div>
                 <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div data-field={`ministries.${idx}.ageRange`} data-ovkey={`ministries.${idx}.ageRange`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.ageRange`, `Edad Ministerio ${idx+1}`, 'text', m.ageRange)} style={{ fontSize: '0.78rem', color: accentGold, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, ...ost(`ministries.${idx}.ageRange`) }}>
-                      {m.ageRange || 'Comunidad'}
+                      {m?.ageRange || 'Comunidad'}
                     </div>
                     <h3 data-field={`ministries.${idx}.name`} data-ovkey={`ministries.${idx}.name`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.name`, `Nombre Ministerio ${idx+1}`, 'text', m.name || m.title)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`ministries.${idx}.name`) }}>
-                      {m.name || m.title}
+                      {m?.name || m?.title}
                     </h3>
                     <p data-field={`ministries.${idx}.description`} data-ovkey={`ministries.${idx}.description`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.description`, `Descripción Ministerio ${idx+1}`, 'textarea', m.description || m.desc)} style={{ fontSize: '0.92rem', color: '#94A3B8', lineHeight: 1.6, margin: '0 0 20px', ...ost(`ministries.${idx}.description`) }}>
                       {m.description || m.desc}
@@ -1479,16 +1479,16 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
               { title: '1. Creer & Conocer a Jesús', description: 'Descubre el amor de Dios y su propósito para tu vida.' },
               { title: '2. Conectar en Comunidad', description: 'Participa en nuestros grupos semanales de amistad y oración.' },
               { title: '3. Servir y Marcar la Diferencia', description: 'Bendice a otros uniéndote a un equipo de voluntarios.' }
-            ]).map((st, idx) => (
+            ]).filter(Boolean).map((st, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, padding: 32 }}>
                 <div style={{ width: 44, height: 44, borderRadius: '50%', background: accentGold, color: primaryBg, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: 20 }}>
                   {idx + 1}
                 </div>
-                <h3 data-field={`nextSteps.steps.${idx}.title`} data-ovkey={`nextSteps.steps.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx+1} Título`, 'text', st.title)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', color: '#FFFFFF', margin: '0 0 12px', ...ost(`nextSteps.steps.${idx}.title`) }}>
-                  {st.title}
+                <h3 data-field={`nextSteps.steps.${idx}.title`} data-ovkey={`nextSteps.steps.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx+1} Título`, 'text', st?.title)} style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', color: '#FFFFFF', margin: '0 0 12px', ...ost(`nextSteps.steps.${idx}.title`) }}>
+                  {st?.title}
                 </h3>
-                <p data-field={`nextSteps.steps.${idx}.description`} data-ovkey={`nextSteps.steps.${idx}.description`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.description`, `Paso ${idx+1} Descripción`, 'textarea', st.description)} style={{ fontSize: '0.95rem', color: '#94A3B8', lineHeight: 1.6, margin: 0, ...ost(`nextSteps.steps.${idx}.description`) }}>
-                  {st.description}
+                <p data-field={`nextSteps.steps.${idx}.description`} data-ovkey={`nextSteps.steps.${idx}.description`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.description`, `Paso ${idx+1} Descripción`, 'textarea', st?.description)} style={{ fontSize: '0.95rem', color: '#94A3B8', lineHeight: 1.6, margin: 0, ...ost(`nextSteps.steps.${idx}.description`) }}>
+                  {st?.description}
                 </p>
               </div>
             ))}

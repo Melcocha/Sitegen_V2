@@ -1181,7 +1181,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 48 }}>
-            {testimonials.map((item, idx) => (
+            {(testimonials || []).filter(Boolean).map((item, idx) => (
               <div key={idx} style={{ background: 'transparent', padding: '0 10px' }}>
                 <div style={{ fontSize: '3rem', color: '#E11D48', lineHeight: 1, marginBottom: 16 }}>“</div>
                 <p data-field={`testimonials.${idx}.quote`} data-ovkey={`testimonials.${idx}.quote`} className="editable-element" onClick={(e) => handleEdit(e, `testimonials.${idx}.quote`, `Testimonio ${idx + 1}`, 'textarea', item.quote)} style={{ fontSize: '1.15rem', lineHeight: 1.65, color: '#334155', fontWeight: 500, margin: '0 0 28px', ...ost(`testimonials.${idx}.quote`) }}>
@@ -1202,7 +1202,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                   />
                   <div>
                     <div data-field={`testimonials.${idx}.author`} data-ovkey={`testimonials.${idx}.author`} className="editable-element" onClick={(e) => handleEdit(e, `testimonials.${idx}.author`, `Autor Testimonio ${idx + 1}`, 'text', item.author)} style={{ fontSize: '0.95rem', fontWeight: 900, color: '#0F172A', ...ost(`testimonials.${idx}.author`) }}>{item.author}</div>
-                    <div data-field={`testimonials.${idx}.role`} data-ovkey={`testimonials.${idx}.role`} className="editable-element" onClick={(e) => handleEdit(e, `testimonials.${idx}.role`, `Rol Testimonio ${idx + 1}`, 'text', item.role)} style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600, ...ost(`testimonials.${idx}.role`) }}>{item.role}</div>
+                    <div data-field={`testimonials.${idx}.role`} data-ovkey={`testimonials.${idx}.role`} className="editable-element" onClick={(e) => handleEdit(e, `testimonials.${idx}.role`, `Rol Testimonio ${idx + 1}`, 'text', item.role)} style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600, ...ost(`testimonials.${idx}.role`) }}>{item?.role}</div>
                   </div>
                 </div>
               </div>
@@ -1423,10 +1423,10 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
               <div key={idx} style={{ background: '#FFFFFF', borderRadius: 16, padding: '32px 24px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', border: '1px solid #E2E8F0' }}>
                 <div style={{ color: accentCyan, fontSize: '1.8rem', marginBottom: 16 }}>✦</div>
                 <h3 data-field={`values.${idx}.title`} data-ovkey={`values.${idx}.title`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.title`, `Título Valor ${idx+1}`, 'text', val.title)} style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0F172A', margin: '0 0 12px', ...ost(`values.${idx}.title`) }}>
-                  {val.title}
+                  {val?.title}
                 </h3>
                 <p data-field={`values.${idx}.text`} data-ovkey={`values.${idx}.text`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.text`, `Texto Valor ${idx+1}`, 'textarea', val.text)} style={{ fontSize: '0.95rem', color: '#64748B', lineHeight: 1.6, margin: 0, ...ost(`values.${idx}.text`) }}>
-                  {val.text}
+                  {val?.text}
                 </p>
               </div>
             ))}
@@ -1499,7 +1499,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                   {isVideoUrl(m.image) ? (
                     <video src={m.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m.name || m.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m?.name || m?.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                 </div>
                 <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -1589,7 +1589,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                   {isVideoUrl(sermon.image) ? (
                     <video src={sermon.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon?.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                 </div>
                 <div style={{ padding: 24 }}>
@@ -1600,7 +1600,7 @@ export default function ChurchTemplateMyGateway({ data = {}, editMode = false, a
                     {sermon.title}
                   </h3>
                   <div data-field={`sermons.${idx}.speaker`} data-ovkey={`sermons.${idx}.speaker`} className="editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.speaker`, `Predicador ${idx+1}`, 'text', sermon.speaker)} style={{ fontSize: '0.88rem', color: '#64748B', fontWeight: 600, ...ost(`sermons.${idx}.speaker`) }}>
-                    🎙️ {sermon.speaker}
+                    🎙️ {sermon?.speaker}
                   </div>
                 </div>
               </div>

@@ -410,13 +410,13 @@ export function MinistriesVisualLayout({
 
         {/* Visual Photo Cards Grid ("Solo Imágenes") */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {list.map((m, idx) => (
+          {(list || []).filter(Boolean).map((m, idx) => (
             <div
               key={idx}
               data-field={`ministries.${idx}.image`}
               data-ovkey={`ministries.${idx}.image`}
               className="editable-element"
-              onClick={(e) => handleEdit && handleEdit(e, `ministries.${idx}.image`, `Foto ${m.title}`, 'image', m.image)}
+              onClick={(e) => handleEdit && handleEdit(e, `ministries.${idx}.image`, `Foto ${m?.title || idx + 1}`, 'image', m?.image)}
               style={{
                 position: 'relative',
                 height: 380,
@@ -428,7 +428,7 @@ export function MinistriesVisualLayout({
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease'
               }}
             >
-              <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={m?.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.9) 100%)' }} />
               <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
                 <h3
@@ -437,7 +437,7 @@ export function MinistriesVisualLayout({
                   className="editable-element"
                   onClick={(e) => {
                     e.stopPropagation()
-                    handleEdit && handleEdit(e, `ministries.${idx}.title`, 'Nombre del Ministerio', 'text', m.title)
+                    handleEdit && handleEdit(e, `ministries.${idx}.title`, 'Nombre del Ministerio', 'text', m?.title)
                   }}
                   style={{ fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em', textTransform: 'uppercase' }}
                 >
@@ -496,13 +496,13 @@ export function SermonsVisualLayout({
 
         {/* Video Thumbnail Covers ("Solo Imágenes") */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
-          {list.map((s, idx) => (
+          {(list || []).filter(Boolean).map((s, idx) => (
             <div
               key={idx}
               data-field={`sermons.${idx}.image`}
               data-ovkey={`sermons.${idx}.image`}
               className="editable-element"
-              onClick={(e) => handleEdit && handleEdit(e, `sermons.${idx}.image`, `Portada Video ${idx + 1}`, 'image', s.image)}
+              onClick={(e) => handleEdit && handleEdit(e, `sermons.${idx}.image`, `Portada Video ${idx + 1}`, 'image', s?.image)}
               style={{
                 position: 'relative',
                 height: 240,
@@ -513,7 +513,7 @@ export function SermonsVisualLayout({
                 border: '1px solid rgba(255,255,255,0.12)'
               }}
             >
-              <img src={s.image || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=85&fit=crop'} alt={s.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={s?.image || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=85&fit=crop'} alt={s?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }} />
               
               {/* Play Badge */}
@@ -532,7 +532,7 @@ export function SermonsVisualLayout({
                   {s.series || 'Serie Actual'}
                 </div>
                 <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#FFFFFF', margin: 0, lineHeight: 1.2 }}>
-                  {s.title}
+                  {s?.title}
                 </h4>
               </div>
             </div>
@@ -610,7 +610,7 @@ export function EventsVisualLayout({
               {/* Event Bottom Content */}
               <div style={{ position: 'absolute', bottom: 22, left: 22, right: 22 }}>
                 <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px', lineHeight: 1.15 }}>
-                  {ev.title}
+                  {ev?.title}
                 </h3>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: accentColor, color: '#000000', padding: '8px 18px', borderRadius: 999, fontSize: '0.78rem', fontWeight: 900, textTransform: 'uppercase' }}>
                   <span>Inscribirme</span> <span>→</span>
@@ -795,7 +795,7 @@ export function ValuesVisualLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
-          {defaultValues.map((val, idx) => (
+          {(defaultValues || []).filter(Boolean).map((val, idx) => (
             <div
               key={idx}
               style={{
@@ -807,7 +807,7 @@ export function ValuesVisualLayout({
                 border: '1px solid rgba(255,255,255,0.12)'
               }}
             >
-              <img src={photos[idx % photos.length]} alt={val.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={photos[idx % photos.length]} alt={val?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.88) 100%)' }} />
 
               <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
@@ -815,10 +815,10 @@ export function ValuesVisualLayout({
                   {idx + 1}
                 </div>
                 <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 8px' }}>
-                  {val.title}
+                  {val?.title}
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.8)', margin: 0, lineHeight: 1.5 }}>
-                  {val.text}
+                  {val?.text}
                 </p>
               </div>
             </div>
@@ -1103,7 +1103,7 @@ export function ValuesMinimalLayout({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {defaultValues.map((val, idx) => (
+          {(defaultValues || []).filter(Boolean).map((val, idx) => (
             <div
               key={idx}
               style={{
@@ -1124,19 +1124,19 @@ export function ValuesMinimalLayout({
                   data-field={`values.${idx}.title`}
                   data-ovkey={`values.${idx}.title`}
                   className="editable-element"
-                  onClick={(e) => handleEdit && handleEdit(e, `values.${idx}.title`, `Valor ${idx + 1} Título`, 'text', val.title)}
+                  onClick={(e) => handleEdit && handleEdit(e, `values.${idx}.title`, `Valor ${idx + 1} Título`, 'text', val?.title)}
                   style={{ fontSize: 'clamp(1.3rem, 2.2vw, 1.8rem)', fontWeight: 800, color: '#FFFFFF', margin: '0 0 10px', ...ost(`values.${idx}.title`) }}
                 >
-                  {val.title}
+                  {val?.title}
                 </h3>
                 <p
                   data-field={`values.${idx}.text`}
                   data-ovkey={`values.${idx}.text`}
                   className="editable-element"
-                  onClick={(e) => handleEdit && handleEdit(e, `values.${idx}.text`, `Valor ${idx + 1} Descripción`, 'textarea', val.text)}
+                  onClick={(e) => handleEdit && handleEdit(e, `values.${idx}.text`, `Valor ${idx + 1} Descripción`, 'textarea', val?.text)}
                   style={{ fontSize: '1.02rem', color: '#94A3B8', lineHeight: 1.7, margin: 0, maxWidth: 800, ...ost(`values.${idx}.text`) }}
                 >
-                  {val.text}
+                  {val?.text}
                 </p>
               </div>
             </div>
@@ -1185,7 +1185,7 @@ export function MinistriesGridLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-          {defaultMinistries.map((m, idx) => (
+          {(defaultMinistries || []).filter(Boolean).map((m, idx) => (
             <div
               key={idx}
               style={{
@@ -1204,7 +1204,7 @@ export function MinistriesGridLayout({
             >
               <img
                 src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'}
-                alt={m.name}
+                alt={m?.name || ''}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.92) 100%)' }} />
@@ -1223,7 +1223,7 @@ export function MinistriesGridLayout({
                   onClick={(e) => handleEdit && handleEdit(e, `ministries.${idx}.name`, `Ministerio ${idx + 1}`, 'text', m.name)}
                   style={{ fontSize: '1.45rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 8px', ...ost(`ministries.${idx}.name`) }}
                 >
-                  {m.name}
+                  {m?.name}
                 </h3>
                 <p
                   data-field={`ministries.${idx}.description`}
@@ -1232,7 +1232,7 @@ export function MinistriesGridLayout({
                   onClick={(e) => handleEdit && handleEdit(e, `ministries.${idx}.description`, `Descripción ${idx + 1}`, 'textarea', m.description)}
                   style={{ fontSize: '0.92rem', color: '#CBD5E1', lineHeight: 1.5, margin: '0 0 16px', ...ost(`ministries.${idx}.description`) }}
                 >
-                  {m.description}
+                  {m?.description}
                 </p>
                 <a
                   href="#wp-contact"
@@ -1288,7 +1288,7 @@ export function NextStepsVisualLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
-          {steps.map((st, idx) => (
+          {(steps || []).filter(Boolean).map((st, idx) => (
             <div
               key={idx}
               style={{
@@ -1305,7 +1305,7 @@ export function NextStepsVisualLayout({
                 boxSizing: 'border-box'
               }}
             >
-              <img src={st.image || 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=800&q=85&fit=crop'} alt={st.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={st.image || 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=800&q=85&fit=crop'} alt={st?.title || ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.92) 100%)' }} />
 
               <div style={{ position: 'relative', zIndex: 2 }}>
@@ -1319,10 +1319,10 @@ export function NextStepsVisualLayout({
                   data-field={`nextSteps.steps.${idx}.title`}
                   data-ovkey={`nextSteps.steps.${idx}.title`}
                   className="editable-element"
-                  onClick={(e) => handleEdit && handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx + 1}`, 'text', st.title)}
+                  onClick={(e) => handleEdit && handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx + 1}`, 'text', st?.title)}
                   style={{ fontSize: '1.45rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px', ...ost(`nextSteps.steps.${idx}.title`) }}
                 >
-                  {st.title}
+                  {st?.title}
                 </h3>
                 <p
                   data-field={`nextSteps.steps.${idx}.description`}
@@ -1376,7 +1376,7 @@ export function NextStepsNumberedLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, position: 'relative' }}>
-          {steps.map((st, idx) => (
+          {(steps || []).filter(Boolean).map((st, idx) => (
             <div
               key={idx}
               style={{
@@ -1396,10 +1396,10 @@ export function NextStepsNumberedLayout({
                 data-field={`nextSteps.steps.${idx}.title`}
                 data-ovkey={`nextSteps.steps.${idx}.title`}
                 className="editable-element"
-                onClick={(e) => handleEdit && handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx + 1}`, 'text', st.title)}
+                onClick={(e) => handleEdit && handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx + 1}`, 'text', st?.title)}
                 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 12px', ...ost(`nextSteps.steps.${idx}.title`) }}
               >
-                {st.title}
+                {st?.title}
               </h3>
               <p
                 data-field={`nextSteps.steps.${idx}.description`}
@@ -1459,7 +1459,7 @@ export function SermonsCardsLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
-          {defaultSermons.map((s, idx) => (
+          {(defaultSermons || []).filter(Boolean).map((s, idx) => (
             <div
               key={idx}
               style={{
@@ -1473,7 +1473,7 @@ export function SermonsCardsLayout({
               }}
             >
               <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
-                <img src={s.thumbnail || s.coverImage || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=85&fit=crop'} alt={s.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={s?.thumbnail || s?.coverImage || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=85&fit=crop'} alt={s?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <div style={{ width: 56, height: 56, borderRadius: '50%', background: accentColor, color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', paddingLeft: 4, boxShadow: '0 8px 25px rgba(0,0,0,0.5)' }}>
                     ▶
@@ -1484,7 +1484,7 @@ export function SermonsCardsLayout({
               <div style={{ padding: 28, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem', color: '#94A3B8', fontWeight: 600, marginBottom: 10 }}>
-                    <span>{s.date || 'Mensaje de Fin de Semana'}</span>
+                    <span>{s?.date || 'Mensaje de Fin de Semana'}</span>
                     <span style={{ color: accentColor, fontWeight: 800 }}>Video HD</span>
                   </div>
                   <h3
@@ -1494,7 +1494,7 @@ export function SermonsCardsLayout({
                     onClick={(e) => handleEdit && handleEdit(e, `sermons.${idx}.title`, `Sermón ${idx + 1}`, 'text', s.title)}
                     style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 10px', lineHeight: 1.3, ...ost(`sermons.${idx}.title`) }}
                   >
-                    {s.title}
+                    {s?.title}
                   </h3>
                   <div style={{ fontSize: '0.92rem', color: '#94A3B8', marginBottom: 20 }}>
                     🎙️ {s.speaker || 'Pastor'}
@@ -1557,7 +1557,7 @@ export function EventsCardsLayout({
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
-          {defaultEvents.map((ev, idx) => (
+          {(defaultEvents || []).filter(Boolean).map((ev, idx) => (
             <div
               key={idx}
               style={{
@@ -1586,19 +1586,19 @@ export function EventsCardsLayout({
                   data-field={`events.items.${idx}.title`}
                   data-ovkey={`events.items.${idx}.title`}
                   className="editable-element"
-                  onClick={(e) => handleEdit && handleEdit(e, `events.items.${idx}.title`, `Evento ${idx + 1}`, 'text', ev.title)}
+                  onClick={(e) => handleEdit && handleEdit(e, `events.items.${idx}.title`, `Evento ${idx + 1}`, 'text', ev?.title)}
                   style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 12px', lineHeight: 1.3, ...ost(`events.items.${idx}.title`) }}
                 >
                   {ev.title}
                 </h3>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, fontSize: '0.85rem', color: '#94A3B8', marginBottom: 16 }}>
-                  <span>⏰ {ev.time || '7:00 PM'}</span>
-                  <span>📍 {ev.location || 'Auditorio Principal'}</span>
+                  <span>⏰ {ev?.time || '7:00 PM'}</span>
+                  <span>📍 {ev?.location || 'Auditorio Principal'}</span>
                 </div>
 
                 <p style={{ fontSize: '0.95rem', color: '#CBD5E1', lineHeight: 1.6, margin: '0 0 24px' }}>
-                  {ev.description || 'Únete a nosotros para una reunión inspiradora.'}
+                  {ev?.description || 'Únete a nosotros para una reunión inspiradora.'}
                 </p>
               </div>
 

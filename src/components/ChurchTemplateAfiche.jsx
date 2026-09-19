@@ -983,13 +983,13 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, maxWidth: 1280, margin: '0 auto' }}>
-          {ministries.map((min, idx) => (
+          {(ministries || []).filter(Boolean).map((min, idx) => (
             <div key={idx} style={{ background: 'transparent', display: 'flex', flexDirection: 'column' }}>
               <div
                 data-field={`ministries.${idx}.image`}
                 data-ovkey={`ministries.${idx}.image`}
                 className="editable-element"
-                onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio: ${min.title}`, 'image', min.image)}
+                onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio: ${min?.title || idx+1}`, 'image', min?.image)}
                 style={{ height: 280, position: 'relative', overflow: 'hidden', marginBottom: 20, cursor: editMode ? 'pointer' : 'default', ...ost(`ministries.${idx}.image`) }}
               >
                 {isVideoUrl(min.image) ? (
@@ -1004,7 +1004,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                 ) : (
                   <img
                     src={min.image}
-                    alt={min.title}
+                    alt={min?.title || ''}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 )}
@@ -1027,7 +1027,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, `ministries.${idx}.title`, `Título Ministerio ${idx + 1}`, 'text', min.title)}
                   style={{ fontSize: '2rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`ministries.${idx}.title`) }}
                 >
-                  {min.title}
+                  {min?.title}
                 </h3>
                 <p
                   data-field={`ministries.${idx}.desc`}
@@ -1036,7 +1036,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                   onClick={(e) => handleEdit(e, `ministries.${idx}.desc`, `Descripción Ministerio ${idx + 1}`, 'textarea', min.desc)}
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.92rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: '0 0 20px', ...ost(`ministries.${idx}.desc`) }}
                 >
-                  {min.desc}
+                  {min?.desc}
                 </p>
                 <a href="#wp-plan-visit" onClick={(e) => handleNavClick(e, '#wp-plan-visit', `ministries.${idx}.title`, `Botón Ministerio ${min.title}`, `Conoce más`)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#FACC15', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.8rem', textDecoration: 'none' }} className="editable-element">
                   Conoce más →
@@ -1124,7 +1124,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 36 }}>
-              {planAVisit.serviceTimes.map((time, i) => (
+              {(planAVisit?.serviceTimes || []).filter(Boolean).map((time, i) => (
                 <div
                   key={i}
                   data-field={`planAVisit.serviceTimes.${i}`}
@@ -1338,14 +1338,14 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
               { title: 'Comunidad Auténtica', text: 'Crecemos juntos a través de grupos de amistad.' },
               { title: 'Verdad Bíblica', text: 'Enseñanza práctica basada en la Palabra de Dios.' },
               { title: 'Impacto y Misión', text: 'Servimos con generosidad a nuestra ciudad.' }
-            ]).map((val, idx) => (
+            ]).filter(Boolean).map((val, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(250,204,21,0.2)', borderRadius: 16, padding: 32 }}>
                 <div style={{ color: '#FACC15', fontSize: '1.6rem', marginBottom: 14 }}>✦</div>
-                <h3 data-field={`values.${idx}.title`} data-ovkey={`values.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `values.${idx}.title`, `Título Valor ${idx+1}`, 'text', val.title)} style={{ fontSize: '1.5rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`values.${idx}.title`) }}>
-                  {val.title}
+                <h3 data-field={`values.${idx}.title`} data-ovkey={`values.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `values.${idx}.title`, `Título Valor ${idx+1}`, 'text', val?.title)} style={{ fontSize: '1.5rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`values.${idx}.title`) }}>
+                  {val?.title}
                 </h3>
-                <p data-field={`values.${idx}.text`} data-ovkey={`values.${idx}.text`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.text`, `Texto Valor ${idx+1}`, 'textarea', val.text)} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.92rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0, ...ost(`values.${idx}.text`) }}>
-                  {val.text}
+                <p data-field={`values.${idx}.text`} data-ovkey={`values.${idx}.text`} className="editable-element" onClick={(e) => handleEdit(e, `values.${idx}.text`, `Texto Valor ${idx+1}`, 'textarea', val?.text)} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.92rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, margin: 0, ...ost(`values.${idx}.text`) }}>
+                  {val?.text}
                 </p>
               </div>
             ))}
@@ -1400,13 +1400,13 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
               { title: '1. Creer & Conocer a Jesús', description: 'Descubre el amor de Dios.' },
               { title: '2. Conectar en Comunidad', description: 'Participa en grupos semanales.' },
               { title: '3. Servir', description: 'Bendice a otros uniéndote a un equipo.' }
-            ]).map((st, idx) => (
+            ]).filter(Boolean).map((st, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(250,204,21,0.2)', borderRadius: 16, padding: 32 }}>
-                <h3 data-field={`nextSteps.steps.${idx}.title`} data-ovkey={`nextSteps.steps.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx+1} Título`, 'text', st.title)} style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`nextSteps.steps.${idx}.title`) }}>
-                  {st.title}
+                <h3 data-field={`nextSteps.steps.${idx}.title`} data-ovkey={`nextSteps.steps.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.title`, `Paso ${idx+1} Título`, 'text', st?.title)} style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`nextSteps.steps.${idx}.title`) }}>
+                  {st?.title}
                 </h3>
-                <p data-field={`nextSteps.steps.${idx}.description`} data-ovkey={`nextSteps.steps.${idx}.description`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.description`, `Paso ${idx+1} Descripción`, 'textarea', st.description)} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.92rem', color: 'rgba(255,255,255,0.7)', margin: 0, ...ost(`nextSteps.steps.${idx}.description`) }}>
-                  {st.description}
+                <p data-field={`nextSteps.steps.${idx}.description`} data-ovkey={`nextSteps.steps.${idx}.description`} className="editable-element" onClick={(e) => handleEdit(e, `nextSteps.steps.${idx}.description`, `Paso ${idx+1} Descripción`, 'textarea', st?.description)} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.92rem', color: 'rgba(255,255,255,0.7)', margin: 0, ...ost(`nextSteps.steps.${idx}.description`) }}>
+                  {st?.description}
                 </p>
               </div>
             ))}
@@ -1461,18 +1461,18 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
             {(data.sermons || [
               { title: 'Caminando por Fe en Tiempos de Cambio', series: 'Serie: Imparables', speaker: 'Pastor Principal', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop' }
-            ]).map((sermon, idx) => (
+            ]).filter(Boolean).map((sermon, idx) => (
               <div key={idx} style={{ background: '#090B10', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(250,204,21,0.2)' }}>
-                <div data-field={`sermons.${idx}.image`} data-ovkey={`sermons.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx+1}`, 'image', sermon.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`sermons.${idx}.image`) }}>
+                <div data-field={`sermons.${idx}.image`} data-ovkey={`sermons.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx+1}`, 'image', sermon?.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`sermons.${idx}.image`) }}>
                   {isVideoUrl(sermon.image) ? (
                     <video src={sermon.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon?.title || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                 </div>
                 <div style={{ padding: 24 }}>
-                  <h3 data-field={`sermons.${idx}.title`} data-ovkey={`sermons.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.title`, `Título Prédica ${idx+1}`, 'text', sermon.title)} style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`sermons.${idx}.title`) }}>
-                    {sermon.title}
+                  <h3 data-field={`sermons.${idx}.title`} data-ovkey={`sermons.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.title`, `Título Prédica ${idx+1}`, 'text', sermon?.title)} style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`sermons.${idx}.title`) }}>
+                    {sermon?.title}
                   </h3>
                 </div>
               </div>
