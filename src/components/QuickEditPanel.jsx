@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { escapeXml, svgToDataUri } from '../lib/aiGenerator'
 
 function compressImageFile(file, maxWidth = 1600, quality = 0.82) {
   return new Promise((resolve) => {
@@ -110,8 +111,13 @@ const PRESET_VIDEOS = [
 ]
 
 function generateLogoSvgDataUrl(name, type, sub) {
-  const cleanName = (name || 'Iglesia Cristiana').replace(/[<>&'"]/g, '').trim()
-  const cleanSub = (sub || 'COMUNIDAD DE FE').replace(/[<>&'"]/g, '').trim()
+  const rawName = (name || 'Iglesia Cristiana').trim()
+  const cleanName = rawName.replace(/[<>'"\\]/g, '').trim() || 'Iglesia Cristiana'
+  const xmlSafeName = escapeXml(cleanName)
+
+  const rawSub = (sub || 'COMUNIDAD DE FE').trim()
+  const cleanSub = rawSub.replace(/[<>'"\\]/g, '').trim() || 'COMUNIDAD DE FE'
+  const xmlSafeSub = escapeXml(cleanSub)
 
   const len = cleanName.length
   let fontSize = 21
@@ -261,18 +267,11 @@ function generateLogoSvgDataUrl(name, type, sub) {
     <g transform="translate(4, 0)">
       ${iconSvg}
     </g>
-    <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${cleanName}</text>
-    <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#94A3B8" letter-spacing="2.5">${cleanSub}</text>
+    <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${xmlSafeName}</text>
+    <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#94A3B8" letter-spacing="2.5">${xmlSafeSub}</text>
   </svg>`
 
-  if (typeof btoa !== 'undefined') {
-    try {
-      return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
-    } catch (e) {
-      // fallback
-    }
-  }
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+  return svgToDataUri(svg)
 }
 
 function getPresetLogos(bizName = 'Iglesia Cristiana') {

@@ -6,6 +6,22 @@
  * El JSON de salida es IDÉNTICO en los 3 modos — ningún componente se ve afectado.
  */
 
+import {
+  CHURCH_SECTIONS,
+  parseChurchPrompt,
+  buildOptimalChurchOrder,
+  populateChurchSectionData,
+  extractChurchName
+} from './churchPromptParser.js'
+
+export {
+  CHURCH_SECTIONS,
+  parseChurchPrompt,
+  buildOptimalChurchOrder,
+  populateChurchSectionData,
+  extractChurchName
+}
+
 const SYSTEM_PROMPT = `You are a world-class web designer and copywriter fluent in Latin American Spanish. Generate a COMPLETE, 100% PERSONALIZED website JSON.
 
 CRITICAL RULES - violating any = failure:
@@ -263,11 +279,11 @@ export async function fetchUrlContent(url) {
 }
 
 // --- Main generator - Gemini -> OpenAI -> Demo (NEVER crashes) ---
-export async function generateWebsiteJSON(userPrompt, websiteUrl = '') {
+export async function generateWebsiteJSON(userPrompt, websiteUrl = '', options = {}) {
   // Check if church prompt — use pre-made exact templates instantly without AI distortion
   if (isChurchPrompt(userPrompt + ' ' + (websiteUrl || ''))) {
-    console.log('⚡ Church pre-made template selected directly (50/50 MyGateway vs Nucleus)')
-    const churchData = mockIglesia('', userPrompt)
+    console.log('⚡ Church intelligent template configured via NLP analyzer')
+    const churchData = mockIglesia('', userPrompt, options?.customSections)
     return new Promise(resolve => setTimeout(() => resolve(churchData), 400))
   }
 
@@ -560,9 +576,39 @@ function pickTemplate(text) {
 }
 
 
+// --- Helper to escape XML special characters for valid SVG generation ---
+export function escapeXml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
+// --- Robust UTF-8 safe SVG data-URI encoder ---
+export function svgToDataUri(svg) {
+  try {
+    if (typeof TextEncoder !== 'undefined' && typeof btoa === 'function') {
+      const bytes = new TextEncoder().encode(svg)
+      let binary = ''
+      const len = bytes.byteLength
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i])
+      }
+      return `data:image/svg+xml;base64,${btoa(binary)}`
+    }
+  } catch (e) {
+    // fallback
+  }
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+}
+
 // --- Helper to generate a custom vector SVG logo for the church according to template option style ---
 export function generateChurchLogoSvg(churchName = 'Comunidad de Fe', styleOption = 'nucleus', primaryColor = '', accentColor = '') {
-  const cleanName = (churchName || 'Comunidad de Fe').replace(/[<>&'"]/g, '').trim()
+  const rawName = (churchName || 'Comunidad de Fe').trim()
+  const cleanName = rawName.replace(/[<>'"\\]/g, '').trim() || 'Comunidad de Fe'
+  const xmlSafeName = escapeXml(cleanName)
   
   // Calculate dynamic font size and width so long names fit comfortably without cutting off
   const len = cleanName.length
@@ -581,6 +627,34 @@ export function generateChurchLogoSvg(churchName = 'Comunidad de Fe', styleOptio
 
   const svgWidth = Math.max(400, Math.min(620, 110 + len * 14))
   const opt = String(styleOption || '').toLowerCase()
+
+  // Intelligent subtitle adaptation based on church identity
+  const lowerName = cleanName.toLowerCase()
+  let subtitle = 'COMUNIDAD DE FE'
+  if (lowerName.includes('parroquia') || lowerName.includes('católica') || lowerName.includes('catolica') || lowerName.includes('misa')) {
+    subtitle = 'PARROQUIA CATÓLICA'
+  } else if (lowerName.includes('basílica') || lowerName.includes('basilica') || lowerName.includes('catedral')) {
+    subtitle = 'CATEDRAL & COMUNIDAD'
+  } else if (lowerName.includes('capilla') || lowerName.includes('santuario')) {
+    subtitle = 'CAPILLA & ORACIÓN'
+  } else if (lowerName.includes('bautista')) {
+    subtitle = 'IGLESIA BAUTISTA'
+  } else if (lowerName.includes('presbiteriana')) {
+    subtitle = 'IGLESIA PRESBITERIANA'
+  } else if (lowerName.includes('metodista')) {
+    subtitle = 'IGLESIA METODISTA'
+  } else if (lowerName.includes('adventista')) {
+    subtitle = 'IGLESIA ADVENTISTA'
+  } else if (lowerName.includes('pentecostal')) {
+    subtitle = 'IGLESIA PENTECOSTAL'
+  } else if (lowerName.includes('comunidad cristiana') || lowerName.includes('centro cristiano')) {
+    subtitle = 'FE, ESPERANZA & AMOR'
+  } else if (lowerName.includes('vida nueva')) {
+    subtitle = 'FE, FAMILIA & VIDA'
+  } else {
+    subtitle = 'COMUNIDAD DE FE'
+  }
+  const xmlSafeSubtitle = escapeXml(subtitle)
 
   let svg = ''
 
@@ -604,8 +678,8 @@ export function generateChurchLogoSvg(churchName = 'Comunidad de Fe', styleOptio
         <path d="M 38 12 L 44 12 L 44 24 L 56 24 L 56 30 L 44 30 L 44 68 L 38 68 L 38 30 L 26 30 L 26 24 L 38 24 Z" fill="url(#crossGrad)"/>
         <polygon points="41,20 42,26 48,27 42,28 41,34 40,28 34,27 40,26" fill="#FFFFFF"/>
       </g>
-      <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${cleanName}</text>
-      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="800" fill="#F97316" letter-spacing="2.5">IGLESIA &amp; FUEGO DE VIDA</text>
+      <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${xmlSafeName}</text>
+      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#F97316" letter-spacing="2.5">${xmlSafeSubtitle}</text>
     </svg>`
   } else if (opt === 'dove_cross' || opt === 'logo2' || opt === 'dove' || opt === 'nucleus' || opt === '1') {
     // ── LOGO EXAMPLE 2: Golden Cross with Blue Dove & Olive Branch ──
@@ -624,8 +698,8 @@ export function generateChurchLogoSvg(churchName = 'Comunidad de Fe', styleOptio
         <ellipse cx="48" cy="56" rx="4" ry="2" fill="#65A30D" transform="rotate(-30 48 56)"/>
         <ellipse cx="56" cy="51" rx="4" ry="2" fill="#65A30D" transform="rotate(-30 56 51)"/>
       </g>
-      <text x="96" y="${yPos}" font-family="'Playfair Display', Georgia, serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${cleanName}</text>
-      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="800" fill="#65A30D" letter-spacing="2.5">ESPÍRITU &amp; PAZ</text>
+      <text x="96" y="${yPos}" font-family="'Playfair Display', Georgia, serif" font-size="${fontSize}" font-weight="900" fill="#FFFFFF">${xmlSafeName}</text>
+      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#65A30D" letter-spacing="2.5">${xmlSafeSubtitle}</text>
     </svg>`
   } else {
     // ── LOGO EXAMPLE 3: Minimalist Architectural Church Line-Art ──
@@ -636,89 +710,12 @@ export function generateChurchLogoSvg(churchName = 'Comunidad de Fe', styleOptio
         <path d="M 34 38 L 22 46 L 22 64 M 46 38 L 58 46 L 58 64" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         <line x1="16" y1="64" x2="64" y2="64" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
       </g>
-      <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize + 1}" font-weight="900" fill="#FFFFFF" letter-spacing="0.02em">${cleanName}</text>
-      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="800" fill="#9CA3AF" letter-spacing="2.5">COMUNIDAD CRISTIANA</text>
+      <text x="96" y="${yPos}" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="${fontSize + 1}" font-weight="900" fill="#FFFFFF" letter-spacing="0.02em">${xmlSafeName}</text>
+      <text x="97" y="65" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" fill="#9CA3AF" letter-spacing="2.5">${xmlSafeSubtitle}</text>
     </svg>`
   }
 
-  if (typeof btoa !== 'undefined') {
-    try {
-      return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`
-    } catch (e) {
-      // fallback
-    }
-  }
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-}
-
-// --- Helper to extract clean church name from user prompt ---
-export function extractChurchName(promptText = '') {
-  if (!promptText) return 'Comunidad de Fe'
-  let text = promptText.trim()
-
-  // 1. Remove audience/purpose descriptions (e.g. "para jovenes", "para la juventud", "para niños", "para familias")
-  const stripAudience = (str) => {
-    return str
-      .replace(/(?:^\s*|\s+)(?:para\s+(?:j[oó]venes|ni[ñn]os|familias|adultos|la\s+juventud|matrimonios|adolescentes|todos|la\s+comunidad)|de\s+j[oó]venes|con\s+j[oó]venes|enfocad[ao]\s+en\s+j[oó]venes|con\s+(?:servicios|horarios|cultos|musica|alabanza)|ubicad[ao]\s+en.*)$/i, '')
-      .replace(/(?:^\s*|\s+)(?:para|con|de|en|donde|que|y)$/i, '')
-      .trim()
-  }
-
-  // 2. Explicit naming: "llamada [X]", "llamado [X]", "de nombre [X]", "nombre: [X]"
-  const llamadaMatch = text.match(/(?:llamada|llamado|de nombre|nombre:?|denominada|titulada)\s+["']?([^"'\n,.;]+?)["']?(?:\s+(?:con|en|para|donde|ubicad|horarios|servicios|que|\.|\,|$)|$)/i)
-  if (llamadaMatch && llamadaMatch[1]) {
-    let name = stripAudience(llamadaMatch[1].trim())
-    if (name) {
-      const cap = name.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-      if (!/(?:iglesia|parroquia|catedral|capilla|templo|ministerio|comunidad)/i.test(cap)) {
-        return `Iglesia ${cap}`
-      }
-      return cap
-    }
-  }
-
-  // 3. Denomination keywords (clean and exact)
-  if (/mormon|santos\s+de\s+los\s+[uú]ltimos/i.test(text)) return 'Iglesia Mormona'
-  if (/bautista/i.test(text)) {
-    const specific = text.match(/(?:iglesia|comunidad)\s+bautista\s+([a-záéíóúñA-ZÁÉÍÓÚÑ0-9\s'-]+)/i)
-    if (specific && specific[1]) {
-      const extra = stripAudience(specific[1])
-      if (extra && extra.length > 2) return `Iglesia Bautista ${extra.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`
-    }
-    return 'Iglesia Bautista'
-  }
-  if (/cat[oó]lica/i.test(text)) return 'Parroquia Católica'
-  if (/presbiteriana/i.test(text)) return 'Iglesia Presbiteriana'
-  if (/metodista/i.test(text)) return 'Iglesia Metodista'
-  if (/pentecostal/i.test(text)) return 'Iglesia Pentecostal'
-  if (/luterana/i.test(text)) return 'Iglesia Luterana'
-  if (/adventista/i.test(text)) return 'Iglesia Adventista'
-  if (/anglicana/i.test(text)) return 'Iglesia Anglicana'
-  if (/ortodoxa/i.test(text)) return 'Iglesia Ortodoxa'
-  if (/evang[eé]lica/i.test(text)) return 'Iglesia Evangélica'
-
-  // 4. Direct church prefix pattern: e.g. "Parroquia Santa Ana", "Iglesia Vida Nueva", "Iglesia María Auxiliadora"
-  const prefixMatch = text.match(/(?:(?:para|de|crear|hacer|generar|diseñar)\s+(?:una|un|la|el)\s+)?((?:parroquia|iglesia|catedral|capilla|ministerio|congregaci[oó]n|comunidad cristiana|templo|centro cristiano)\s+[a-záéíóúñA-ZÁÉÍÓÚÑ0-9\s'-]+?)(?:\s+(?:con|donde|en|horarios|servicios|ubicad[ao]|que|\.|\,|$)|$)/i)
-  if (prefixMatch && prefixMatch[1]) {
-    let raw = prefixMatch[1].trim()
-    raw = raw.replace(/^(?:para|de|crear|hacer|generar|diseñar|una|un|la|el)\s+/i, '').trim()
-    raw = raw.replace(/\s+(?:llamada|llamado|de nombre)\s+/i, ' ').trim()
-    raw = stripAudience(raw)
-    if (raw.length >= 4) {
-      return raw.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    }
-  }
-
-  // 5. Short prompts containing church terms
-  if (text.length <= 50 && /(?:parroquia|iglesia|catedral|capilla|ministerio|fe|comunidad|templo)/i.test(text)) {
-    let clean = text.replace(/^(?:quiero|crear|hacer|generar|una|un|pagina|web|para|de)\s+/gi, '').trim()
-    clean = stripAudience(clean)
-    if (clean) {
-      return clean.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    }
-  }
-
-  return 'Comunidad de Fe'
+  return svgToDataUri(svg)
 }
 
 // ─── Templates ────────────────────────────────────────────────────────────────
@@ -1215,30 +1212,49 @@ export function mockIglesiaAfiche(businessName = '') {
   }
 }
 
-// Main mock picker: extracts church name from prompt and selects template
-function mockIglesia(businessName = '', promptText = '') {
-  const extractedName = businessName || extractChurchName(promptText)
+// Main mock picker: extracts church name from prompt and dynamically configures sections
+export function mockIglesia(businessName = '', promptText = '', customSections = null) {
+  const prefs = parseChurchPrompt(promptText, customSections)
+  const extractedName = businessName || prefs.churchName || extractChurchName(promptText)
   const text = (promptText || '').toLowerCase()
 
+  let baseData
   if (text.includes('nucleus') || text.includes('opcion 1') || text.includes('opción 1')) {
-    return mockIglesiaNucleus(extractedName)
-  }
-  if (text.includes('mygateway') || text.includes('gateway') || text.includes('opcion 2') || text.includes('opción 2')) {
-    return mockIglesiaMyGateway(extractedName)
-  }
-  if (text.includes('poster') || text.includes('vitral') || text.includes('cristal') || text.includes('opcion 3') || text.includes('opción 3')) {
-    return mockIglesiaPoster(extractedName)
-  }
-  if (text.includes('afiche') || text.includes('adoracion') || text.includes('adoración') || text.includes('opcion 4') || text.includes('opción 4')) {
-    return mockIglesiaAfiche(extractedName)
+    baseData = mockIglesiaNucleus(extractedName)
+  } else if (text.includes('mygateway') || text.includes('gateway') || text.includes('opcion 2') || text.includes('opción 2')) {
+    baseData = mockIglesiaMyGateway(extractedName)
+  } else if (text.includes('poster') || text.includes('vitral') || text.includes('cristal') || text.includes('opcion 3') || text.includes('opción 3')) {
+    baseData = mockIglesiaPoster(extractedName)
+  } else if (text.includes('afiche') || text.includes('adoracion') || text.includes('adoración') || text.includes('opcion 4') || text.includes('opción 4')) {
+    baseData = mockIglesiaAfiche(extractedName)
+  } else {
+    // Distribution among all 4 options when generating a general church prompt:
+    const rand = Math.random()
+    if (rand < 0.25) baseData = mockIglesiaNucleus(extractedName)
+    else if (rand < 0.50) baseData = mockIglesiaMyGateway(extractedName)
+    else if (rand < 0.75) baseData = mockIglesiaPoster(extractedName)
+    else baseData = mockIglesiaAfiche(extractedName)
   }
 
-  // Distribution among all 4 options when generating a general church prompt:
-  const rand = Math.random()
-  if (rand < 0.25) return mockIglesiaNucleus(extractedName)
-  if (rand < 0.50) return mockIglesiaMyGateway(extractedName)
-  if (rand < 0.75) return mockIglesiaPoster(extractedName)
-  return mockIglesiaAfiche(extractedName)
+  // Override sectionsVisibility with AI detected / custom chosen sections
+  baseData.sectionsVisibility = {
+    ...baseData.sectionsVisibility,
+    hero: true,
+    contact: prefs.sections.contact !== false,
+    ...prefs.sections,
+  }
+
+  // Ensure rich data exists for all enabled sections
+  populateChurchSectionData(baseData, extractedName, promptText, prefs)
+
+  // Ensure clean businessName and customized logo with matching subtitle
+  baseData.businessName = extractedName
+  baseData.logoImage = generateChurchLogoSvg(extractedName, baseData.churchTemplateVariant, baseData.primaryColor, baseData.accentColor)
+
+  // Re-order sectionOrder so all visible sections appear in natural narrative order
+  baseData.sectionOrder = buildOptimalChurchOrder(baseData.sectionsVisibility, baseData.churchTemplateVariant)
+
+  return baseData
 }
 
 // ─── Templates ────────────────────────────────────────────────────────────────

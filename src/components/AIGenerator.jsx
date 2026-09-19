@@ -9,7 +9,9 @@ import WebsitePreview from './WebsitePreview'
 import WebsiteEditor from './WebsiteEditor'
 
 const PROMPT_EXAMPLES = [
-  { label: '⛪ Iglesia', text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
+  { label: '⛪ Con Prédicas y Ministerios', text: 'Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios para toda la familia' },
+  { label: '📅 Con Eventos y Donaciones', text: 'Comunidad Cristiana El Shaddai con eventos especiales, donaciones online y peticiones de oración' },
+  { label: '🕒 Solo Horarios y Contacto', text: 'Parroquia San José sólo con horarios de misa y datos de contacto' },
 ]
 
 // ─── Loading steps animation ──────────────────────────────────────
@@ -201,6 +203,9 @@ function PreviewSection({ websiteData, setWebsiteData, prompt, onSaved }) {
           .ai-generator-preview-wrapper {
             flex-direction: column !important;
           }
+          .ai-generator-examples-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes voicePulse {
@@ -257,14 +262,15 @@ export default function AIGenerator({ scrollRef }) {
     toggleListening()
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (overridePrompt) => {
     if (isListening) stopListening()
-    if (!prompt.trim() || isGenerating) return
+    const textToUse = (typeof overridePrompt === 'string' ? overridePrompt : prompt).trim()
+    if (!textToUse || isGenerating) return
     setIsGenerating(true)
     setError('')
     setWebsiteData(null)
     try {
-      const data = await generateWebsiteJSON(prompt)
+      const data = await generateWebsiteJSON(textToUse, '')
       setWebsiteData(data)
       setTimeout(() => scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
     } catch (err) {
@@ -279,7 +285,12 @@ export default function AIGenerator({ scrollRef }) {
     basePromptRef.current = e.target.value
     setCharCount(e.target.value.length)
   }
-  const handleKeyDown = (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleGenerate()
+    }
+  }
 
   return (
     <section id="generator" style={{ background: '#000000', paddingTop: 90, paddingBottom: 90, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
@@ -372,34 +383,61 @@ export default function AIGenerator({ scrollRef }) {
             />
           </div>
 
-          <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '0.8rem' }}>Ejemplo rápido:</span>
-            {PROMPT_EXAMPLES.map(ex => (
-              <button
-                key={ex.label}
-                type="button"
-                onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; setCharCount(ex.text.length); textareaRef.current?.focus() }}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 999,
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  background: 'rgba(255,255,255,0.06)',
-                  fontSize: '0.8125rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  color: '#FFFFFF',
-                  fontFamily: 'var(--font)',
-                  transition: 'all 0.2s',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#000000' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#FFFFFF' }}
-              >
-                {ex.label}
-              </button>
-            ))}
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+              <Sparkles size={13} color="#00C896" />
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Ejemplos rápidos (un clic para generar):
+              </span>
+            </div>
+
+            <div className="ai-generator-examples-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 10
+            }}>
+              {PROMPT_EXAMPLES.map(ex => {
+                const isSelected = prompt.trim() === ex.text.trim()
+                return (
+                  <button
+                    key={ex.label}
+                    type="button"
+                    className={`ai-generator-example-btn ${isSelected ? 'is-selected' : ''}`}
+                    onClick={() => {
+                      setPrompt(ex.text)
+                      basePromptRef.current = ex.text
+                      setCharCount(ex.text.length)
+                      handleGenerate(ex.text)
+                    }}
+                    disabled={isGenerating}
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 12,
+                      border: isSelected ? '1px solid #FFFFFF' : '1px solid rgba(255,255,255,0.18)',
+                      background: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                      fontSize: '0.8125rem',
+                      fontWeight: 700,
+                      cursor: isGenerating ? 'wait' : 'pointer',
+                      color: isSelected ? '#000000' : '#FFFFFF',
+                      fontFamily: 'var(--font)',
+                      transition: 'all 0.18s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      gap: 6,
+                      minHeight: 44,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      opacity: isGenerating && !isSelected ? 0.6 : 1,
+                      boxShadow: isSelected ? '0 4px 14px rgba(255,255,255,0.2)' : 'none'
+                    }}
+                  >
+                    {ex.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {error && (
@@ -456,6 +494,19 @@ export default function AIGenerator({ scrollRef }) {
       <style>{`
         .ai-generator-card {
           padding: 28px 32px;
+        }
+        .ai-generator-example-btn {
+          transition: all 0.18s ease !important;
+        }
+        .ai-generator-example-btn:not(.is-selected):not(:disabled):hover {
+          background: #FFFFFF !important;
+          color: #000000 !important;
+          transform: translateY(-1px);
+        }
+        .ai-generator-example-btn.is-selected {
+          background: #FFFFFF !important;
+          color: #000000 !important;
+          border-color: #FFFFFF !important;
         }
         @media (max-width: 640px) {
           .ai-generator-card {

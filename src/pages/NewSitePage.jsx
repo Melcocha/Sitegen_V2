@@ -17,7 +17,9 @@ import {
 } from 'lucide-react'
 
 const EXAMPLES = [
-  { label: 'Iglesia', text: 'Iglesia Cristiana con horarios dominicales, prédicas recientes y ministerios para toda la familia' },
+  { label: '⛪ Con Prédicas y Ministerios', text: 'Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios para toda la familia' },
+  { label: '📅 Con Eventos y Donaciones', text: 'Comunidad Cristiana El Shaddai con eventos especiales, donaciones online y peticiones de oración' },
+  { label: '🕒 Solo Horarios y Contacto', text: 'Parroquia San José sólo con horarios de misa y datos de contacto' },
 ]
 
 // Extract first http/https URL from any text
@@ -61,6 +63,7 @@ export default function NewSitePage() {
   const textareaRef = useRef(null)
   const previewRef  = useRef(null)
   const basePromptRef = useRef(initialPrompt)
+  const autoTriggeredRef = useRef(false)
 
   // Check plan limit on mount
   useEffect(() => {
@@ -102,15 +105,16 @@ export default function NewSitePage() {
     toggleListening()
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (overridePrompt) => {
     if (isListening) stopListening()
-    if (!prompt.trim() || generating) return
+    const textToUse = (typeof overridePrompt === 'string' ? overridePrompt : prompt).trim()
+    if (!textToUse || generating) return
     setGenerating(true)
     setError('')
     setSiteJson(null)
     try {
-      const url = detectedUrl || extractUrl(prompt)
-      const data = await generateWebsiteJSON(prompt, url)
+      const url = detectedUrl || extractUrl(textToUse)
+      const data = await generateWebsiteJSON(textToUse, url)
       setSiteJson(data)
       setGenerating(false)
       setTimeout(() => {
@@ -122,6 +126,14 @@ export default function NewSitePage() {
       setGenerating(false)
     }
   }
+
+  // Auto-generate if accessed with prompt in URL
+  useEffect(() => {
+    if (initialPrompt && !autoTriggeredRef.current) {
+      autoTriggeredRef.current = true
+      handleGenerate(initialPrompt)
+    }
+  }, [initialPrompt])
 
   const handleSave = async () => {
     if (!siteJson || saving) return
@@ -258,7 +270,12 @@ export default function NewSitePage() {
                   basePromptRef.current = e.target.value
                   setDetectedUrl(extractUrl(e.target.value))
                 }}
-                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleGenerate()
+                  }
+                }}
                 placeholder='Ej: "Iglesia Cristiana Vida Nueva con horarios dominicales, prédicas y ministerios..." o presiona "Dictar por voz" 🎙️'
                 maxLength={500}
                 rows={3}
@@ -341,17 +358,61 @@ export default function NewSitePage() {
           </div>
 
           {/* Examples */}
-          <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ejemplo rápido:</span>
-            {EXAMPLES.map(ex => (
-              <button key={ex.label} onClick={() => { setPrompt(ex.text); basePromptRef.current = ex.text; textareaRef.current?.focus() }}
-                style={{ padding: '6px 14px', borderRadius: 999, border: '1.5px solid #00C896', background: 'rgba(0,200,150,0.08)', fontSize: '0.8125rem', fontWeight: 700, cursor: 'pointer', color: '#00A87A', fontFamily: 'inherit', transition: 'all 0.15s', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#00C896'; e.currentTarget.style.color = '#fff' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,200,150,0.08)'; e.currentTarget.style.color = '#00A87A' }}
-              >
-                <span>⛪</span> {ex.label}
-              </button>
-            ))}
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+              <Sparkles size={13} color="#00A87A" />
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Ejemplos rápidos (un clic para generar):
+              </span>
+            </div>
+
+            <div className="new-site-examples-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 10
+            }}>
+              {EXAMPLES.map(ex => {
+                const isSelected = prompt.trim() === ex.text.trim()
+                return (
+                  <button
+                    key={ex.label}
+                    type="button"
+                    className={`new-site-example-btn ${isSelected ? 'is-selected' : ''}`}
+                    onClick={() => {
+                      setPrompt(ex.text)
+                      basePromptRef.current = ex.text
+                      setDetectedUrl(extractUrl(ex.text))
+                      handleGenerate(ex.text)
+                    }}
+                    disabled={generating}
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 12,
+                      border: '1.5px solid #00C896',
+                      background: isSelected ? '#00C896' : 'rgba(0,200,150,0.06)',
+                      fontSize: '0.8125rem',
+                      fontWeight: 700,
+                      cursor: generating ? 'wait' : 'pointer',
+                      color: isSelected ? '#ffffff' : '#008762',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.18s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      gap: 6,
+                      minHeight: 44,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      opacity: generating && !isSelected ? 0.6 : 1,
+                      boxShadow: isSelected ? '0 4px 14px rgba(0,200,150,0.28)' : 'none'
+                    }}
+                  >
+                    {ex.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* Error */}
@@ -541,6 +602,21 @@ export default function NewSitePage() {
         .new-site-card {
           padding: 36px 40px;
         }
+        .new-site-example-btn {
+          transition: all 0.18s ease !important;
+        }
+        .new-site-example-btn:not(.is-selected):not(:disabled):hover {
+          background-color: #00C896 !important;
+          color: #ffffff !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0,200,150,0.22) !important;
+        }
+        .new-site-example-btn.is-selected {
+          background-color: #00C896 !important;
+          color: #ffffff !important;
+          border-color: #00A87A !important;
+          box-shadow: 0 4px 14px rgba(0,200,150,0.28) !important;
+        }
         @media (max-width: 640px) {
           .new-site-header {
             padding: 0 14px !important;
@@ -584,6 +660,9 @@ export default function NewSitePage() {
             font-size: 0.95rem !important;
             border-radius: 14px !important;
             line-height: 1.6 !important;
+          }
+          .new-site-examples-grid {
+            grid-template-columns: 1fr !important;
           }
           .new-site-gen-btn {
             padding: 15px 18px !important;
