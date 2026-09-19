@@ -41,21 +41,59 @@ async function getCroppedImg(imageElement, crop) {
 }
 
 export default function CropperModal({ imageSrc, onCropComplete, onCancel }) {
-  const [crop, setCrop] = useState()
+  const [crop, setCrop] = useState({
+    unit: '%',
+    width: 90,
+    height: 90,
+    x: 5,
+    y: 5
+  })
   const imgRef = useRef(null)
+
+  const handleImageLoad = (e) => {
+    const { width, height } = e.currentTarget
+    if (width && height) {
+      setCrop({
+        unit: '%',
+        width: 90,
+        height: 90,
+        x: 5,
+        y: 5
+      })
+    }
+  }
 
   const handleSave = async () => {
     try {
-      if (!crop || !crop.width || !crop.height) {
-        // Si no recortan nada, usar el full width/height real original
-        alert("Por favor dibuja un cuadro de recorte sobre la imagen primero.")
-        return;
+      let targetCrop = crop
+      if (!targetCrop || !targetCrop.width || !targetCrop.height) {
+        if (imgRef.current) {
+          targetCrop = {
+            unit: 'px',
+            x: 0,
+            y: 0,
+            width: imgRef.current.width,
+            height: imgRef.current.height
+          }
+        }
       }
-      const croppedImageBlob = await getCroppedImg(imgRef.current, crop)
-      onCropComplete(croppedImageBlob)
+      const croppedImageBlob = targetCrop ? await getCroppedImg(imgRef.current, targetCrop) : null
+      if (croppedImageBlob) {
+        onCropComplete(croppedImageBlob)
+      } else {
+        const resp = await fetch(imageSrc)
+        const blob = await resp.blob()
+        onCropComplete(blob)
+      }
     } catch (e) {
-      console.error(e)
-      alert("Error al recortar la imagen.")
+      console.warn('[CropperModal] Error during crop, using original:', e)
+      try {
+        const resp = await fetch(imageSrc)
+        const blob = await resp.blob()
+        onCropComplete(blob)
+      } catch (err) {
+        onCancel()
+      }
     }
   }
 
@@ -77,6 +115,7 @@ export default function CropperModal({ imageSrc, onCropComplete, onCancel }) {
             alt="Crop me" 
             style={{ maxHeight: '60vh', width: 'auto', display: 'block' }} 
             crossOrigin="anonymous" 
+            onLoad={handleImageLoad}
           />
         </ReactCrop>
       </div>

@@ -13,7 +13,8 @@ import {
   Palette, Type, Phone, Globe, AlignLeft, Layout,
   ChevronDown, ChevronRight, Plus, Trash2, GripVertical,
   Star, Image, Search, Sparkles, MessageSquare, Users, Link as LinkIcon, Upload,
-  Heart, Calendar, Video, BookOpen, Layers, Settings, Sliders, Radio, DollarSign, MessageCircle
+  Heart, Calendar, Video, BookOpen, Layers, Settings, Sliders, Radio, DollarSign, MessageCircle,
+  ArrowUp, ArrowDown, Eye, EyeOff
 } from 'lucide-react'
 
 // ─── Google Fonts available ───────────────────────────────────────
@@ -90,17 +91,17 @@ const SERVICE_ICONS = [
 
 // ─── Shared components ────────────────────────────────────────────
 const S = {
-  label: { display:'block', fontSize:'.69rem', fontWeight:700, color:'#9CA3AF', textTransform:'uppercase', letterSpacing:'.06em', marginBottom:5 },
-  input: { width:'100%', padding:'8px 10px', border:'1.5px solid #E5E7EB', borderRadius:8, fontSize:'.8125rem', fontFamily:'inherit', color:'#111827', outline:'none', boxSizing:'border-box', background:'#fff' },
-  textarea: { width:'100%', padding:'8px 10px', border:'1.5px solid #E5E7EB', borderRadius:8, fontSize:'.8125rem', fontFamily:'inherit', resize:'vertical', color:'#111827', outline:'none', boxSizing:'border-box', background:'#fff' },
-  row: { marginBottom:13 },
-  divider: { height:1, background:'#F3F4F6', margin:'14px 0' },
-  addBtn: { width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:6, padding:'8px', border:'1.5px dashed #D1D5DB', borderRadius:9, background:'transparent', cursor:'pointer', fontSize:'.78rem', fontWeight:600, color:'#6B7280', fontFamily:'inherit' },
+  label: { display:'block', fontSize:'.72rem', fontWeight:800, color:'#475569', textTransform:'uppercase', letterSpacing:'.05em', marginBottom:7 },
+  input: { width:'100%', padding:'10px 12px', border:'1.5px solid #E2E8F0', borderRadius:9, fontSize:'.875rem', fontFamily:'inherit', color:'#0F172A', outline:'none', boxSizing:'border-box', background:'#fff', transition:'border-color 0.15s ease' },
+  textarea: { width:'100%', padding:'10px 12px', border:'1.5px solid #E2E8F0', borderRadius:9, fontSize:'.875rem', fontFamily:'inherit', resize:'vertical', color:'#0F172A', outline:'none', boxSizing:'border-box', background:'#fff', minHeight:80, transition:'border-color 0.15s ease' },
+  row: { marginBottom:16 },
+  divider: { height:1, background:'#F1F5F9', margin:'18px 0' },
+  addBtn: { width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'10px', border:'1.5px dashed #CBD5E1', borderRadius:10, background:'#F8FAFC', cursor:'pointer', fontSize:'.82rem', fontWeight:700, color:'#475569', fontFamily:'inherit' },
 }
 
 function Field({ label, value, onChange, multiline, placeholder, type='text', min, max, step }) {
   const focusStyle = (e) => e.target.style.borderColor = '#6366F1'
-  const blurStyle  = (e) => e.target.style.borderColor = '#E5E7EB'
+  const blurStyle  = (e) => e.target.style.borderColor = '#E2E8F0'
   return (
     <div style={S.row}>
       {label && <label style={S.label}>{label}</label>}
@@ -112,6 +113,46 @@ function Field({ label, value, onChange, multiline, placeholder, type='text', mi
   )
 }
 
+function compressImageFile(file, maxWidth = 1600, quality = 0.82) {
+  return new Promise((resolve) => {
+    if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      resolve(file)
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width)
+          width = maxWidth
+        }
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(blob)
+            } else {
+              resolve(file)
+            }
+          },
+          'image/jpeg',
+          quality
+        )
+      }
+      img.onerror = () => resolve(file)
+      img.src = e.target.result
+    }
+    reader.onerror = () => resolve(file)
+    reader.readAsDataURL(file)
+  })
+}
+
 function fileToDataUrl(fileOrBlob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -121,14 +162,31 @@ function fileToDataUrl(fileOrBlob) {
   })
 }
 
+const QUICK_STOCK_PHOTOS = [
+  { label: '🎵 Alabanza', url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1600&q=85&fit=crop' },
+  { label: '🙏 Oración', url: 'https://images.unsplash.com/photo-1509021436471-18736672b71e?w=1600&q=85&fit=crop' },
+  { label: '🏛️ Templo', url: 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1600&q=85&fit=crop' },
+  { label: '👨‍👩‍👧 Familia', url: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1600&q=85&fit=crop' },
+  { label: '🏢 Negocio', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=85&fit=crop' },
+  { label: '💻 Tecnología', url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&q=85&fit=crop' },
+  { label: '🍽️ Gastronomía', url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=85&fit=crop' },
+  { label: '🌿 Comunidad', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&q=85&fit=crop' },
+]
+
 function ImageUploadBox({ label, imageUrl, onUpload, onClear, useCropper }) {
   const [uploading, setUploading] = useState(false)
   const [cropSrc, setCropSrc] = useState(null)
+  const [showUrlInput, setShowUrlInput] = useState(false)
+  const [showStockList, setShowStockList] = useState(false)
+  const [customUrl, setCustomUrl] = useState('')
 
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     
+    // Compress image to prevent database bloat
+    const file = await compressImageFile(rawFile)
+
     if (useCropper) {
       const reader = new FileReader()
       reader.addEventListener('load', () => setCropSrc(reader.result))
@@ -141,8 +199,8 @@ function ImageUploadBox({ label, imageUrl, onUpload, onClear, useCropper }) {
   const uploadToSupabase = async (blob) => {
     setUploading(true)
     try {
-      const fileExt = blob.name ? blob.name.split('.').pop() : 'png'
-      const fileName = `${Math.random()}.${fileExt}`
+      const fileExt = blob.name ? blob.name.split('.').pop() : 'jpg'
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`
       const filePath = `uploads/${fileName}`
       
       const { error: uploadError } = await supabase.storage
@@ -153,12 +211,12 @@ function ImageUploadBox({ label, imageUrl, onUpload, onClear, useCropper }) {
       const { data } = supabase.storage.from('web_assets').getPublicUrl(filePath)
       onUpload(data.publicUrl)
     } catch (error) {
-      console.warn('Supabase storage upload failed or offline, using Data URL fallback:', error)
+      console.warn('Supabase storage upload fallback to Data URL:', error)
       try {
         const dataUrl = await fileToDataUrl(blob)
         onUpload(dataUrl)
       } catch (err) {
-        alert('Error procesando la imagen.')
+        console.error('Error al procesar la imagen:', err)
       }
     } finally {
       setUploading(false)
@@ -170,8 +228,16 @@ function ImageUploadBox({ label, imageUrl, onUpload, onClear, useCropper }) {
     await uploadToSupabase(croppedBlob)
   }
 
+  const handleApplyUrl = () => {
+    if (customUrl.trim()) {
+      onUpload(customUrl.trim())
+      setCustomUrl('')
+      setShowUrlInput(false)
+    }
+  }
+
   return (
-    <div style={{ marginTop: 10 }}>
+    <div style={{ marginTop: 10, marginBottom: 12 }}>
       {cropSrc && (
         <CropperModal 
           imageSrc={cropSrc} 
@@ -180,39 +246,101 @@ function ImageUploadBox({ label, imageUrl, onUpload, onClear, useCropper }) {
         />
       )}
       {label && <label style={S.label}>{label}</label>}
+
       {imageUrl ? (
-        <div style={{ position:'relative', borderRadius:10, overflow:'hidden', marginBottom:8, height:80, background:'#FAFAFA', display:'flex', alignItems:'center', justifyContent:'center', border:'1.5px solid #E5E7EB' }}>
-          <img src={imageUrl} alt="preview" style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'contain' }} />
-          <button onClick={onClear} style={{ position:'absolute', top:5, right:5, border:'none', background:'rgba(0,0,0,.55)', borderRadius:'50%', width:22, height:22, cursor:'pointer', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <div style={{ position:'relative', borderRadius:10, overflow:'hidden', marginBottom:8, height:96, background:'#FAFAFA', display:'flex', alignItems:'center', justifyContent:'center', border:'1.5px solid #E5E7EB' }}>
+          <img src={imageUrl} alt="preview" style={{ maxWidth:'100%', maxHeight:'100%', objectFit:'cover', width:'100%', height:'100%' }} />
+          <button onClick={onClear} title="Eliminar imagen" style={{ position:'absolute', top:6, right:6, border:'none', background:'rgba(0,0,0,.65)', borderRadius:'50%', width:24, height:24, cursor:'pointer', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
       ) : null}
-      <div style={{ display:'flex', gap:7 }}>
-        <label style={{ flex:1, padding:'8px 10px', border:'1.5px dashed #D1D5DB', borderRadius:9, cursor: uploading?'default':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:'.75rem', color:'#6B7280', fontWeight:600, background:uploading?'#F3F4F6':'#FAFAFA', opacity: uploading?0.7:1 }}>
+
+      {/* Action buttons */}
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        <label style={{ flex: 1, minWidth: 120, padding:'10px 12px', border:'1.5px dashed #CBD5E1', borderRadius:9, cursor: uploading?'default':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:7, fontSize:'.8rem', color:'#334155', fontWeight:700, background:uploading?'#F1F5F9':'#F8FAFC', opacity: uploading?0.7:1 }}>
           <Upload size={14} />
-          {uploading ? 'Subiendo...' : 'Subir imagen'}
+          {uploading ? 'Subiendo...' : 'Subir archivo'}
           <input type="file" accept="image/*" style={{ display:'none' }} disabled={uploading} onChange={handleFileChange} />
         </label>
+
+        <button
+          type="button"
+          onClick={() => { setShowUrlInput(!showUrlInput); setShowStockList(false); }}
+          style={{ padding:'10px 14px', border:'1px solid #E2E8F0', borderRadius:9, background: showUrlInput ? '#EEF2FF' : '#fff', color: showUrlInput ? '#4F46E5' : '#334155', cursor:'pointer', fontSize:'.8rem', fontWeight:700, display:'flex', alignItems:'center', gap:6 }}
+        >
+          <LinkIcon size={14} />
+          Pegar URL
+        </button>
+
+        <button
+          type="button"
+          onClick={() => { setShowStockList(!showStockList); setShowUrlInput(false); }}
+          style={{ padding:'10px 14px', border:'1px solid #E2E8F0', borderRadius:9, background: showStockList ? '#EEF2FF' : '#fff', color: showStockList ? '#4F46E5' : '#334155', cursor:'pointer', fontSize:'.8rem', fontWeight:700, display:'flex', alignItems:'center', gap:6 }}
+        >
+          <Image size={14} />
+          Fotos Stock
+        </button>
       </div>
+
+      {/* Direct URL Input popdown */}
+      {showUrlInput && (
+        <div style={{ marginTop: 8, display: 'flex', gap: 6, animation: 'fadeIn 0.15s ease' }}>
+          <input
+            type="url"
+            value={customUrl}
+            onChange={(e) => setCustomUrl(e.target.value)}
+            placeholder="https://images.unsplash.com/..."
+            style={{ flex: 1, padding: '6px 10px', border: '1.5px solid #6366F1', borderRadius: 7, fontSize: '0.78rem', outline: 'none' }}
+            onKeyDown={(e) => e.key === 'Enter' && handleApplyUrl()}
+          />
+          <button
+            type="button"
+            onClick={handleApplyUrl}
+            style={{ padding: '6px 12px', background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 7, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+          >
+            Aplicar
+          </button>
+        </div>
+      )}
+
+      {/* Stock photo pills */}
+      {showStockList && (
+        <div style={{ marginTop: 8, padding: 8, background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, animation: 'fadeIn 0.15s ease' }}>
+          {QUICK_STOCK_PHOTOS.map((stk, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => { onUpload(stk.url); setShowStockList(false); }}
+              style={{
+                padding: '6px 8px', border: '1px solid #CBD5E1', borderRadius: 6,
+                background: '#fff', fontSize: '0.72rem', fontWeight: 600, color: '#334155',
+                cursor: 'pointer', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+              }}
+            >
+              {stk.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 function Section({ title, icon, badge, children, isOpen, onToggle }) {
   return (
-    <div style={{ borderBottom:'1px solid #F3F4F6' }}>
-      <button onClick={onToggle} style={{ width:'100%', padding:'13px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', background: isOpen?'#FAFAFA':'transparent', border:'none', cursor:'pointer', fontWeight:700, fontSize:'.84rem', color:'#111827', fontFamily:'inherit', transition:'background .12s' }}>
-        <span style={{ display:'flex', alignItems:'center', gap:9, color:'#374151' }}>
-          <span style={{ color: isOpen?'#6366F1':'#9CA3AF', transition:'color .15s' }}>{icon}</span>
-          {title}
-          {badge && <span style={{ padding:'1px 7px', background:'#EEF2FF', color:'#6366F1', borderRadius:999, fontSize:'.65rem', fontWeight:700 }}>{badge}</span>}
+    <div style={{ borderBottom:'1px solid #F1F5F9' }}>
+      <button onClick={onToggle} style={{ width:'100%', padding:'15px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', background: isOpen?'#F8FAFC':'transparent', border:'none', cursor:'pointer', fontWeight:800, fontSize:'.88rem', color:'#0F172A', fontFamily:'inherit', transition:'background .12s' }}>
+        <span style={{ display:'flex', alignItems:'center', gap:10, color:'#1E293B' }}>
+          <span style={{ color: isOpen?'#4F46E5':'#94A3B8', transition:'color .15s', display:'flex', alignItems:'center' }}>{icon}</span>
+          <span>{title}</span>
+          {badge && <span style={{ padding:'2px 8px', background:'#EEF2FF', color:'#4F46E5', borderRadius:999, fontSize:'.68rem', fontWeight:800 }}>{badge}</span>}
         </span>
-        <span style={{ color: isOpen?'#6366F1':'#9CA3AF', transition:'transform .2s, color .15s', display:'inline-flex', transform: isOpen?'rotate(0)':'rotate(-90deg)' }}>
-          <ChevronDown size={14} />
+        <span style={{ color: isOpen?'#4F46E5':'#94A3B8', transition:'transform .2s, color .15s', display:'inline-flex', transform: isOpen?'rotate(0)':'rotate(-90deg)' }}>
+          <ChevronDown size={16} />
         </span>
       </button>
-      {isOpen && <div style={{ padding:'4px 18px 18px' }}>{children}</div>}
+      {isOpen && <div style={{ padding:'8px 20px 24px', boxSizing:'border-box' }}>{children}</div>}
     </div>
   )
 }
@@ -554,6 +682,7 @@ function NextStepsEditor({ nextSteps, onChange }) {
     <div>
       <Field label="Título de la Sección" value={ns.title} onChange={v => updateMain('title', v)} placeholder="Tus Próximos Pasos en la Fe" />
       <Field label="Subtítulo" value={ns.subtitle} onChange={v => updateMain('subtitle', v)} multiline placeholder="Descripción introductoria..." />
+      <ImageUploadBox label="Foto de la Sección" imageUrl={ns.image} onUpload={url => updateMain('image', url)} onClear={() => updateMain('image', '')} />
       <div style={S.divider} />
       {(ns.steps || []).map((st, i) => (
         <div key={i} style={{ border: '1.5px solid #E5E7EB', borderRadius: 10, padding: 10, marginBottom: 10, background: '#FAFAFA' }}>
@@ -699,41 +828,141 @@ function EventsEditor({ events, onChangeData }) {
   )
 }
 
+function SectionLayoutPicker({ label = "Diseño del Bloque (Layout)", current, options = [], onChange }) {
+  const activeOpt = options.find(o => o.id === current) || options.find(o => o.isDefault) || options[0]
+  return (
+    <div style={{ marginBottom: 18, padding: '12px 14px', background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 12, boxSizing: 'border-box', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.74rem', fontWeight: 800, color: '#1E293B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <span style={{ fontSize: '1rem' }}>🎨</span>
+          <span>{label}</span>
+        </div>
+        <span style={{ fontSize: '0.7rem', color: '#4F46E5', fontWeight: 800, background: '#EEF2FF', padding: '3px 10px', borderRadius: 6 }}>
+          {activeOpt?.label || ''}
+        </span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`, gap: 8, width: '100%', boxSizing: 'border-box' }}>
+        {options.map(opt => {
+          const isSel = (current === opt.id) || (!current && opt.isDefault)
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => onChange(opt.id)}
+              style={{
+                padding: '10px 6px',
+                borderRadius: 9,
+                border: isSel ? '2px solid #6366F1' : '1.5px solid #CBD5E1',
+                background: isSel ? '#EEF2FF' : '#FFFFFF',
+                color: isSel ? '#4338CA' : '#334155',
+                fontSize: '0.74rem',
+                fontWeight: isSel ? 800 : 600,
+                cursor: 'pointer',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4,
+                boxShadow: isSel ? '0 2px 8px rgba(99,102,241,0.22)' : '0 1px 2px rgba(0,0,0,0.02)',
+                transition: 'all 0.15s ease',
+                boxSizing: 'border-box',
+                minWidth: 0,
+                width: '100%',
+                overflow: 'hidden'
+              }}
+            >
+              <span style={{ fontSize: '1.2rem' }}>{opt.icon}</span>
+              <span style={{ lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%', fontSize: '0.73rem' }}>
+                {opt.label}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function SectionsOrderEditor({ sectionOrder, sectionsVisibility, data, onChange }) {
   const [dragIdx, setDragIdx] = useState(null)
   const [overIdx, setOverIdx] = useState(null)
 
   const isChurch = data.industry?.toLowerCase().includes('iglesi') || data.industry?.toLowerCase().includes('church') || Boolean(data.planAVisit) || Boolean(data.ministries) || Boolean(data.sermons) || data.churchTemplateVariant
-  const CHURCH_ORDER = ['hero', 'missionBlock', 'welcome', 'planAVisit', 'nucleusColumns', 'values', 'ministries', 'nextSteps', 'sermons', 'events', 'donation', 'prayerRequest', 'about', 'testimonials', 'contact']
-  const DEFAULT_ORDER = isChurch ? CHURCH_ORDER : ['hero', 'services', 'about', 'gallery', 'team', 'beforeAfter', 'testimonials', 'contact']
-  const order = sectionOrder || DEFAULT_ORDER
+
+  // Full section catalogs per template
+  const POSTER_ALL = ['hero', 'welcome', 'planAVisit', 'values', 'nucleusColumns', 'ministries', 'nextSteps', 'missionBlock', 'sermons', 'events', 'donation', 'prayerRequest', 'about', 'contact']
+  const AFICHE_ALL = ['hero', 'nucleusColumns', 'ministries', 'planAVisit', 'welcome', 'values', 'nextSteps', 'sermons', 'events', 'prayerRequest', 'about', 'donation', 'contact']
+  const NUCLEUS_ALL = ['hero', 'missionBlock', 'panoramas', 'sermons', 'planAVisit', 'welcome', 'values', 'ministries', 'nextSteps', 'events', 'donation', 'prayerRequest', 'about', 'contact']
+  const MYGATEWAY_ALL = ['hero', 'nextSteps', 'nucleusColumns', 'testimonials', 'planAVisit', 'welcome', 'values', 'ministries', 'sermons', 'donation', 'prayerRequest', 'about', 'contact']
+  const STANDARD_ALL = ['hero', 'services', 'about', 'gallery', 'team', 'beforeAfter', 'testimonials', 'contact']
+
+  let allTemplateSections = STANDARD_ALL
+  if (data.churchTemplateVariant === 'poster') allTemplateSections = POSTER_ALL
+  else if (data.churchTemplateVariant === 'afiche' || data.churchTemplateVariant === 'noche_adoracion') allTemplateSections = AFICHE_ALL
+  else if (data.churchTemplateVariant === 'mygateway') allTemplateSections = MYGATEWAY_ALL
+  else if (isChurch) allTemplateSections = NUCLEUS_ALL
+
+  const order = (Array.isArray(sectionOrder) && sectionOrder.length > 0) ? sectionOrder : allTemplateSections
   const visibility = sectionsVisibility || {}
 
   const SECTION_NAMES = {
-    hero: 'Hero Principal (Portada)',
-    missionBlock: 'Misión & Visión (Nucleus)',
-    welcome: 'Bienvenida a Casa (MyGateway)',
-    planAVisit: 'Planifica tu Visita & Horarios',
-    nucleusColumns: 'Líderes & Calendario (Nucleus)',
-    values: 'Valores & Fundamentos de Fe',
-    ministries: 'Ministerios & Familias',
-    nextSteps: 'Próximos Pasos en la Fe',
-    sermons: 'Sermones & Mensajes',
-    events: 'Eventos & Calendario',
-    donation: 'Ofrendas / Donaciones',
-    prayerRequest: 'Petición de Oración',
-    services: 'Servicios',
-    about: 'Sobre Nosotros',
-    gallery: 'Galería de Fotos',
-    team: 'Nuestro Equipo',
-    beforeAfter: 'Antes y Después',
-    testimonials: 'Testimonios',
-    contact: 'Formulario de Contacto'
+    hero: '🌟 Portada Principal (Hero)',
+    missionBlock: '🎯 Misión & Visión',
+    vision: '🎯 Visión & Propósito',
+    welcome: '🏠 Bienvenida a Casa',
+    planAVisit: '📍 Planifica tu Visita & Horarios',
+    nucleusColumns: '👥 Líderes, Pastores & Galería',
+    panoramas: '📸 Franjas Panorámicas',
+    values: '✝️ Valores & Fundamentos de Fe',
+    ministries: '🤝 Ministerios & Grupos',
+    nextSteps: '🚶 Próximos Pasos en la Fe',
+    sermons: '📖 Prédicas & Mensajes',
+    events: '📅 Calendario de Eventos',
+    donation: '💳 Ofrendas / Donaciones',
+    prayerRequest: '🙏 Petición de Oración',
+    services: '💼 Servicios & Soluciones',
+    about: 'ℹ️ Sobre Nosotros',
+    gallery: '🖼️ Galería de Fotos',
+    team: '👥 Nuestro Equipo',
+    beforeAfter: '✨ Antes y Después',
+    testimonials: '💬 Testimonios de Vida',
+    contact: '📞 Contacto & Ubicación'
   }
 
   const toggleVisibility = (key) => {
     const nextVis = { ...visibility, [key]: visibility[key] === false }
     onChange('sectionsVisibility', nextVis)
+  }
+
+  const handleDelete = (key) => {
+    const nextVis = { ...visibility, [key]: false }
+    onChange('sectionsVisibility', nextVis)
+  }
+
+  const handleRestore = (key) => {
+    const nextVis = { ...visibility, [key]: true }
+    onChange('sectionsVisibility', nextVis)
+    if (!order.includes(key)) {
+      onChange('sectionOrder', [...order, key])
+    }
+  }
+
+  const moveUp = (i) => {
+    if (i <= 0) return
+    const nextOrder = [...order]
+    const temp = nextOrder[i]
+    nextOrder[i] = nextOrder[i - 1]
+    nextOrder[i - 1] = temp
+    onChange('sectionOrder', nextOrder)
+  }
+
+  const moveDown = (i) => {
+    if (i >= order.length - 1) return
+    const nextOrder = [...order]
+    const temp = nextOrder[i]
+    nextOrder[i] = nextOrder[i + 1]
+    nextOrder[i + 1] = temp
+    onChange('sectionOrder', nextOrder)
   }
 
   const onDragStart = (e, i) => { setDragIdx(i); e.dataTransfer.effectAllowed = 'move'; }
@@ -749,43 +978,146 @@ function SectionsOrderEditor({ sectionOrder, sectionsVisibility, data, onChange 
   }
   const onDragEnd = () => { setDragIdx(null); setOverIdx(null) }
 
+  // Available sections not currently shown
+  const inactiveSections = allTemplateSections.filter(k => visibility[k] === false || !order.includes(k))
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {order.map((key, i) => {
-        const isVisible = visibility[key] !== false
-        return (
-          <div
-            key={key}
-            draggable
-            onDragStart={e => onDragStart(e, i)}
-            onDragOver={e => onDragOver(e, i)}
-            onDrop={e => onDrop(e, i)}
-            onDragEnd={onDragEnd}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px',
-              border: `1.5px solid ${overIdx === i && dragIdx !== i ? '#6366F1' : '#E5E7EB'}`,
-              borderRadius: 10, background: dragIdx === i ? '#F5F3FF' : isVisible ? '#fff' : '#F3F4F6',
-              opacity: dragIdx === i ? 0.5 : 1, transition: 'all 0.15s'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
-              <span style={{ cursor: 'grab', color: '#D1D5DB', display: 'flex', alignItems: 'center', userSelect: 'none' }}>
-                <GripVertical size={14} />
-              </span>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: '.8rem', fontWeight: 700, color: isVisible ? '#1F2937' : '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {SECTION_NAMES[key] || key}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ fontSize: '.78rem', color: '#6B7280', lineHeight: 1.4 }}>
+        Usa las flechas <b>↑ / ↓</b> o arrastra para reordenar. Puedes <b>ocultar o eliminar</b> cualquier sección.
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {order.map((key, i) => {
+          const isVisible = visibility[key] !== false
+          return (
+            <div
+              key={key}
+              draggable
+              onDragStart={e => onDragStart(e, i)}
+              onDragOver={e => onDragOver(e, i)}
+              onDrop={e => onDrop(e, i)}
+              onDragEnd={onDragEnd}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px',
+                border: `1.5px solid ${overIdx === i && dragIdx !== i ? '#6366F1' : isVisible ? '#E5E7EB' : '#F3F4F6'}`,
+                borderRadius: 10, background: dragIdx === i ? '#F5F3FF' : isVisible ? '#fff' : '#F9FAFB',
+                opacity: dragIdx === i ? 0.5 : isVisible ? 1 : 0.65, transition: 'all 0.15s',
+                boxShadow: isVisible ? '0 1px 3px rgba(0,0,0,0.04)' : 'none'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+                <span style={{ cursor: 'grab', color: '#9CA3AF', display: 'flex', alignItems: 'center', userSelect: 'none' }} title="Arrastrar para ordenar">
+                  <GripVertical size={15} />
+                </span>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: '.82rem', fontWeight: 700, color: isVisible ? '#1F2937' : '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {SECTION_NAMES[key] || key}
+                  </div>
                 </div>
               </div>
+
+              {/* Action Buttons: Up, Down, Visibility, Delete */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <button
+                  type="button"
+                  onClick={() => moveUp(i)}
+                  disabled={i === 0}
+                  title="Mover arriba"
+                  style={{
+                    border: 'none', background: 'none', cursor: i === 0 ? 'not-allowed' : 'pointer',
+                    color: i === 0 ? '#D1D5DB' : '#4B5563', padding: '4px 5px', borderRadius: 5,
+                    display: 'flex', alignItems: 'center', transition: 'background 0.1s'
+                  }}
+                  onMouseEnter={e => { if (i > 0) e.currentTarget.style.background = '#F3F4F6' }}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <ArrowUp size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => moveDown(i)}
+                  disabled={i === order.length - 1}
+                  title="Mover abajo"
+                  style={{
+                    border: 'none', background: 'none', cursor: i === order.length - 1 ? 'not-allowed' : 'pointer',
+                    color: i === order.length - 1 ? '#D1D5DB' : '#4B5563', padding: '4px 5px', borderRadius: 5,
+                    display: 'flex', alignItems: 'center', transition: 'background 0.1s'
+                  }}
+                  onMouseEnter={e => { if (i < order.length - 1) e.currentTarget.style.background = '#F3F4F6' }}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <ArrowDown size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => toggleVisibility(key)}
+                  title={isVisible ? 'Ocultar sección' : 'Mostrar sección'}
+                  style={{
+                    border: 'none', background: 'none', cursor: 'pointer',
+                    color: isVisible ? '#6366F1' : '#9CA3AF', padding: '4px 5px', borderRadius: 5,
+                    display: 'flex', alignItems: 'center', transition: 'background 0.1s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#F3F4F6'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  {isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete(key)}
+                  title="Eliminar sección de la página"
+                  style={{
+                    border: 'none', background: 'none', cursor: 'pointer',
+                    color: '#EF4444', padding: '4px 5px', borderRadius: 5,
+                    display: 'flex', alignItems: 'center', transition: 'background 0.1s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#FEE2E2'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <button onClick={() => toggleVisibility(key)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: isVisible ? '#6366F1' : '#9CA3AF', padding: 4 }}>
-                {isVisible ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>}
-              </button>
-            </div>
+          )
+        })}
+      </div>
+
+      {/* Available / Hidden sections catalog */}
+      {inactiveSections.length > 0 && (
+        <div style={{ marginTop: 8, padding: 14, background: '#F8FAFC', border: '1.5px dashed #CBD5E1', borderRadius: 12 }}>
+          <div style={{ fontSize: '.8rem', fontWeight: 800, color: '#334155', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Plus size={14} color="#6366F1" />
+            <span>Secciones Disponibles para Agregar ({inactiveSections.length})</span>
           </div>
-        )
-      })}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {inactiveSections.map(key => (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#FFFFFF', borderRadius: 8, border: '1px solid #E2E8F0' }}>
+                <span style={{ fontSize: '.78rem', fontWeight: 600, color: '#475569' }}>
+                  {SECTION_NAMES[key] || key}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRestore(key)}
+                  style={{
+                    border: 'none', background: '#6366F1', color: '#FFFFFF',
+                    borderRadius: 6, padding: '4px 10px', fontSize: '.72rem', fontWeight: 800,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                    transition: 'all 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#4F46E5'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#6366F1'}
+                >
+                  <Plus size={11} /> Agregar
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -840,23 +1172,24 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
         </div>
 
         {/* Category Pills Navigation */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:4, padding:'0 12px 10px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:6, padding:'2px 14px 12px' }}>
           {[
-            { id:'content', label:'Contenido', icon:<AlignLeft size={13}/> },
-            { id:'style', label:'Diseño', icon:<Palette size={13}/> },
-            { id:'structure', label:'Menú', icon:<Layers size={13}/> },
-            { id:'settings', label:'Ajustes', icon:<Settings size={13}/> },
+            { id:'content', label:'Contenido', icon:<AlignLeft size={14}/> },
+            { id:'style', label:'Diseño', icon:<Palette size={14}/> },
+            { id:'structure', label:'Menú', icon:<Layers size={14}/> },
+            { id:'settings', label:'Ajustes', icon:<Settings size={14}/> },
           ].map(tb => (
             <button
               key={tb.id}
               onClick={() => { setActiveTab(tb.id); setOpenSection(null) }}
               style={{
-                display:'flex', alignItems:'center', justifyContent:'center', gap:5,
-                padding:'7px 4px', borderRadius:8, border:'none',
-                background: activeTab === tb.id ? '#EEF2FF' : '#F9FAFB',
-                color: activeTab === tb.id ? '#4F46E5' : '#6B7280',
-                fontWeight: activeTab === tb.id ? 800 : 600,
-                fontSize:'.72rem', cursor:'pointer', transition:'all .15s'
+                display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                padding:'9px 6px', borderRadius:9, border:'none',
+                background: activeTab === tb.id ? '#4F46E5' : '#F1F5F9',
+                color: activeTab === tb.id ? '#FFFFFF' : '#475569',
+                fontWeight: activeTab === tb.id ? 800 : 700,
+                fontSize:'.78rem', cursor:'pointer', transition:'all .15s',
+                boxShadow: activeTab === tb.id ? '0 2px 6px rgba(79,70,229,0.25)' : 'none'
               }}>
               {tb.icon}
               <span>{tb.label}</span>
@@ -873,19 +1206,18 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
           <div>
             {isChurch ? (
               <>
-                {/* Top Announcement Bar */}
-                <Section title="Barra de Anuncios Superior" icon={<Radio size={14}/>} {...sec('churchAnnounce')}>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                    <span style={{ fontSize:'.75rem', fontWeight:600, color:'#374151' }}>Mostrar Barra de Anuncios</span>
-                    <input type="checkbox" checked={websiteData.announcementBar?.visible !== false} onChange={e=>update('announcementBar.visible', e.target.checked)} style={{ width:18, height:18, accentColor:'#6366F1' }} />
-                  </div>
-                  <Field label="Texto del Anuncio" value={websiteData.announcementBar?.text} onChange={v=>update('announcementBar.text',v)} multiline placeholder="👋 Weekly Check-In: ¿Necesitas oración?..." />
-                  <Field label="Texto del Botón" value={websiteData.announcementBar?.ctaText} onChange={v=>update('announcementBar.ctaText',v)} placeholder="Conéctate Ahora" />
-                  <Field label="Enlace del Botón" value={websiteData.announcementBar?.ctaLink} onChange={v=>update('announcementBar.ctaLink',v)} placeholder="#wp-plan-visit" />
-                </Section>
-
                 {/* Hero / Portada */}
                 <Section title="🌟 Portada Hero & Llamado a la Acción" icon={<Image size={14}/>} {...sec('hero')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Portada (Hero)"
+                    current={websiteData.sectionLayouts?.hero}
+                    options={[
+                      { id: 'centered', icon: '🏛️', label: 'Centrado', isDefault: true },
+                      { id: 'visual',   icon: '🎬', label: 'Solo Visual' },
+                      { id: 'split',    icon: '🌗', label: 'Split 50/50' }
+                    ]}
+                    onChange={val => update('sectionLayouts.hero', val)}
+                  />
                   <Field label="⏰ Horario / Eyebrow (texto dorado pequeño)" value={websiteData.hero?.eyebrow} onChange={v=>update('hero.eyebrow',v)} placeholder="DOMINGOS 10:30 A.M." />
                   <div style={S.divider} />
                   <Field label="Titular Principal" value={websiteData.hero?.headline} onChange={v=>update('hero.headline',v)} placeholder="Encuentra tu Lugar en Nuestra Familia" />
@@ -933,33 +1265,72 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
 
                 {/* Bienvenida Pastoral */}
                 <Section title="Bienvenida a Casa" icon={<Heart size={14}/>} {...sec('welcome')}>
-                  <Field label="Etiqueta Superior" value={websiteData.welcome?.label} onChange={v=>update('welcome.label',v)} placeholder="Bienvenido a Casa" />
+                  <SectionLayoutPicker
+                    label="Diseño de Bienvenida"
+                    current={websiteData.sectionLayouts?.welcome}
+                    options={[
+                      { id: 'text',   icon: '📖', label: 'Pastoral / Texto', isDefault: true },
+                      { id: 'visual', icon: '🖼️', label: 'Solo Fotos' },
+                      { id: 'split',  icon: '✨', label: 'Split Tarjeta' }
+                    ]}
+                    onChange={val => update('sectionLayouts.welcome', val)}
+                  />
+                  <Field label="Etiqueta Superior" value={websiteData.welcome?.label || websiteData.welcome?.script} onChange={v=>{ update('welcome.label',v); update('welcome.script',v); }} placeholder="Bienvenido a Casa" />
                   <Field label="Título de Bienvenida" value={websiteData.welcome?.title} onChange={v=>update('welcome.title',v)} placeholder="Una comunidad apasionada por Jesús..." />
                   <Field label="Mensaje Pastoral" value={websiteData.welcome?.text} onChange={v=>update('welcome.text',v)} multiline placeholder="Creemos que la iglesia es una familia..." />
+                  <ImageUploadBox label="Foto Principal de Visión / Bienvenida" imageUrl={websiteData.visionImage || websiteData.welcome?.image} onUpload={url=>{ update('visionImage', url); update('welcome.image', url); }} onClear={()=>{ update('visionImage', ''); update('welcome.image', ''); }} />
                   <Field label="Botón Primario" value={websiteData.welcome?.ctaText} onChange={v=>update('welcome.ctaText',v)} placeholder="Conoce Nuestra Visión" />
                   <Field label="Botón Secundario" value={websiteData.welcome?.ctaSecondaryText} onChange={v=>update('welcome.ctaSecondaryText',v)} placeholder="Pide Oración" />
                 </Section>
 
                 {/* Planifica tu Visita & Horarios */}
                 <Section title="Planifica tu Visita & Horarios" icon={<Calendar size={14}/>} {...sec('visit')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Visita & Horarios"
+                    current={websiteData.sectionLayouts?.visit}
+                    options={[
+                      { id: 'split',  icon: '📍', label: 'Split Imagen', isDefault: true },
+                      { id: 'cards',  icon: '⏰', label: 'Horarios Card' },
+                      { id: 'visual', icon: '📸', label: 'Solo Fotos' }
+                    ]}
+                    onChange={val => update('sectionLayouts.visit', val)}
+                  />
                   <Field label="Título de la Sección" value={websiteData.planAVisit?.title} onChange={v=>update('planAVisit.title',v)} placeholder="Planifica tu Primera Visita" />
                   <Field label="Subtítulo" value={websiteData.planAVisit?.subtitle} onChange={v=>update('planAVisit.subtitle',v)} multiline />
                   <Field label="Dirección de la Iglesia" value={websiteData.planAVisit?.address} onChange={v=>update('planAVisit.address',v)} placeholder="Sede o dirección principal de la comunidad" />
+                  <ImageUploadBox label="Foto Sección Visítanos" imageUrl={websiteData.planAVisit?.image} onUpload={url=>update('planAVisit.image', url)} onClear={()=>update('planAVisit.image', '')} />
                   <div style={S.divider} />
                   <label style={S.label}>⏰ Horarios de Cultos & Servicios</label>
                   <ServiceTimesEditor times={websiteData.planAVisit?.serviceTimes} onChange={v=>update('planAVisit.serviceTimes',v)} />
-                  <div style={S.divider} />
-                  <Field label="👶 Info Niños / KidZone" value={websiteData.planAVisit?.kidsInfo} onChange={v=>update('planAVisit.kidsInfo',v)} multiline placeholder="Área infantil segura..." />
-                  <Field label="✨ ¿Qué Esperar? (Ambiente, vestimenta, café)" value={websiteData.planAVisit?.whatToExpect} onChange={v=>update('planAVisit.whatToExpect',v)} multiline />
                 </Section>
 
                 {/* Valores & Fundamentos */}
                 <Section title="Valores & Fundamentos de Fe" icon={<BookOpen size={14}/>} {...sec('values')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Valores"
+                    current={websiteData.sectionLayouts?.values}
+                    options={[
+                      { id: 'cards',   icon: '✝️', label: 'Tarjetas', isDefault: true },
+                      { id: 'visual',  icon: '🖼️', label: 'Solo Imágenes' },
+                      { id: 'minimal', icon: '📜', label: 'Minimalista' }
+                    ]}
+                    onChange={val => update('sectionLayouts.values', val)}
+                  />
                   <ValuesEditor values={websiteData.values} onChange={v=>update('values',v)} />
                 </Section>
 
                 {/* Ministerios & Familias */}
                 <Section title="Ministerios & Familias" icon={<Users size={14}/>} {...sec('ministries')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Ministerios"
+                    current={websiteData.sectionLayouts?.ministries}
+                    options={[
+                      { id: 'cards',  icon: '👥', label: 'Con Detalles', isDefault: true },
+                      { id: 'visual', icon: '📸', label: 'Solo Imágenes' },
+                      { id: 'grid',   icon: '🧩', label: 'Mosaico' }
+                    ]}
+                    onChange={val => update('sectionLayouts.ministries', val)}
+                  />
                   <Field label="Título de la Sección" value={websiteData.ministriesTitle} onChange={v=>update('ministriesTitle',v)} placeholder="Nuestros Ministerios y Familias" />
                   <Field label="Subtítulo" value={websiteData.ministriesSubtitle} onChange={v=>update('ministriesSubtitle',v)} multiline />
                   <div style={S.divider} />
@@ -968,11 +1339,31 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
 
                 {/* Próximos Pasos */}
                 <Section title="Próximos Pasos en la Fe" icon={<Sparkles size={14}/>} {...sec('nextSteps')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Próximos Pasos"
+                    current={websiteData.sectionLayouts?.nextSteps}
+                    options={[
+                      { id: 'split',  icon: '🚶', label: 'Split Foto', isDefault: true },
+                      { id: 'visual', icon: '🖼️', label: 'Solo Fotos' },
+                      { id: 'steps',  icon: '🔢', label: '3 Pasos' }
+                    ]}
+                    onChange={val => update('sectionLayouts.nextSteps', val)}
+                  />
                   <NextStepsEditor nextSteps={websiteData.nextSteps} onChange={v=>update('nextSteps',v)} />
                 </Section>
 
                 {/* Sermones & Mensajes */}
                 <Section title="Sermones & Mensajes en Video" icon={<Video size={14}/>} {...sec('sermons')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Sermones"
+                    current={websiteData.sectionLayouts?.sermons}
+                    options={[
+                      { id: 'player', icon: '▶️', label: 'Reproductor', isDefault: true },
+                      { id: 'visual', icon: '🎬', label: 'Solo Portadas' },
+                      { id: 'cards',  icon: '📺', label: 'Tarjetas' }
+                    ]}
+                    onChange={val => update('sectionLayouts.sermons', val)}
+                  />
                   <SermonsEditor
                     sermons={websiteData.sermons}
                     title={websiteData.sermonsTitle}
@@ -983,6 +1374,16 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
 
                 {/* Eventos & Calendario */}
                 <Section title="Eventos & Calendario" icon={<Calendar size={14}/>} badge={`${((websiteData.events?.items || (Array.isArray(websiteData.events) ? websiteData.events : []))).length || 3}`} {...sec('events')}>
+                  <SectionLayoutPicker
+                    label="Diseño de Eventos"
+                    current={websiteData.sectionLayouts?.events}
+                    options={[
+                      { id: 'list',   icon: '📅', label: 'Lista Eventos', isDefault: true },
+                      { id: 'visual', icon: '🎨', label: 'Solo Afiches' },
+                      { id: 'cards',  icon: '🗓️', label: 'Tarjetas' }
+                    ]}
+                    onChange={val => update('sectionLayouts.events', val)}
+                  />
                   <EventsEditor
                     events={websiteData.events}
                     onChangeData={(f,v)=>update(f,v)}
@@ -991,11 +1392,150 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
 
                 {/* Donaciones & Ofrendas */}
                 <Section title="Ofrendas & Donaciones" icon={<DollarSign size={14}/>} {...sec('donation')}>
+                  {/* Pasarela Stripe / Tipo de Enlace */}
+                  <div style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.78rem', fontWeight: 800, color: '#0F172A' }}>
+                        <span>💳 Pasarela de Pago & Enlace de Donación</span>
+                        {websiteData.donation?.ctaLink?.includes('stripe') && (
+                          <span style={{ background: '#6366F1', color: '#fff', padding: '1px 6px', borderRadius: 4, fontSize: '0.65rem', fontWeight: 800 }}>
+                            Stripe
+                          </span>
+                        )}
+                      </div>
+                      {websiteData.donation?.ctaLink && (
+                        <button
+                          type="button"
+                          onClick={() => window.open(websiteData.donation.ctaLink, '_blank', 'noopener,noreferrer')}
+                          style={{ border: 'none', background: 'transparent', color: '#4F46E5', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Probar ↗
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ fontSize: '.7rem', color: '#64748B', marginBottom: 10, lineHeight: 1.4 }}>
+                      Elige el destino donde serán dirigidos tus miembros al hacer clic en el botón de ofrendar:
+                    </div>
+
+                    {/* Presets */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 12 }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update('donation.ctaLink', 'https://buy.stripe.com/')
+                          if (!websiteData.donation?.ctaText || websiteData.donation?.ctaText === 'Ofrendar con Stripe' || websiteData.donation?.ctaText === 'Ofrendar en Línea' || websiteData.donation?.ctaText === 'Ofrendar / Donar en Línea') {
+                            update('donation.ctaText', 'Ofrendar')
+                          }
+                        }}
+                        style={{
+                          padding: '7px 10px', borderRadius: 8,
+                          border: websiteData.donation?.ctaLink?.includes('stripe') ? '1.5px solid #6366F1' : '1px solid #CBD5E1',
+                          background: websiteData.donation?.ctaLink?.includes('stripe') ? '#EEF2FF' : '#FFFFFF',
+                          color: websiteData.donation?.ctaLink?.includes('stripe') ? '#4338CA' : '#334155',
+                          fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6
+                        }}
+                      >
+                        <span>💳</span>
+                        <span>Stripe Checkout</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update('donation.ctaLink', 'https://paypal.me/')
+                          if (!websiteData.donation?.ctaText || websiteData.donation?.ctaText === 'Ofrendar con Stripe' || websiteData.donation?.ctaText === 'Ofrendar en Línea' || websiteData.donation?.ctaText === 'Ofrendar / Donar en Línea') {
+                            update('donation.ctaText', 'Ofrendar')
+                          }
+                        }}
+                        style={{
+                          padding: '7px 10px', borderRadius: 8,
+                          border: websiteData.donation?.ctaLink?.includes('paypal') ? '1.5px solid #2563EB' : '1px solid #CBD5E1',
+                          background: websiteData.donation?.ctaLink?.includes('paypal') ? '#EFF6FF' : '#FFFFFF',
+                          color: websiteData.donation?.ctaLink?.includes('paypal') ? '#1D4ED8' : '#334155',
+                          fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6
+                        }}
+                      >
+                        <span>🅿️</span>
+                        <span>PayPal</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update('donation.ctaLink', '#wp-contact')
+                          if (!websiteData.donation?.ctaText || websiteData.donation?.ctaText === 'Ofrendar con Stripe') {
+                            update('donation.ctaText', 'Ofrendar')
+                          }
+                        }}
+                        style={{
+                          padding: '7px 10px', borderRadius: 8,
+                          border: websiteData.donation?.ctaLink === '#wp-contact' ? '1.5px solid #10B981' : '1px solid #CBD5E1',
+                          background: websiteData.donation?.ctaLink === '#wp-contact' ? '#ECFDF5' : '#FFFFFF',
+                          color: websiteData.donation?.ctaLink === '#wp-contact' ? '#065F46' : '#334155',
+                          fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6
+                        }}
+                      >
+                        <span>📍</span>
+                        <span>Info / Banco Local</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const cleanPhone = (websiteData.whatsappNumber || websiteData.contact?.whatsapp || '').replace(/[^0-9]/g, '')
+                          update('donation.ctaLink', cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola,%20deseo%20información%20para%20ofrendar` : 'https://wa.me/')
+                          if (!websiteData.donation?.ctaText || websiteData.donation?.ctaText === 'Ofrendar con Stripe') {
+                            update('donation.ctaText', 'Ofrendar')
+                          }
+                        }}
+                        style={{
+                          padding: '7px 10px', borderRadius: 8,
+                          border: websiteData.donation?.ctaLink?.includes('wa.me') ? '1.5px solid #25D366' : '1px solid #CBD5E1',
+                          background: websiteData.donation?.ctaLink?.includes('wa.me') ? '#F0FDF4' : '#FFFFFF',
+                          color: websiteData.donation?.ctaLink?.includes('wa.me') ? '#166534' : '#334155',
+                          fontWeight: 700, fontSize: '0.74rem', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6
+                        }}
+                      >
+                        <span>💬</span>
+                        <span>WhatsApp Directo</span>
+                      </button>
+                    </div>
+
+                    <Field
+                      label="URL o Ruta de Destino"
+                      value={websiteData.donation?.ctaLink}
+                      onChange={v=>update('donation.ctaLink', v)}
+                      placeholder="https://buy.stripe.com/..., https://... o #wp-contact"
+                    />
+                    <div style={{ fontSize: '.68rem', color: '#94A3B8', marginTop: 4 }}>
+                      💡 Tip: Puedes generar un link de pago directo en tu cuenta de Stripe (Stripe Payment Links) y pegarlo aquí.
+                    </div>
+                  </div>
+
+                  <Field label="Texto del Botón CTA" value={websiteData.donation?.ctaText === 'Ofrendar con Stripe' ? 'Ofrendar' : websiteData.donation?.ctaText} onChange={v=>update('donation.ctaText',v)} placeholder="Ofrendar" />
+
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+                    {['Ofrendar', 'Dar Mi Ofrenda', 'Ofrendar en Línea', 'Sembrar en Línea', 'Apoyar Ministerio'].map(txt => (
+                      <button
+                        key={txt}
+                        type="button"
+                        onClick={() => update('donation.ctaText', txt)}
+                        style={{
+                          padding: '3px 8px', borderRadius: 6, border: '1px solid #E2E8F0',
+                          background: (websiteData.donation?.ctaText === txt || (!websiteData.donation?.ctaText && txt === 'Ofrendar') || (websiteData.donation?.ctaText === 'Ofrendar con Stripe' && txt === 'Ofrendar')) ? '#111827' : '#F9FAFB',
+                          color: (websiteData.donation?.ctaText === txt || (!websiteData.donation?.ctaText && txt === 'Ofrendar') || (websiteData.donation?.ctaText === 'Ofrendar con Stripe' && txt === 'Ofrendar')) ? '#FFFFFF' : '#4B5563',
+                          fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer'
+                        }}
+                      >
+                        {txt}
+                      </button>
+                    ))}
+                  </div>
+
                   <Field label="Etiqueta Superior" value={websiteData.donation?.eyebrow} onChange={v=>update('donation.eyebrow',v)} placeholder="GENEROSIDAD" />
                   <Field label="Título" value={websiteData.donation?.title} onChange={v=>update('donation.title',v)} placeholder="Generosidad que Transforma Vidas" />
                   <Field label="Mensaje Motivacional" value={websiteData.donation?.subtitle} onChange={v=>update('donation.subtitle',v)} multiline />
-                  <Field label="Texto del Botón CTA" value={websiteData.donation?.ctaText} onChange={v=>update('donation.ctaText',v)} placeholder="Ofrendar / Donar en Línea" />
-                  <Field label="Enlace del Botón CTA" value={websiteData.donation?.ctaLink} onChange={v=>update('donation.ctaLink',v)} placeholder="#wp-contact o https://..." />
                   <Field label="Nota de Seguridad / Transparencia" value={websiteData.donation?.note} onChange={v=>update('donation.note',v)} placeholder="Donaciones 100% seguras..." />
                 </Section>
 
@@ -1020,11 +1560,6 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
                   <ServiceEditor services={websiteData.services} onChange={v=>update('services',v)} />
                 </Section>
 
-                <Section title="Sobre Nosotros" icon={<Users size={14}/>} {...sec('about')}>
-                  <Field label="Título" value={websiteData.about?.title} onChange={v=>update('about.title',v)} />
-                  <Field label="Texto" value={websiteData.about?.text} onChange={v=>update('about.text',v)} multiline />
-                </Section>
-
                 <Section title="Testimonios" icon={<MessageSquare size={14}/>} badge={`${(websiteData.testimonials||[]).length}`} {...sec('testimonials')}>
                   <TestimonialsEditor testimonials={websiteData.testimonials} onChange={v=>update('testimonials',v)} />
                 </Section>
@@ -1033,35 +1568,72 @@ export default function WebsiteEditor({ websiteData, onChange, onSectionFocus })
 
             {/* Common About & Contact in content */}
             <Section title="Sobre Nosotros" icon={<Users size={14}/>} {...sec('about')}>
+              {isChurch && (
+                <SectionLayoutPicker
+                  label="Diseño Sobre Nosotros"
+                  current={websiteData.sectionLayouts?.about}
+                  options={[
+                    { id: 'text',   icon: '📜', label: 'Historia & Texto', isDefault: true },
+                    { id: 'visual', icon: '📸', label: 'Muro de Fotos' },
+                    { id: 'split',  icon: '🏛️', label: 'Split Comunidad' }
+                  ]}
+                  onChange={val => update('sectionLayouts.about', val)}
+                />
+              )}
               <Field label="Título de la Sección" value={websiteData.about?.title} onChange={v=>update('about.title',v)} placeholder="Nuestra Historia y Misión" />
               <Field label="Texto Descriptivo" value={websiteData.about?.text} onChange={v=>update('about.text',v)} multiline />
               <ImageUploadBox label="Foto de la Sección Sobre Nosotros" imageUrl={websiteData.aboutImage} onUpload={url=>update('aboutImage',url)} onClear={()=>update('aboutImage','')} />
             </Section>
 
-            <Section title="Contacto & WhatsApp" icon={<Phone size={14}/>} {...sec('contact')}>
-              <Field label="Teléfono" value={websiteData.contact?.phone} onChange={v=>update('contact.phone',v)} placeholder="+1 (555) 123-4567" />
-              <Field label="WhatsApp" value={websiteData.contact?.whatsapp} onChange={v=>update('contact.whatsapp',v)} placeholder="+1 (555) 987-6543" />
-              <Field label="Email" value={websiteData.contact?.email} onChange={v=>update('contact.email',v)} placeholder="contacto@tu-iglesia.org" />
-              <Field label="Dirección Física" value={websiteData.contact?.address} onChange={v=>update('contact.address',v)} multiline />
-            </Section>
-
-            {/* Floating Popup / Widget Option */}
-            <Section title="Widget Flotante & Pop-up (Opcional)" icon={<Sparkles size={14}/>} {...sec('floatingWidget')}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+            <Section title="Contacto & WhatsApp Flotante" icon={<Phone size={14}/>} {...sec('contact')}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: websiteData.whatsappEnabled !== false ? '#F0FDF4' : '#F8FAFC', border: `1.5px solid ${websiteData.whatsappEnabled !== false ? '#BBF7D0' : '#E2E8F0'}`, borderRadius: 10, marginBottom: 14 }}>
                 <div>
-                  <div style={{ fontSize:'.78rem', fontWeight:700, color:'#111827' }}>Habilitar Pop-up Flotante</div>
-                  <div style={{ fontSize:'.68rem', color:'#6B7280' }}>Muestra una burbuja/ventana flotante en la esquina inferior</div>
+                  <div style={{ fontSize: '.78rem', fontWeight: 800, color: websiteData.whatsappEnabled !== false ? '#166534' : '#64748B' }}>
+                    {websiteData.whatsappEnabled !== false ? '🟢 Botón Flotante Activo' : '⚪ Botón Flotante Desactivado'}
+                  </div>
+                  <div style={{ fontSize: '.68rem', color: websiteData.whatsappEnabled !== false ? '#15803D' : '#94A3B8' }}>
+                    {websiteData.whatsappEnabled !== false ? 'Siempre visible dentro de tu página' : 'Oculto para los visitantes'}
+                  </div>
                 </div>
-                <input type="checkbox" checked={Boolean(websiteData.floatingWidget?.enabled)} onChange={e=>update('floatingWidget.enabled', e.target.checked)} style={{ width:18, height:18, accentColor:'#6366F1', cursor:'pointer' }} />
+                <button
+                  type="button"
+                  onClick={() => update('whatsappEnabled', websiteData.whatsappEnabled === false ? true : false)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: 999,
+                    border: 'none',
+                    background: websiteData.whatsappEnabled !== false ? '#FEE2E2' : '#DCFCE7',
+                    color: websiteData.whatsappEnabled !== false ? '#DC2626' : '#16A34A',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {websiteData.whatsappEnabled !== false ? 'Desactivar' : 'Activar'}
+                </button>
               </div>
-              {Boolean(websiteData.floatingWidget?.enabled) && (
-                <>
-                  <Field label="Título del Pop-up" value={websiteData.floatingWidget?.title} onChange={v=>update('floatingWidget.title',v)} placeholder="Planifica tu Visita" />
-                  <Field label="Subtítulo / Mensaje" value={websiteData.floatingWidget?.subtitle} onChange={v=>update('floatingWidget.subtitle',v)} placeholder="Domingos 9:00 AM & 11:00 AM" multiline />
-                  <Field label="Texto del Botón" value={websiteData.floatingWidget?.ctaText} onChange={v=>update('floatingWidget.ctaText',v)} placeholder="Planifica tu Visita" />
-                  <Field label="Enlace del Botón" value={websiteData.floatingWidget?.ctaLink} onChange={v=>update('floatingWidget.ctaLink',v)} placeholder="#wp-plan-visit" />
-                </>
-              )}
+
+              <Field
+                label="Número de WhatsApp (con código de país)"
+                value={websiteData.contact?.whatsapp || websiteData.whatsapp || ''}
+                onChange={v => {
+                  update('contact.whatsapp', v)
+                  update('whatsapp', v)
+                  update('whatsappNumber', v)
+                }}
+                placeholder="+503 7700-1122"
+              />
+
+              <Field
+                label="Mensaje Automático Inicial"
+                value={websiteData.whatsappMessage || '¡Hola! Me gustaría más información.'}
+                onChange={v => update('whatsappMessage', v)}
+                placeholder="Hola, me gustaría más información..."
+              />
+
+              <Field label="Teléfono Fijo / Alternativo" value={websiteData.contact?.phone} onChange={v=>update('contact.phone',v)} placeholder="+1 (555) 123-4567" />
+              <Field label="Email de Contacto" value={websiteData.contact?.email} onChange={v=>update('contact.email',v)} placeholder="contacto@tu-iglesia.org" />
+              <Field label="Dirección Física" value={websiteData.contact?.address} onChange={v=>update('contact.address',v)} multiline />
             </Section>
           </div>
         )}

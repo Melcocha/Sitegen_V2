@@ -9,6 +9,7 @@ import ChurchTemplateNucleus from './ChurchTemplateNucleus'
 import ChurchTemplatePoster from './ChurchTemplatePoster'
 import ChurchTemplateAfiche from './ChurchTemplateAfiche'
 import CanvasTransformerOverlay from './CanvasTransformerOverlay'
+import FloatingWhatsAppButton from './FloatingWhatsAppButton'
 
 const INDUSTRY_HERO = {
   // ── Professional services ─────────────────────────────────────
@@ -892,7 +893,7 @@ const VARIANT_THUMBS = {
   ],
 }
 
-function SectionToolbar({ sectionKey, variantVal, accentColor, primaryColor, onVariantChange, onMoveUp, onMoveDown, canMoveUp, canMoveDown, label, children }) {
+function SectionToolbar({ sectionKey, variantVal, accentColor, primaryColor, onVariantChange, onMoveUp, onMoveDown, onDelete, canMoveUp, canMoveDown, label, children }) {
   const [hov, setHov] = useState(false)
   const thumbs = VARIANT_THUMBS[sectionKey]
   const a = accentColor || '#6366F1'
@@ -923,7 +924,7 @@ function SectionToolbar({ sectionKey, variantVal, accentColor, primaryColor, onV
         </div>
         <div style={{ flex:1 }}/>
         {/* Move controls */}
-        <div style={{ display:'flex', gap:2, padding:'4px 6px', background:'rgba(0,0,0,0.6)', backdropFilter:'blur(8px)', borderRadius:'0 0 0 8px' }}>
+        <div style={{ display:'flex', gap:4, padding:'4px 6px', background:'rgba(0,0,0,0.6)', backdropFilter:'blur(8px)', borderRadius:'0 0 0 8px' }}>
           <button onClick={e=>{e.stopPropagation();onMoveUp()}} disabled={!canMoveUp}
             style={{ border:'none', background: canMoveUp?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.05)', color: canMoveUp?'#fff':'rgba(255,255,255,0.3)', borderRadius:5, padding:'3px 7px', cursor: canMoveUp?'pointer':'default', fontSize:'.7rem', fontWeight:700, display:'flex', alignItems:'center', gap:3 }}>
             ↑ Subir
@@ -932,6 +933,16 @@ function SectionToolbar({ sectionKey, variantVal, accentColor, primaryColor, onV
             style={{ border:'none', background: canMoveDown?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.05)', color: canMoveDown?'#fff':'rgba(255,255,255,0.3)', borderRadius:5, padding:'3px 7px', cursor: canMoveDown?'pointer':'default', fontSize:'.7rem', fontWeight:700, display:'flex', alignItems:'center', gap:3 }}>
             ↓ Bajar
           </button>
+          {onDelete && (
+            <button onClick={e=>{e.stopPropagation();onDelete()}}
+              title="Eliminar o ocultar sección"
+              style={{ border:'none', background: 'rgba(239,68,68,0.25)', color: '#FCA5A5', borderRadius:5, padding:'3px 7px', cursor: 'pointer', fontSize:'.7rem', fontWeight:700, display:'flex', alignItems:'center', gap:3 }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.45)'; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.25)'; e.currentTarget.style.color = '#FCA5A5' }}
+            >
+              🗑️ Eliminar
+            </button>
+          )}
         </div>
       </div>
 
@@ -1007,7 +1018,7 @@ function EditableEl({ children, label, onClick, editMode }) {
 }
 
 
-export default function WebsitePreview({ data, editMode=false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+export default function WebsitePreview({ data, editMode=false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop', hideFloatingWhatsApp = false, isPublicSite = false }) {
   const previewWrapRef = useRef(null)
   const [testPage, setTestPage] = useState(0)
   const [activeVideoModal, setActiveVideoModal] = useState(null)
@@ -1075,18 +1086,29 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
   if (isChurch) {
     let churchContent = null;
+    const secChange = onSectionChange || onQuickUpdate;
     if (data.churchTemplateVariant === 'afiche' || data.churchTemplateVariant === 'noche_adoracion') {
-      churchContent = <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+      churchContent = <ChurchTemplateAfiche data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onSectionChange={secChange} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     } else if (data.churchTemplateVariant === 'poster') {
-      churchContent = <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+      churchContent = <ChurchTemplatePoster data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onSectionChange={secChange} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     } else if (data.churchTemplateVariant === 'mygateway') {
-      churchContent = <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+      churchContent = <ChurchTemplateMyGateway data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onSectionChange={secChange} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     } else {
-      churchContent = <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
+      churchContent = <ChurchTemplateNucleus data={data} editMode={editMode} activeField={activeField} onElementClick={onElementClick} onSectionChange={secChange} onQuickUpdate={onQuickUpdate} onQuickUpdateBatch={onQuickUpdateBatch} device={device} />
     }
     return (
       <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
         {churchContent}
+        {!hideFloatingWhatsApp && (
+          <FloatingWhatsAppButton
+            data={data}
+            editMode={editMode}
+            contained={!isPublicSite}
+            positionMode={isPublicSite ? 'fixed' : 'absolute'}
+            onElementClick={onElementClick}
+            onQuickUpdate={onQuickUpdate}
+          />
+        )}
       </div>
     );
   }
@@ -1263,6 +1285,7 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                     ;[next[idx], next[idx+1]] = [next[idx+1], next[idx]]
                     onSectionChange && onSectionChange('sectionOrder', next)
                   }}
+                  onDelete={() => onSectionChange && onSectionChange(`sectionsVisibility.${key}`, false)}
                   canMoveUp={idx > 0}
                   canMoveDown={idx < order.length - 1}
                 >
@@ -1321,7 +1344,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         {/* Col 1 */}
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', padding: 32, borderRadius: 24, border: '1px solid rgba(196,163,90,0.18)', boxShadow: '0 12px 40px rgba(0,0,0,0.4)' }}>
                           <div style={{ width: '100%', height: 340, borderRadius: 18, overflow: 'hidden', marginBottom: 24, boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
-                            <img src={col1.image} alt={col1.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img
+                              src={col1.image}
+                              alt={col1.title}
+                              className={editMode ? 'wp-editable' : ''}
+                              onClick={editMode ? e => ec(e, { field: 'nucleusColumns.col1.image', label: 'Foto Columna 1', value: col1.image, type: 'image' }) : undefined}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                            />
                           </div>
                           <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#DFCA88', marginBottom: 8 }}>
                             ✦ {col1.eyebrow}
@@ -1341,7 +1370,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         {/* Col 2 */}
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', padding: 32, borderRadius: 24, border: '1px solid rgba(196,163,90,0.18)', boxShadow: '0 12px 40px rgba(0,0,0,0.4)' }}>
                           <div style={{ width: '100%', height: 340, borderRadius: 18, overflow: 'hidden', marginBottom: 24, boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
-                            <img src={col2.image} alt={col2.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img
+                              src={col2.image}
+                              alt={col2.title}
+                              className={editMode ? 'wp-editable' : ''}
+                              onClick={editMode ? e => ec(e, { field: 'nucleusColumns.col2.image', label: 'Foto Columna 2', value: col2.image, type: 'image' }) : undefined}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                            />
                           </div>
                           <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#DFCA88', marginBottom: 8 }}>
                             ✦ {col2.eyebrow}
@@ -1378,13 +1413,31 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                       {/* 3 Full-Bleed Emotional Photos */}
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 0, width: '100%', overflow: 'hidden' }}>
                         <div style={{ height: 420, overflow: 'hidden', position: 'relative' }}>
-                          <img src={data.welcome?.photo1 || 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=85&fit=crop'} alt="Familia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img
+                            src={data.welcome?.photo1 || 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=85&fit=crop'}
+                            alt="Familia"
+                            className={editMode ? 'wp-editable' : ''}
+                            onClick={editMode ? e => ec(e, { field: 'welcome.photo1', label: 'Foto 1 Bienvenida', value: data.welcome?.photo1, type: 'image' }) : undefined}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                          />
                         </div>
                         <div style={{ height: 420, overflow: 'hidden', position: 'relative' }}>
-                          <img src={data.welcome?.photo2 || 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=85&fit=crop'} alt="Alabanza" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img
+                            src={data.welcome?.photo2 || 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=85&fit=crop'}
+                            alt="Alabanza"
+                            className={editMode ? 'wp-editable' : ''}
+                            onClick={editMode ? e => ec(e, { field: 'welcome.photo2', label: 'Foto 2 Bienvenida', value: data.welcome?.photo2, type: 'image' }) : undefined}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                          />
                         </div>
                         <div style={{ height: 420, overflow: 'hidden', position: 'relative' }}>
-                          <img src={data.welcome?.photo3 || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop'} alt="Comunidad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img
+                            src={data.welcome?.photo3 || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop'}
+                            alt="Comunidad"
+                            className={editMode ? 'wp-editable' : ''}
+                            onClick={editMode ? e => ec(e, { field: 'welcome.photo3', label: 'Foto 3 Bienvenida', value: data.welcome?.photo3, type: 'image' }) : undefined}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                          />
                         </div>
                       </div>
                     </section>
@@ -1417,7 +1470,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
                         {/* Right: Crisp Full-Bleed Image */}
                         <div style={{ minHeight: 460, position: 'relative', overflow: 'hidden' }}>
-                          <img src={data.planAVisit?.image || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1200&q=85&fit=crop'} alt="Domingo en Comunidad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img
+                            src={data.planAVisit?.image || 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1200&q=85&fit=crop'}
+                            alt="Domingo en Comunidad"
+                            className={editMode ? 'wp-editable' : ''}
+                            onClick={editMode ? e => ec(e, { field: 'planAVisit.image', label: 'Foto Sección Visítanos', value: data.planAVisit?.image, type: 'image' }) : undefined}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                          />
                         </div>
                       </div>
                     </section>
@@ -1459,7 +1518,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
 
                         {/* Right: Crisp Full-Bleed Image */}
                         <div style={{ minHeight: 460, position: 'relative', overflow: 'hidden' }}>
-                          <img src={ns.image || 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=1200&q=85&fit=crop'} alt="Bautismos y Comunidad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img
+                            src={ns.image || 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=1200&q=85&fit=crop'}
+                            alt="Bautismos y Comunidad"
+                            className={editMode ? 'wp-editable' : ''}
+                            onClick={editMode ? e => ec(e, { field: 'nextSteps.image', label: 'Foto Sección Próximos Pasos', value: ns.image, type: 'image' }) : undefined}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                          />
                         </div>
                       </div>
                     </section>
@@ -1488,7 +1553,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                           {minList.map((min, idx) => (
                             <div key={idx} style={{ background: isDark ? '#0F172A' : '#F8FAFC', borderRadius: 20, overflow: 'hidden', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`, boxShadow: '0 6px 24px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column' }}>
                               <div style={{ height: 220, position: 'relative', overflow: 'hidden' }}>
-                                <img src={min.image || (idx === 0 ? 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80&fit=crop')} alt={min.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img
+                                  src={min.image || (idx === 0 ? 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80&fit=crop')}
+                                  alt={min.name}
+                                  className={editMode ? 'wp-editable' : ''}
+                                  onClick={editMode ? e => ec(e, { field: `ministries.${idx}.image`, label: `Foto Ministerio: ${min.name || idx+1}`, value: min.image, type: 'image' }) : undefined}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                                />
                               </div>
                               <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 14 }}>
                                 <div>
@@ -1595,8 +1666,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                           {sermonsList.map((sermon, idx) => (
                             <div key={idx} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column' }}>
                               <div style={{ height: 180, position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-                                onClick={() => setActiveVideoModal({ title: sermon.title, url: sermon.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}>
-                                <img src={sermon.image || (idx === 0 ? 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80&fit=crop')} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                onClick={editMode ? e => ec(e, { field: `sermons.${idx}.image`, label: `Portada Prédica: ${sermon.title || idx+1}`, value: sermon.image, type: 'image' }) : () => setActiveVideoModal({ title: sermon.title, url: sermon.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' })}>
+                                <img
+                                  src={sermon.image || (idx === 0 ? 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80&fit=crop' : idx === 1 ? 'https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=800&q=80&fit=crop' : 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80&fit=crop')}
+                                  alt={sermon.title}
+                                  className={editMode ? 'wp-editable' : ''}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
                                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                   <div style={{ width: 52, height: 52, borderRadius: '50%', background: a, color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', boxShadow: '0 4px 20px rgba(0,0,0,0.4)', paddingLeft: 3 }}>
                                     ▶
@@ -1645,13 +1721,37 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                         <p style={{ fontSize: '1.05rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.85)', maxWidth: 660, margin: '0 auto 32px' }}>
                           {data.donation?.subtitle || 'Tu fidelidad y ofrendas hacen posible apoyar a familias vulnerables, sostener misiones y llevar esperanza a nuestra comunidad.'}
                         </p>
-                        <button
-                          onClick={() => alert('¡Gracias por tu generosidad! En producción este botón conectará con tu pasarela de ofrendas seguras.')}
-                          style={{ padding: '16px 36px', borderRadius: 999, background: a, color: isDark ? '#000' : '#0F172A', fontWeight: 900, fontSize: '1.05rem', border: 'none', cursor: 'pointer', boxShadow: `0 8px 30px ${a}55`, transition: 'transform 0.2s' }}
-                          onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                          onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                          {data.donation?.ctaText || 'Ofrendar / Donar en Línea'}
-                        </button>
+                        {data.donation?.ctaLink ? (
+                          <a
+                            href={data.donation.ctaLink}
+                            target={data.donation.ctaLink.startsWith('http') ? '_blank' : undefined}
+                            rel={data.donation.ctaLink.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            style={{
+                              display: 'inline-block',
+                              padding: '16px 36px',
+                              borderRadius: 999,
+                              background: a,
+                              color: isDark ? '#000' : '#0F172A',
+                              fontWeight: 900,
+                              fontSize: '1.05rem',
+                              textDecoration: 'none',
+                              boxShadow: `0 8px 30px ${a}55`,
+                              transition: 'transform 0.2s'
+                            }}
+                            onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                            onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                          >
+                            {(data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')}
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => alert('¡Gracias por tu generosidad! Configura tu enlace de Stripe o PayPal en el editor para activar este botón.')}
+                            style={{ padding: '16px 36px', borderRadius: 999, background: a, color: isDark ? '#000' : '#0F172A', fontWeight: 900, fontSize: '1.05rem', border: 'none', cursor: 'pointer', boxShadow: `0 8px 30px ${a}55`, transition: 'transform 0.2s' }}
+                            onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                            onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                            {(data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')}
+                          </button>
+                        )}
                         <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', marginTop: 16 }}>
                           {data.donation?.note || 'Donaciones 100% seguras y transparentes. Agradecemos tu corazón generoso.'}
                         </p>
@@ -2192,7 +2292,13 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
                       {aboutV === 4 && (
                         <div style={{ position: 'relative', borderRadius: 28, overflow: 'hidden', minHeight: 520, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', padding: '60px 8%' }}>
                           <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-                            <img src={getAboutPhoto(data)} alt="Nosotros" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img
+                              src={getAboutPhoto(data)}
+                              alt="Nosotros"
+                              className={editMode ? 'wp-editable' : ''}
+                              onClick={editMode ? e => ec(e, { field: 'about.image', label: 'Imagen Nosotros', value: getAboutPhoto(data), type: 'image' }) : undefined}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: editMode ? 'pointer' : 'default' }}
+                            />
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.15) 100%)' }} />
                           </div>
                           <div style={{ position: 'relative', zIndex: 1, maxWidth: 560, background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 24, padding: '40px', color: '#fff' }}>
@@ -3034,6 +3140,17 @@ export default function WebsitePreview({ data, editMode=false, activeField, onEl
             +
           </button>
         </div>
+      )}
+      {/* Floating WhatsApp Button */}
+      {!hideFloatingWhatsApp && (
+        <FloatingWhatsAppButton
+          data={data}
+          editMode={editMode}
+          contained={!isPublicSite}
+          positionMode={isPublicSite ? 'fixed' : 'absolute'}
+          onElementClick={onElementClick}
+          onQuickUpdate={onQuickUpdate}
+        />
       )}
     </div>
   )

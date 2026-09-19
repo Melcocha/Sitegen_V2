@@ -1098,7 +1098,7 @@ export function mockIglesiaPoster(businessName = '') {
       eyebrow: 'ACOMPÁÑANOS ESTE DOMINGO',
       title: 'Horarios de Servicios & Ubicación',
       subtitle: 'Te esperamos con los brazos abiertos. Encuentra aquí todo lo necesario para tu primera visita.',
-      ctaText: 'Planifica tu Visita por WhatsApp',
+      ctaText: 'Planifica tu Visita',
       address: 'Av. Las Palmeras #123, San Salvador, El Salvador',
       serviceTimes: [
         'Domingo 9:00 AM — Primer Servicio Familiar',
@@ -1202,7 +1202,7 @@ export function mockIglesiaAfiche(businessName = '') {
       eyebrow: 'ESTÁS INVITADO',
       title: 'Acompáñanos este Fin de Semana',
       subtitle: 'Encuentra horarios, dirección y todo lo necesario para tu primera visita.',
-      ctaText: 'Planificar por WhatsApp',
+      ctaText: 'Planifica tu Visita',
       address: 'Av. Las Palmeras #123, San Salvador',
       serviceTimes: [
         'Sábado 6:00 PM — Noche de Adoración & Oración',

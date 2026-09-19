@@ -1,7 +1,28 @@
 import React from 'react'
 import TemplateDragHandles from './TemplateDragHandles'
+import SectionControlBar from './SectionControlBar'
+import {
+  HeroVisualLayout,
+  HeroSplitLayout,
+  WelcomeVisualLayout,
+  WelcomeSplitLayout,
+  VisitVisualLayout,
+  VisitCardsLayout,
+  ValuesVisualLayout,
+  ValuesMinimalLayout,
+  MinistriesVisualLayout,
+  MinistriesGridLayout,
+  NextStepsVisualLayout,
+  NextStepsNumberedLayout,
+  SermonsVisualLayout,
+  SermonsCardsLayout,
+  EventsVisualLayout,
+  EventsCardsLayout,
+  AboutVisualLayout,
+  AboutSplitLayout
+} from './ChurchSectionLayouts'
 
-export default function ChurchTemplateNucleus({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+export default function ChurchTemplateNucleus({ data = {}, editMode = false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
   const isMobileDevice = device === 'mobile'
   const isTabletDevice = device === 'tablet'
   const rootClassName = `nucleus-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
@@ -23,6 +44,10 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
     return (cur && typeof cur === 'object') ? cur : {}
   }
   const isActive = (k) => editMode && activeField && activeField === k
+  const isVideoUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url) || url.startsWith('data:video/')
+  }
   const ost = (k) => ({
     ...(ov(k).textColor ? { color: ov(k).textColor } : {}),
     ...(ov(k).bgColor ? { background: ov(k).bgColor } : {}),
@@ -42,9 +67,6 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
     ...(ov(k).borderRadius ? { borderRadius: ov(k).borderRadius } : {}),
     ...(ov(k).objectFit ? { objectFit: ov(k).objectFit } : {}),
     ...(ov(k).filter ? { filter: ov(k).filter } : {}),
-    ...(isActive(k) ? {
-      position: 'relative',
-    } : {}),
   })
 
   const rdh = (k) => isActive(k) && (
@@ -121,7 +143,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
   const heroImage = data.heroImage || 'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1920&q=85&fit=crop'
   const visionImage = data.visionImage || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&q=85&fit=crop'
 
-  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '') => {
+  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '', extra = {}) => {
     if (editMode && onElementClick) {
       e.preventDefault()
       e.stopPropagation()
@@ -134,28 +156,90 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         type: fieldType,
         value: currentVal || '',
         x: r.left || e.clientX,
-        y: (r.bottom ? r.bottom + 8 : e.clientY)
+        y: (r.bottom ? r.bottom + 8 : e.clientY),
+        ...extra
       })
     }
   }
 
-  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentText) => {
+  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentText, extra = {}) => {
     if (editMode && onElementClick) {
       e.preventDefault()
       e.stopPropagation()
-      handleEdit(e, fieldKey, fieldLabel, 'text', currentText)
-    } else if (targetHash) {
-      e.preventDefault()
-      e.stopPropagation()
-      const targetEl = document.querySelector(targetHash)
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth' })
+      handleEdit(e, fieldKey, fieldLabel, 'text', currentText, extra)
+      return
+    }
+    if (targetHash) {
+      if (targetHash.startsWith('http://') || targetHash.startsWith('https://') || targetHash.startsWith('mailto:') || targetHash.startsWith('tel:')) {
+        return
+      }
+      if (targetHash.startsWith('#')) {
+        e.preventDefault()
+        e.stopPropagation()
+        try {
+          const targetEl = document.querySelector(targetHash)
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth' })
+          }
+        } catch (err) {
+          console.warn('Navigation selector error:', err)
+        }
       }
     }
   }
 
   const activeFont = data.font || 'Playfair Display'
   const primaryBg = data.primaryColor || '#07080D'
+
+  const DEFAULT_NUCLEUS_ORDER = [
+    'hero',
+    'missionBlock',
+    'panoramas',
+    'sermons',
+    'planAVisit',
+    'welcome',
+    'values',
+    'ministries',
+    'nextSteps',
+    'events',
+    'donation',
+    'prayerRequest',
+    'about',
+    'contact'
+  ]
+  const activeOrder = (Array.isArray(data.sectionOrder) && data.sectionOrder.length > 0) ? data.sectionOrder : DEFAULT_NUCLEUS_ORDER
+  const visibility = data.sectionsVisibility || {}
+  const welcome = data.welcome || {}
+  const layouts = data.sectionLayouts || {}
+
+  const handleMoveUp = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx > 0) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx - 1]
+      newOrder[curIdx - 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleMoveDown = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx >= 0 && curIdx < activeOrder.length - 1) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx + 1]
+      newOrder[curIdx + 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleDeleteSection = (key) => {
+    if (onSectionChange) onSectionChange(`sectionsVisibility.${key}`, false)
+    else if (onQuickUpdate) onQuickUpdate(`sectionsVisibility.${key}`, false)
+  }
 
   return (
     <div className={rootClassName} style={{ containerType: 'inline-size', position: 'relative', fontFamily: `'${activeFont}', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif`, color: '#111827', background: primaryBg, margin: 0, padding: 0, width: '100%', overflowX: 'hidden' }}>
@@ -598,21 +682,90 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         </div>
       </header>
 
-      {/* ── 2. HERO AMPLIÍSIMO 100VW SIN LÍMITES NI CUADROS ── */}
-      {data.sectionsVisibility?.hero !== false && (
-      <section id="wp-hero" style={{ position: 'relative', width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', background: '#07080D', overflow: 'hidden', boxSizing: 'border-box' }}>
+      {/* ── DYNAMIC SECTIONS LOOP ── */}
+      {activeOrder.map((sectionKey, sIdx) => {
+        if (visibility[sectionKey] === false) return null
+        const canUp = sIdx > 0
+        const canDown = sIdx < activeOrder.length - 1
+
+        const wrap = (secContent, label) => (
+          <SectionControlBar
+            key={sectionKey}
+            sectionKey={sectionKey}
+            label={label}
+            canMoveUp={canUp}
+            canMoveDown={canDown}
+            onMoveUp={() => handleMoveUp(sectionKey)}
+            onMoveDown={() => handleMoveDown(sectionKey)}
+            onDelete={() => handleDeleteSection(sectionKey)}
+            editMode={editMode}
+            accentColor={accentGold}
+            primaryColor={primaryBg}
+          >
+            {secContent}
+          </SectionControlBar>
+        )
+
+        switch (sectionKey) {
+          case 'hero':
+            if (layouts.hero === 'visual') {
+              return wrap(
+                <HeroVisualLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentGold}
+                  font={activeFont}
+                />,
+                'Hero Portada (Visual)'
+              )
+            }
+            if (layouts.hero === 'split') {
+              return wrap(
+                <HeroSplitLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Hero Portada (Split)'
+              )
+            }
+            return wrap(
+              <section id="wp-hero" style={{ position: 'relative', width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', background: '#07080D', overflow: 'hidden', boxSizing: 'border-box' }}>
         <div
           data-field="heroImage"
           data-ovkey="heroImage"
           className="editable-element"
           onClick={(e) => handleEdit(e, 'heroImage', 'Imagen de Portada (Hero)', 'image', heroImage)}
-          style={{ position: 'absolute', inset: 0, zIndex: 0, cursor: editMode ? 'pointer' : 'default', ...ost('heroImage') }}
+          style={{ ...ost('heroImage'), position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, maxWidth: 'none', maxHeight: 'none', zIndex: 0, cursor: editMode ? 'pointer' : 'default' }}
         >
-          <img
-            src={heroImage}
-            alt={businessName}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'brightness(0.65)' }}
-          />
+          {data.heroVideo || isVideoUrl(heroImage) ? (
+            <video
+              src={data.heroVideo || heroImage}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'brightness(0.65)' }}
+            />
+          ) : (
+            <img
+              src={heroImage}
+              alt={businessName}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'brightness(0.65)' }}
+            />
+          )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #07080D 0%, rgba(7,8,13,0.65) 50%, rgba(7,8,13,0.15) 100%)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, #07080D 100%)', pointerEvents: 'none' }} />
         </div>
@@ -673,12 +826,13 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             </a>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 3. MISIÓN & VISIÓN EDITORIAL ── */}
-      {data.sectionsVisibility?.missionBlock !== false && (
-      <section id="wp-vision" style={{ width: '100%', background: '#07080D', padding: '120px 8%', boxSizing: 'border-box' }}>
+      </section>,
+              'Hero Portada'
+            )
+          case 'missionBlock':
+          case 'vision':
+            return wrap(
+              <section id="wp-vision" style={{ width: '100%', background: '#07080D', padding: '120px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 80, alignItems: 'center' }}>
           <div>
             <div
@@ -716,11 +870,19 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
               onClick={(e) => handleEdit(e, 'visionImage', 'Foto Sección Visión', 'image', visionImage)}
               style={{ position: 'relative', width: '100%', height: 320, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('visionImage') }}
             >
-              <img
-                src={visionImage}
-                alt="Enseñanza"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              {isVideoUrl(visionImage) ? (
+                <video
+                  src={visionImage}
+                  autoPlay loop muted playsInline
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <img
+                  src={visionImage}
+                  alt="Enseñanza"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              )}
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 50%, #07080D 100%)', pointerEvents: 'none' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #07080D 0%, transparent 20%, transparent 80%, #07080D 100%)', pointerEvents: 'none' }} />
             </div>
@@ -750,11 +912,12 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             </div>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 4. FRANJAS FOTOGRÁFICAS INFINITAS 100VW ── */}
-      <section id="wp-panoramas" style={{ width: '100%', margin: 0, padding: 0 }}>
+      </section>,
+              'Visión & Propósito'
+            )
+          case 'panoramas':
+            return wrap(
+              <section id="wp-panoramas" style={{ width: '100%', margin: 0, padding: 0 }}>
         {panoramas.map((pano, idx) => (
           <div key={idx}
             data-field={`panoramas.${idx}.image`}
@@ -763,11 +926,19 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             onClick={(e) => handleEdit(e, `panoramas.${idx}.image`, `Foto Panorama ${idx + 1}`, 'image', pano.image)}
             style={{ position: 'relative', width: '100%', height: 420, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`panoramas.${idx}.image`) }}
           >
-            <img
-              src={pano.image}
-              alt={pano.title}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.55)' }}
-            />
+            {isVideoUrl(pano.image) ? (
+              <video
+                src={pano.image}
+                autoPlay loop muted playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.55)' }}
+              />
+            ) : (
+              <img
+                src={pano.image}
+                alt={pano.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.55)' }}
+              />
+            )}
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #07080D 0%, transparent 60%)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, #07080D 100%)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', inset: 0, padding: '0 8%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', color: '#FFFFFF', pointerEvents: 'none' }}>
@@ -792,10 +963,46 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             </div>
           </div>
         ))}
-      </section>
-
-      {/* ── 5. MENSAJES & PRÉDICAS RECIENTES ── */}
-      <section id="wp-sermons" style={{ width: '100%', background: '#07080D', padding: '120px 8%', boxSizing: 'border-box' }}>
+      </section>,
+              'Franjas Panorámicas'
+            )
+          case 'sermons':
+            if (layouts.sermons === 'visual') {
+              return wrap(
+                <SermonsVisualLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Sermones (Solo Portadas)'
+              )
+            }
+            if (layouts.sermons === 'cards') {
+              return wrap(
+                <SermonsCardsLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  title={data.sermonsTitle}
+                  subtitle={data.sermonsSubtitle}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Sermones (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-sermons" style={{ width: '100%', background: '#07080D', padding: '120px 8%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 70px' }}>
             <div
@@ -828,11 +1035,19 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
                   onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx + 1}`, 'image', sermon.image)}
                   style={{ position: 'relative', height: 240, overflow: 'hidden', marginBottom: 24, cursor: editMode ? 'pointer' : 'default', ...ost(`sermons.${idx}.image`) }}
                 >
-                  <img
-                    src={sermon.image}
-                    alt={sermon.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75)' }}
-                  />
+                  {isVideoUrl(sermon.image) ? (
+                    <video
+                      src={sermon.image}
+                      autoPlay loop muted playsInline
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75)' }}
+                    />
+                  ) : (
+                    <img
+                      src={sermon.image}
+                      alt={sermon.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.75)' }}
+                    />
+                  )}
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, #07080D 100%)', pointerEvents: 'none' }} />
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
                     <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#C4A35A', color: '#07080D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '1.3rem', boxShadow: '0 8px 30px rgba(196,163,90,0.6)' }}>
@@ -873,11 +1088,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ))}
           </div>
         </div>
-      </section>
-
-      {/* ── 6. SECCIÓN SPLIT 50/50 PLAN YOUR VISIT ── */}
-      {data.sectionsVisibility?.planAVisit !== false && (
-      <section id="wp-plan-visit" style={{ width: '100%', margin: 0, padding: 0, background: '#07080D', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', alignItems: 'stretch' }}>
+      </section>,
+              'Prédicas & Mensajes'
+            )
+          case 'planAVisit':
+            if (layouts.visit === 'visual') {
+              return wrap(
+                <VisitVisualLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Visítanos (Solo Fotos)'
+              )
+            }
+            if (layouts.visit === 'cards') {
+              return wrap(
+                <VisitCardsLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Visítanos (Horarios Card)'
+              )
+            }
+            return wrap(
+              <section id="wp-plan-visit" style={{ width: '100%', margin: 0, padding: 0, background: '#07080D', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', alignItems: 'stretch' }}>
         <div
           data-field="planAVisit.image"
           data-ovkey="planAVisit.image"
@@ -885,14 +1133,22 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           onClick={(e) => handleEdit(e, 'planAVisit.image', 'Foto Sección Visítanos', 'image', planAVisit.image)}
           style={{ minHeight: 600, position: 'relative', overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('planAVisit.image') }}
         >
-          <img
-            src={planAVisit.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1400&q=85&fit=crop'}
-            alt="Visítanos este Fin de Semana"
-            onError={(e) => {
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1400&q=85&fit=crop'
-            }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.7)' }}
-          />
+          {isVideoUrl(planAVisit.image) ? (
+            <video
+              src={planAVisit.image}
+              autoPlay loop muted playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.7)' }}
+            />
+          ) : (
+            <img
+              src={planAVisit.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1400&q=85&fit=crop'}
+              alt="Visítanos este Fin de Semana"
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1400&q=85&fit=crop'
+              }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.7)' }}
+            />
+          )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 60%, #07080D 100%)', pointerEvents: 'none' }} />
         </div>
 
@@ -935,12 +1191,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             {planAVisit.ctaText}
           </a>
         </div>
-      </section>
-      )}
-
-      {/* ── 7. BIENVENIDA A CASA ── */}
-      {data.sectionsVisibility?.welcome !== false && (
-      <section id="wp-welcome" style={{ width: '100%', background: '#0D0F17', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+      </section>,
+              'Planifica tu Visita'
+            )
+          case 'welcome':
+            if (layouts.welcome === 'visual') {
+              return wrap(
+                <WelcomeVisualLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Solo Fotos)'
+              )
+            }
+            if (layouts.welcome === 'split') {
+              return wrap(
+                <WelcomeSplitLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Split Tarjeta)'
+              )
+            }
+            return wrap(
+              <section id="wp-welcome" style={{ width: '100%', background: '#0D0F17', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
           <div data-field="welcome.label" data-ovkey="welcome.label" className="editable-element" onClick={(e) => handleEdit(e, 'welcome.label', 'Etiqueta Bienvenida', 'text', data.welcome?.label || '✦ BIENVENIDO A CASA ✦')} style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 16, ...ost('welcome.label') }}>
             {data.welcome?.label || '✦ BIENVENIDO A CASA ✦'}
@@ -960,12 +1248,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             </a>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 8. VALORES & FUNDAMENTOS ── */}
-      {data.sectionsVisibility?.values !== false && (
-      <section id="wp-values" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+      </section>,
+              'Bienvenida'
+            )
+          case 'values':
+            if (layouts.values === 'visual') {
+              return wrap(
+                <ValuesVisualLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Valores (Solo Imágenes)'
+              )
+            }
+            if (layouts.values === 'minimal') {
+              return wrap(
+                <ValuesMinimalLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Valores (Minimalista)'
+              )
+            }
+            return wrap(
+              <section id="wp-values" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
             <div
@@ -1006,12 +1326,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ))}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 9. MINISTERIOS & FAMILIAS ── */}
-      {data.sectionsVisibility?.ministries !== false && (
-      <section id="wp-ministries" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+      </section>,
+              'Valores & Creencias'
+            )
+          case 'ministries':
+            if (layouts.ministries === 'visual') {
+              return wrap(
+                <MinistriesVisualLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Ministerios (Solo Imágenes)'
+              )
+            }
+            if (layouts.ministries === 'grid') {
+              return wrap(
+                <MinistriesGridLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Ministerios (Mosaico)'
+              )
+            }
+            return wrap(
+              <section id="wp-ministries" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
             <div
@@ -1038,7 +1390,11 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ]).map((m, idx) => (
               <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div data-field={`ministries.${idx}.image`} data-ovkey={`ministries.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio ${idx+1}`, 'image', m.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`ministries.${idx}.image`) }}>
-                  <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m.name || m.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {isVideoUrl(m.image) ? (
+                    <video src={m.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <img src={m.image || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=85&fit=crop'} alt={m.name || m.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
                 </div>
                 <div style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
@@ -1062,12 +1418,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ))}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 10. PRÓXIMOS PASOS EN LA FE ── */}
-      {data.sectionsVisibility?.nextSteps !== false && (
-      <section id="wp-next-steps" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+      </section>,
+              'Ministerios'
+            )
+          case 'nextSteps':
+            if (layouts.nextSteps === 'visual') {
+              return wrap(
+                <NextStepsVisualLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (Solo Fotos)'
+              )
+            }
+            if (layouts.nextSteps === 'steps') {
+              return wrap(
+                <NextStepsNumberedLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (3 Pasos)'
+              )
+            }
+            return wrap(
+              <section id="wp-next-steps" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px' }}>
             <div
@@ -1106,94 +1494,44 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             ))}
           </div>
         </div>
-      </section>
-      )}
-
-
-      {/* ── 12. PETICIÓN DE ORACIÓN ── */}
-      {data.sectionsVisibility?.prayerRequest !== false && (
-      <section id="wp-prayer" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <div
-            data-field="prayerRequest.eyebrow"
-            data-ovkey="prayerRequest.eyebrow"
-            className="editable-element"
-            onClick={(e) => handleEdit(e, 'prayerRequest.eyebrow', 'Etiqueta Oración', 'text', data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦')}
-            style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14, ...ost('prayerRequest.eyebrow') }}
-          >
-            {data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦'}
-          </div>
-          <h2 data-field="prayerRequest.title" data-ovkey="prayerRequest.title" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Petición de Oración', 'text', data.prayerRequest?.title || '¿Podemos Orar por Ti?')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('prayerRequest.title') }}>
-            {data.prayerRequest?.title || '¿Podemos Orar por Ti?'}
-          </h2>
-          <p data-field="prayerRequest.subtitle" data-ovkey="prayerRequest.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.subtitle', 'Subtítulo Petición de Oración', 'textarea', data.prayerRequest?.subtitle || 'Nuestro equipo pastoral y de intercesión ora cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.')} style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.7, margin: '0 0 32px', ...ost('prayerRequest.subtitle') }}>
-            {data.prayerRequest?.subtitle || 'Nuestro equipo pastoral y de intercesión ora cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.'}
-          </p>
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, padding: 32, textAlign: 'left' }}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: '#DFCA88', fontWeight: 700, marginBottom: 6 }}>Tu Nombre</label>
-              <input type="text" placeholder="Ej: María González" style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#0B0D14', border: '1px solid rgba(196,163,90,0.3)', color: '#FFF', fontSize: '0.9rem' }} />
-            </div>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: '#DFCA88', fontWeight: 700, marginBottom: 6 }}>Tu Petición o Necesidad</label>
-              <textarea rows={4} placeholder="Escribe tu motivo de oración aquí..." style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#0B0D14', border: '1px solid rgba(196,163,90,0.3)', color: '#FFF', fontSize: '0.9rem', resize: 'vertical' }} />
-            </div>
-            <button data-field="prayerRequest.ctaText" data-ovkey="prayerRequest.ctaText" className="afiche3-btn-gold editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.ctaText', 'Texto Botón Oración', 'text', data.prayerRequest?.ctaText || 'Enviar Petición de Oración')} style={{ width: '100%', padding: '16px', borderRadius: 999, border: 'none', cursor: 'pointer', fontSize: '0.9rem', ...ost('prayerRequest.ctaText') }}>
-              {data.prayerRequest?.ctaText || 'Enviar Petición de Oración'}
-            </button>
-          </div>
-        </div>
-      </section>
-      )}
-
-      {/* ── 13. SOBRE NOSOTROS ── */}
-      {data.about && (
-        <section id="wp-about" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
-            <div>
-              <div
-                data-field="about.eyebrow"
-                data-ovkey="about.eyebrow"
-                className="editable-element"
-                onClick={(e) => handleEdit(e, 'about.eyebrow', 'Etiqueta Sobre Nosotros', 'text', data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦')}
-                style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('about.eyebrow') }}
-              >
-                {data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦'}
-              </div>
-              <h2 data-field="about.title" data-ovkey="about.title" className="editable-element" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about.title || 'Nuestra Historia')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 20px', ...ost('about.title') }}>
-                {data.about.title || 'Nuestra Historia'}
-              </h2>
-              <p data-field="about.text" data-ovkey="about.text" className="editable-element" onClick={(e) => handleEdit(e, 'about.text', 'Texto Sobre Nosotros', 'textarea', data.about.text)} style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.7, margin: 0, ...ost('about.text') }}>
-                {data.about.text}
-              </p>
-            </div>
-            {data.aboutImage && (
-              <div data-field="aboutImage" data-ovkey="aboutImage" className="editable-element" onClick={(e) => handleEdit(e, 'aboutImage', 'Foto Sobre Nosotros', 'image', data.aboutImage)} style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', height: 360, ...ost('aboutImage') }}>
-                <img src={data.aboutImage} alt="Sobre Nosotros" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* ── 14. WIDGET FLOTANTE POP-UP ── */}
-      {Boolean(data.floatingWidget?.enabled) && (
-        <div id="wp-widget" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 999, background: '#0D0F17', border: '2px solid ' + accentGold, borderRadius: 20, padding: '20px 24px', maxWidth: 320, boxShadow: '0 10px 40px rgba(0,0,0,0.8)', color: '#FFF' }}>
-          <div data-field="floatingWidget.title" data-ovkey="floatingWidget.title" className="editable-element" onClick={(e) => handleEdit(e, 'floatingWidget.title', 'Título Pop-up Flotante', 'text', data.floatingWidget.title || 'Planifica tu Visita')} style={{ fontWeight: 800, fontSize: '1.05rem', color: accentGold, marginBottom: 6, ...ost('floatingWidget.title') }}>
-            {data.floatingWidget.title || 'Planifica tu Visita'}
-          </div>
-          <div data-field="floatingWidget.subtitle" data-ovkey="floatingWidget.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'floatingWidget.subtitle', 'Mensaje Pop-up', 'text', data.floatingWidget.subtitle || 'Domingos 9:00 AM & 11:00 AM')} style={{ fontSize: '0.85rem', color: '#94A3B8', marginBottom: 14, ...ost('floatingWidget.subtitle') }}>
-            {data.floatingWidget.subtitle || 'Domingos 9:00 AM & 11:00 AM'}
-          </div>
-          <a data-field="floatingWidget.ctaText" data-ovkey="floatingWidget.ctaText" href={data.floatingWidget.ctaLink || '#wp-plan-visit'} onClick={(e) => handleNavClick(e, data.floatingWidget.ctaLink || '#wp-plan-visit', 'floatingWidget.ctaText', 'Texto Botón Pop-up', data.floatingWidget.ctaText || 'Planifica tu Visita')} className="afiche3-btn-gold editable-element" style={{ display: 'block', textAlign: 'center', padding: '10px 18px', borderRadius: 999, textDecoration: 'none', fontSize: '0.8rem', ...ost('floatingWidget.ctaText') }}>
-            {data.floatingWidget.ctaText || 'Planifica tu Visita'}
-          </a>
-        </div>
-      )}
-
-      {/* ── 6.2. EVENTOS ── */}
-      {data.sectionsVisibility?.events !== false && (
-      <section id="wp-events" style={{ width: '100%', background: '#05070C', padding: '100px 6%', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.08)' }}>
+      </section>,
+              'Próximos Pasos'
+            )
+          case 'events':
+            if (layouts.events === 'visual') {
+              return wrap(
+                <EventsVisualLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Eventos (Solo Afiches)'
+              )
+            }
+            if (layouts.events === 'cards') {
+              return wrap(
+                <EventsCardsLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Eventos (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-events" style={{ width: '100%', background: '#05070C', padding: '100px 6%', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.08)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 20 }}>
             <div>
@@ -1244,7 +1582,11 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
                     onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
                     style={{ position: 'relative', height: 200, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display='none' }} />
+                    {isVideoUrl(ev.image) ? (
+                      <video src={ev.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display='none' }} />
+                    )}
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, rgba(13,15,22,0.9) 100%)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', top: 16, left: 16, background: accentGold, color: '#05070C', borderRadius: 10, padding: '8px 14px', textAlign: 'center', minWidth: 52 }}>
                       <div
@@ -1317,12 +1659,12 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             })()}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 6.5. DONACIONES ── */}
-      {data.sectionsVisibility?.donation !== false && (
-      <section id="wp-donations" style={{ width: '100%', background: '#040508', padding: '100px 8%', boxSizing: 'border-box' }}>
+      </section>,
+              'Eventos & Calendario'
+            )
+          case 'donation':
+            return wrap(
+              <section id="wp-donations" style={{ width: '100%', background: '#040508', padding: '100px 8%', boxSizing: 'border-box' }}>
         <div style={{
           maxWidth: 860, margin: '0 auto', textAlign: 'center',
           background: 'linear-gradient(135deg, rgba(196,163,90,0.08) 0%, rgba(196,163,90,0.03) 100%)',
@@ -1357,8 +1699,16 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
           <a
             data-field="donation.ctaText" data-ovkey="donation.ctaText"
             href={data.donation?.ctaLink || '#wp-contact'}
+            target={(data.donation?.ctaLink || '').startsWith('http') ? '_blank' : undefined}
+            rel={(data.donation?.ctaLink || '').startsWith('http') ? 'noopener noreferrer' : undefined}
             className="editable-element"
-            onClick={(e) => handleEdit(e, 'donation.ctaText', 'Botón Donaciones', 'text', data.donation?.ctaText || 'Ofrendar en Línea')}
+            onClick={(e) => {
+              const btnLabel = (data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')
+              handleNavClick(e, data.donation?.ctaLink || '#wp-contact', 'donation.ctaText', 'Botón Donaciones', btnLabel, {
+                linkField: 'donation.ctaLink',
+                linkValue: data.donation?.ctaLink || '#wp-contact'
+              })
+            }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 10,
               padding: '16px 40px', borderRadius: 999,
@@ -1371,7 +1721,7 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            {data.donation?.ctaText || 'Ofrendar en Línea'}
+            {(data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')}
           </a>
           {data.donation?.note && (
             <div
@@ -1384,11 +1734,113 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
             </div>
           )}
         </div>
-      </section>
-      )}
-
-      {/* ── 7. FOOTER EDITORIAL ── */}
-      <footer id="wp-contact" style={{ width: '100%', background: '#040508', color: '#FFFFFF', padding: '100px 6% 40px', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.15)' }}>
+      </section>,
+              'Ofrendas / Donaciones'
+            )
+          case 'prayerRequest':
+            return wrap(
+              <section id="wp-prayer" style={{ width: '100%', background: '#07080D', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
+          <div
+            data-field="prayerRequest.eyebrow"
+            data-ovkey="prayerRequest.eyebrow"
+            className="editable-element"
+            onClick={(e) => handleEdit(e, 'prayerRequest.eyebrow', 'Etiqueta Oración', 'text', data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦')}
+            style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 14, ...ost('prayerRequest.eyebrow') }}
+          >
+            {data.prayerRequest?.eyebrow || '✦ ESTAMOS PARA TI ✦'}
+          </div>
+          <h2 data-field="prayerRequest.title" data-ovkey="prayerRequest.title" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Petición de Oración', 'text', data.prayerRequest?.title || '¿Podemos Orar por Ti?')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 3.8vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 16px', ...ost('prayerRequest.title') }}>
+            {data.prayerRequest?.title || '¿Podemos Orar por Ti?'}
+          </h2>
+          <p data-field="prayerRequest.subtitle" data-ovkey="prayerRequest.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.subtitle', 'Subtítulo Petición de Oración', 'textarea', data.prayerRequest?.subtitle || 'Nuestro equipo pastoral y de intercesión ora cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.')} style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.7, margin: '0 0 32px', ...ost('prayerRequest.subtitle') }}>
+            {data.prayerRequest?.subtitle || 'Nuestro equipo pastoral y de intercesión ora cada semana por cada necesidad planteada. Déjanos saber cómo podemos apoyarte.'}
+          </p>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,163,90,0.2)', borderRadius: 16, padding: 32, textAlign: 'left' }}>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#DFCA88', fontWeight: 700, marginBottom: 6 }}>Tu Nombre</label>
+              <input type="text" placeholder="Ej: María González" style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#0B0D14', border: '1px solid rgba(196,163,90,0.3)', color: '#FFF', fontSize: '0.9rem' }} />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: '0.8rem', color: '#DFCA88', fontWeight: 700, marginBottom: 6 }}>Tu Petición o Necesidad</label>
+              <textarea rows={4} placeholder="Escribe tu motivo de oración aquí..." style={{ width: '100%', padding: '12px 16px', borderRadius: 8, background: '#0B0D14', border: '1px solid rgba(196,163,90,0.3)', color: '#FFF', fontSize: '0.9rem', resize: 'vertical' }} />
+            </div>
+            <button data-field="prayerRequest.ctaText" data-ovkey="prayerRequest.ctaText" className="afiche3-btn-gold editable-element" onClick={(e) => handleEdit(e, 'prayerRequest.ctaText', 'Texto Botón Oración', 'text', data.prayerRequest?.ctaText || 'Enviar Petición de Oración')} style={{ width: '100%', padding: '16px', borderRadius: 999, border: 'none', cursor: 'pointer', fontSize: '0.9rem', ...ost('prayerRequest.ctaText') }}>
+              {data.prayerRequest?.ctaText || 'Enviar Petición de Oración'}
+            </button>
+          </div>
+        </div>
+      </section>,
+              'Petición de Oración'
+            )
+          case 'about':
+            if (layouts.about === 'visual') {
+              return wrap(
+                <AboutVisualLayout
+                  data={data}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Muro de Fotos)'
+              )
+            }
+            if (layouts.about === 'split') {
+              return wrap(
+                <AboutSplitLayout
+                  data={data}
+                  about={data.about || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentGold}
+                  primaryBg={'#07080D'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Split Comunidad)'
+              )
+            }
+            return wrap(
+              <section id="wp-about" style={{ width: '100%', background: '#0B0D14', padding: '100px 8%', boxSizing: 'border-box', borderBottom: '1px solid rgba(196,163,90,0.15)' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
+            <div>
+              <div
+                data-field="about.eyebrow"
+                data-ovkey="about.eyebrow"
+                className="editable-element"
+                onClick={(e) => handleEdit(e, 'about.eyebrow', 'Etiqueta Sobre Nosotros', 'text', data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦')}
+                style={{ fontSize: '0.8rem', fontWeight: 800, color: accentGold, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12, ...ost('about.eyebrow') }}
+              >
+                {data.about?.eyebrow || '✦ QUIÉNES SOMOS ✦'}
+              </div>
+              <h2 data-field="about.title" data-ovkey="about.title" className="editable-element" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about?.title || 'Nuestra Historia')} style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', color: '#FFFFFF', margin: '0 0 20px', ...ost('about.title') }}>
+                {data.about?.title || 'Nuestra Historia'}
+              </h2>
+              <p data-field="about.text" data-ovkey="about.text" className="editable-element" onClick={(e) => handleEdit(e, 'about.text', 'Texto Sobre Nosotros', 'textarea', data.about?.text || '')} style={{ fontSize: '1.05rem', color: '#94A3B8', lineHeight: 1.7, margin: 0, ...ost('about.text') }}>
+                {data.about?.text || 'Somos una iglesia comprometida con compartir el amor de Dios, servir a nuestra comunidad y acompañarte en cada paso de tu fe.'}
+              </p>
+            </div>
+            {data.aboutImage && (
+              <div data-field="aboutImage" data-ovkey="aboutImage" className="editable-element" onClick={(e) => handleEdit(e, 'aboutImage', 'Foto Sobre Nosotros', 'image', data.aboutImage)} style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', height: 360, ...ost('aboutImage') }}>
+                {isVideoUrl(data.aboutImage) ? (
+                  <video src={data.aboutImage} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <img src={data.aboutImage} alt="Sobre Nosotros" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                )}
+              </div>
+            )}
+          </div>
+        </section>,
+              'Sobre Nosotros'
+            )
+          case 'contact':
+            return wrap(
+              <footer id="wp-contact" style={{ width: '100%', background: '#040508', color: '#FFFFFF', padding: '100px 6% 40px', boxSizing: 'border-box', borderTop: '1px solid rgba(196,163,90,0.15)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 48, marginBottom: 60 }}>
           <div>
             {logoImage ? (
@@ -1453,7 +1905,13 @@ export default function ChurchTemplateNucleus({ data = {}, editMode = false, act
         <div style={{ borderTop: '1px solid rgba(196,163,90,0.15)', paddingTop: 28, textAlign: 'center', color: '#64748B', fontSize: '0.85rem' }}>
           © {new Date().getFullYear()} {businessName}. Todos los derechos reservados.
         </div>
-      </footer>
+      </footer>,
+              'Contacto & Footer'
+            )
+          default:
+            return null
+        }
+      })}
 
     </div>
   )

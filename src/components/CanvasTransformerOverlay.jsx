@@ -78,7 +78,13 @@ export default function CanvasTransformerOverlay({
     }
   }, [activeField, ovStyle, containerRef])
 
-  if (!box || !activeField || (!onQuickUpdate && !onQuickUpdateBatch)) return null
+  const isBgField = activeField === 'heroImage' ||
+    activeField === 'hero_bg' ||
+    activeField === 'hero.bgImage' ||
+    activeField?.includes('bgImage') ||
+    activeField?.includes('Background')
+
+  if (!box || !activeField || isBgField || (!onQuickUpdate && !onQuickUpdateBatch)) return null
 
   // ── 1. Drag Move Handler (X, Y) ──
   const startMove = (e) => {

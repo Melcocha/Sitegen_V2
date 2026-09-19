@@ -76,6 +76,7 @@ export default function PublicSitePage() {
         data={siteJson}
         editMode={false}
         device="desktop"
+        isPublicSite={true}
       />
     </div>
   )

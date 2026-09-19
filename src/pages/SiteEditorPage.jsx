@@ -15,6 +15,7 @@ import QuickEditPanel from '../components/QuickEditPanel'
 import { publishSite } from '../lib/publishService'
 import { getSite, updateSiteContent, migrateLocalSiteToRemote, markPublished } from '../lib/websiteService'
 import WebsitePreview from '../components/WebsitePreview'
+import FloatingWhatsAppButton from '../components/FloatingWhatsAppButton'
 import { checkDomainAvailability } from '../lib/domainChecker'
 import {
   ArrowLeft, Save, Globe, Eye, EyeOff, Smartphone, Monitor,
@@ -151,6 +152,7 @@ export default function SiteEditorPage() {
   const [isDirty,    setIsDirty]    = useState(false)
   const [quickEdit,  setQuickEdit]  = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarWidth, setSidebarWidth] = useState(410)
   const [activeMobileTab, setActiveMobileTab] = useState('editor') // 'editor' | 'preview'
   const [saveToast,  setSaveToast]  = useState(false) // floating toast confirmation
   const [showTemplates, setShowTemplates] = useState(false)
@@ -770,7 +772,7 @@ export default function SiteEditorPage() {
         <div
           className={`site-editor-sidebar ${activeMobileTab === 'editor' ? 'mobile-active' : 'mobile-hidden'}`}
           style={{
-            width: sidebarOpen ? 300 : 0,
+            width: sidebarOpen ? sidebarWidth : 0,
             flexShrink: 0,
             background: '#fff',
             borderRight: sidebarOpen ? '1px solid #E5E7EB' : 'none',
@@ -783,38 +785,28 @@ export default function SiteEditorPage() {
           {sidebarOpen && (
             <>
               {/* Panel header */}
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid #F3F4F6', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Diseño y Contenido</div>
+              <div style={{ padding: '12px 18px', borderBottom: '1px solid #E5E7EB', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#334155', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Diseño y Contenido</div>
                 <button
-                  onClick={() => setShowTemplates(true)}
+                  type="button"
+                  onClick={() => setSidebarWidth(w => w === 410 ? 500 : 410)}
+                  title={sidebarWidth === 410 ? "Expandir barra a 500px para más espacio" : "Volver a 410px"}
                   style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    background: 'linear-gradient(135deg, #6366F1, #4F46E5)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    borderRadius: 6,
+                    padding: '3px 9px',
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    color: '#475569',
                     cursor: 'pointer',
-                    fontWeight: 800,
-                    fontSize: '0.76rem',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    boxShadow: '0 4px 12px rgba(99,102,241,0.25)',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(99,102,241,0.35)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'none'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(99,102,241,0.25)'
+                    gap: 4,
+                    transition: 'all 0.15s ease'
                   }}
                 >
-                  <Sparkles size={13} />
-                  Cargar Plantilla Premium
+                  <span>{sidebarWidth === 410 ? '↔️ Expandir' : '➡️ 410px'}</span>
                 </button>
               </div>
               <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -823,19 +815,18 @@ export default function SiteEditorPage() {
                   onChange={handleChange}
                   onSectionFocus={(secId) => {
                     const map = {
-                      churchAnnounce: ['wp-announcement', 'announcementBar'],
-                      hero: ['wp-hero', 'inicio', 'wp-afiche-hero'],
+                      hero: ['wp-hero', 'wp-afiche-hero', 'inicio'],
                       welcome: ['wp-welcome', 'wp-vision', 'welcome'],
                       visit: ['wp-plan-visit', 'visita', 'horarios'],
                       values: ['wp-values', 'valores'],
                       ministries: ['wp-ministerios', 'wp-ministries', 'ministerios'],
-                      nextSteps: ['wp-next-steps', 'pasos'],
+                      nextSteps: ['wp-next-steps', 'wp-next-steps-split', 'pasos'],
                       sermons: ['wp-sermons', 'sermones'],
+                      events: ['wp-events', 'wp-eventos', 'eventos', 'calendario'],
                       donation: ['wp-donations', 'wp-donation', 'ofrendas'],
                       prayer: ['wp-prayer', 'oracion'],
                       about: ['wp-about', 'wp-nosotros', 'nosotros'],
                       contact: ['wp-contact', 'contacto'],
-                      floatingWidget: ['wp-widget']
                     }
                     const candidates = map[secId] || [`wp-${secId}`, secId]
                     for (const id of candidates) {
@@ -905,26 +896,47 @@ export default function SiteEditorPage() {
             {currentDevice.icon} {currentDevice.label} — Vista previa en tiempo real
           </div>
 
-          {/* Preview frame */}
+          {/* Preview frame wrapper with WhatsApp anchored strictly inside */}
           <div style={{
             width: device === 'desktop' ? '100%' : currentDevice.width,
             maxWidth: '100%',
             flex: 1,
             height: '100%',
             minHeight: 0,
-            background: '#fff',
-            borderRadius: 12,
-            overflow: 'auto',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
             position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            borderRadius: 12,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+            background: '#fff',
+            transition: 'width 0.22s cubic-bezier(.4,0,.2,1)',
           }}>
-            <WebsitePreview
+            <div style={{
+              width: '100%',
+              height: '100%',
+              overflowY: 'auto',
+              position: 'relative',
+            }}>
+              <WebsitePreview
+                data={siteJson}
+                editMode={true}
+                device={device}
+                activeField={quickEdit?.field}
+                onElementClick={(target) => setQuickEdit(target)}
+                onSectionChange={handleQuickUpdate}
+                onQuickUpdate={handleQuickUpdate}
+                onQuickUpdateBatch={handleQuickUpdateBatch}
+                hideFloatingWhatsApp={true}
+              />
+            </div>
+
+            {/* Always pinned strictly INSIDE the device canvas frame */}
+            <FloatingWhatsAppButton
               data={siteJson}
               editMode={true}
-              device={device}
-              activeField={quickEdit?.field}
+              contained={true}
               onElementClick={(target) => setQuickEdit(target)}
-              onSectionChange={handleQuickUpdate}
               onQuickUpdate={handleQuickUpdate}
               onQuickUpdateBatch={handleQuickUpdateBatch}
             />
@@ -1023,7 +1035,7 @@ export default function SiteEditorPage() {
 
               {/* Category tabs */}
               <div style={{ display: 'flex', gap: 8, padding: '12px 28px', background: '#F8FAFC', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' }}>
-                {['Todas', 'Captar Clientes', 'Vender'].map(cat => (
+                {['Todas', 'Iglesias', 'Captar Clientes', 'Vender'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}

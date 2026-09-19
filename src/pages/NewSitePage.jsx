@@ -158,7 +158,7 @@ export default function NewSitePage() {
 
       {/* Top bar */}
       <header className="new-site-header" style={{ background: '#ffffff', borderBottom: '1px solid #E5E7EB', height: 56, display: 'flex', alignItems: 'center', gap: 16, position: 'sticky', top: 0, zIndex: 40 }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#ffffff' }}>
+        <Link to="/app/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6B7280', textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 600, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#ffffff' }}>
           <ArrowLeft size={14} /> Mis sitios
         </Link>
         <div className="topbar-divider" style={{ height: 18, width: 1, minWidth: 1, maxWidth: 1, background: '#E5E7EB', padding: 0, margin: 0, flexShrink: 0 }} />
@@ -475,13 +475,41 @@ export default function NewSitePage() {
                       )
                     })}
                   </div>
+
+                  {/* WhatsApp Enable / Disable Toggle in Options bar */}
+                  <button
+                    type="button"
+                    onClick={() => setSiteJson(prev => ({
+                      ...prev,
+                      whatsappEnabled: prev.whatsappEnabled === false ? true : false,
+                    }))}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '7px 16px',
+                      borderRadius: 999,
+                      border: siteJson.whatsappEnabled !== false ? '1.5px solid #25D366' : '1.5px solid #CBD5E1',
+                      background: siteJson.whatsappEnabled !== false ? '#F0FDF4' : '#FFFFFF',
+                      color: siteJson.whatsappEnabled !== false ? '#166534' : '#64748B',
+                      fontWeight: 800,
+                      fontSize: '0.8rem',
+                      cursor: 'pointer',
+                      boxShadow: siteJson.whatsappEnabled !== false ? '0 2px 8px rgba(37,211,102,0.2)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                    title={siteJson.whatsappEnabled !== false ? 'Clic para desactivar el botón flotante de WhatsApp' : 'Clic para activar el botón flotante de WhatsApp'}
+                  >
+                    <span>{siteJson.whatsappEnabled !== false ? '🟢' : '⚪'}</span>
+                    <span>WhatsApp: {siteJson.whatsappEnabled !== false ? 'Activo' : 'Desactivado'}</span>
+                  </button>
                 </div>
               )}
             </div>
 
             {/* Preview */}
             <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', border: '1.5px solid #E5E7EB', minWidth: 0, width: '100%' }}>
-              <WebsitePreview data={siteJson} />
+              <WebsitePreview data={siteJson} isPublicSite={false} />
             </div>
           </div>
         )}

@@ -122,7 +122,7 @@ export default function Examples() {
                     </div>
                   </div>
                   <Link
-                    to="/app/new"
+                    to={`/app/new?prompt=${encodeURIComponent(s.prompt || s.label)}`}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '8px 18px',

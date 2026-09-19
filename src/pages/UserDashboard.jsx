@@ -173,7 +173,9 @@ const INDUSTRY_KEYWORDS = [
 ]
 
 function getIndustryHero(site) {
-  const raw = site.site_json?.industry || site.industry || ''
+  const d = site.site_json || site.json_data || {}
+  if (d.heroImage) return d.heroImage
+  const raw = d.industry || site.industry || ''
   if (!raw) return INDUSTRY_HERO.default
   if (INDUSTRY_HERO[raw]) return INDUSTRY_HERO[raw]
   const lower = raw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -495,6 +497,7 @@ function SiteCard({ site, onDelete, onOpenStats, onOpenDomain }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const [hovered, setHovered] = useState(false)
   const status = STATUS_MAP[site.status] || STATUS_MAP.draft
+  const siteData = site.site_json || site.json_data || {}
 
   const handleConfirmDelete = async (e) => {
     e?.stopPropagation?.()
@@ -536,7 +539,7 @@ function SiteCard({ site, onDelete, onOpenStats, onOpenDomain }) {
           loading="lazy"
         />
         {/* Color overlay using site's accent */}
-        <div style={{ position:'absolute', inset:0, background:`linear-gradient(160deg, ${site.json_data?.primaryColor||'#1E3A5F'}CC 0%, ${site.json_data?.accentColor||'#6366F1'}44 100%)` }} />
+        <div style={{ position:'absolute', inset:0, background:`linear-gradient(160deg, ${siteData.primaryColor||'#1E3A5F'}CC 0%, ${siteData.accentColor||'#6366F1'}44 100%)` }} />
 
         {/* Mini browser chrome */}
         <div style={{ position:'absolute', top:8, left:8, right:8, background:'rgba(255,255,255,.12)', backdropFilter:'blur(6px)', borderRadius:6, padding:'4px 8px', display:'flex', alignItems:'center', gap:5 }}>
@@ -551,30 +554,30 @@ function SiteCard({ site, onDelete, onOpenStats, onOpenDomain }) {
         {/* Mini nav */}
         <div style={{ position:'absolute', top:38, left:8, right:8, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div style={{ fontWeight:800, fontSize:'.6rem', color:'#fff', textShadow:'0 1px 4px rgba(0,0,0,.4)', maxWidth:120, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-            {site.json_data?.businessName || site.name}
+            {siteData.businessName || site.name}
           </div>
-          <div style={{ padding:'3px 8px', borderRadius:999, background:site.json_data?.accentColor||'#6366F1', fontSize:'.5rem', fontWeight:700, color:'#fff', whiteSpace:'nowrap', boxShadow:'0 2px 6px rgba(0,0,0,.3)' }}>
-            {site.json_data?.nav?.ctaText || 'Contáctanos'}
+          <div style={{ padding:'3px 8px', borderRadius:999, background:siteData.accentColor||'#6366F1', fontSize:'.5rem', fontWeight:700, color:'#fff', whiteSpace:'nowrap', boxShadow:'0 2px 6px rgba(0,0,0,.3)' }}>
+            {siteData.nav?.ctaText || siteData.hero?.ctaText || 'Contáctanos'}
           </div>
         </div>
 
         {/* Mini hero text */}
         <div style={{ position:'absolute', bottom:28, left:8, right:8 }}>
           <div style={{ fontWeight:900, fontSize:'.72rem', color:'#fff', textShadow:'0 1px 6px rgba(0,0,0,.5)', lineHeight:1.25, marginBottom:4, overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' }}>
-            {site.json_data?.hero?.headline || site.json_data?.businessName || site.name}
+            {siteData.hero?.headline || siteData.businessName || site.name}
           </div>
           <div style={{ display:'flex', gap:5 }}>
-            <div style={{ padding:'2px 7px', borderRadius:999, background:site.json_data?.accentColor||'#6366F1', fontSize:'.48rem', fontWeight:700, color:'#fff' }}>
-              {site.json_data?.hero?.ctaText || 'Comenzar →'}
+            <div style={{ padding:'2px 7px', borderRadius:999, background:siteData.accentColor||'#6366F1', fontSize:'.48rem', fontWeight:700, color:'#fff' }}>
+              {siteData.hero?.ctaText || 'Comenzar →'}
             </div>
           </div>
         </div>
 
         {/* Status badge + Industry */}
         <div style={{ position:'absolute', bottom:8, left:8, right:8, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          {site.json_data?.industry && (
+          {(siteData.industry || site.industry) && (
             <div style={{ padding:'2px 6px', borderRadius:4, background:'rgba(0,0,0,.45)', backdropFilter:'blur(4px)', fontSize:'.55rem', fontWeight:700, color:'rgba(255,255,255,.9)', textTransform:'uppercase', letterSpacing:'.05em' }}>
-              {site.json_data.industry}
+              {siteData.industry || site.industry}
             </div>
           )}
           <div style={{ marginLeft:'auto', padding:'2px 8px', borderRadius:999, background:status.bg, color:status.color, fontSize:'.6rem', fontWeight:700, backdropFilter:'blur(4px)' }}>

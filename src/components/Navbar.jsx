@@ -137,6 +137,28 @@ export default function Navbar() {
               </div>
             )}
 
+            {/* Enlace Iniciar Sesión para visitantes */}
+            {!loading && !isAuthenticated && (
+              <Link
+                to="/login"
+                id="nav-login-btn"
+                style={{
+                  color: 'rgba(255,255,255,0.75)',
+                  textDecoration: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  padding: '8px 14px',
+                  borderRadius: 8,
+                  transition: 'color 0.2s',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#FFFFFF'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.75)'}
+              >
+                Iniciar Sesión
+              </Link>
+            )}
+
             {/* ── BOTÓN ÚNICO: Crear mi página web ── */}
             <Link
               to="/app/new"
@@ -200,6 +222,15 @@ export default function Navbar() {
             ))}
           </div>
           <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
+          {!loading && !isAuthenticated && (
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              style={{ padding: '12px 14px', borderRadius: 10, textDecoration: 'none', color: '#fff', fontSize: '0.9rem', fontWeight: 600, background: 'rgba(255,255,255,0.04)', textAlign: 'center' }}
+            >
+              Iniciar Sesión
+            </Link>
+          )}
           <Link
             to="/app/new"
             onClick={() => setMenuOpen(false)}

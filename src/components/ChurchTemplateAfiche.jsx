@@ -1,8 +1,29 @@
 import React, { useState } from 'react'
 import { Sparkles, Calendar, Clock, MapPin, Play, Heart, ChevronRight, Phone, Volume2, ArrowUpRight } from 'lucide-react'
 import TemplateDragHandles from './TemplateDragHandles'
+import SectionControlBar from './SectionControlBar'
+import {
+  HeroVisualLayout,
+  HeroSplitLayout,
+  WelcomeVisualLayout,
+  WelcomeSplitLayout,
+  VisitVisualLayout,
+  VisitCardsLayout,
+  ValuesVisualLayout,
+  ValuesMinimalLayout,
+  MinistriesVisualLayout,
+  MinistriesGridLayout,
+  NextStepsVisualLayout,
+  NextStepsNumberedLayout,
+  SermonsVisualLayout,
+  SermonsCardsLayout,
+  EventsVisualLayout,
+  EventsCardsLayout,
+  AboutVisualLayout,
+  AboutSplitLayout
+} from './ChurchSectionLayouts'
 
-export default function ChurchTemplateAfiche({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+export default function ChurchTemplateAfiche({ data = {}, editMode = false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
   const isMobileDevice = device === 'mobile'
   const isTabletDevice = device === 'tablet'
   const rootClassName = `afiche-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
@@ -28,6 +49,10 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
     return (cur && typeof cur === 'object') ? cur : {}
   }
   const isActive = (k) => editMode && activeField && activeField === k
+  const isVideoUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url) || url.startsWith('data:video/')
+  }
   const ost = (k) => ({
     ...(ov(k).textColor ? { color: ov(k).textColor } : {}),
     ...(ov(k).bgColor ? { background: ov(k).bgColor } : {}),
@@ -47,9 +72,6 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
     ...(ov(k).borderRadius ? { borderRadius: ov(k).borderRadius } : {}),
     ...(ov(k).objectFit ? { objectFit: ov(k).objectFit } : {}),
     ...(ov(k).filter ? { filter: ov(k).filter } : {}),
-    ...(isActive(k) ? {
-      position: 'relative',
-    } : {}),
   })
 
   const rdh = (k) => isActive(k) && (
@@ -140,7 +162,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
     eyebrow: 'ESTÁS INVITADO',
     title: 'Acompáñanos este Fin de Semana',
     subtitle: 'Encuentra horarios, dirección y todo lo necesario para tu primera visita.',
-    ctaText: 'Planificar por WhatsApp',
+    ctaText: 'Planifica tu Visita',
     address: 'Av. Las Palmeras #123, San Salvador',
     serviceTimes: [
       'Sábado 6:00 PM — Noche de Adoración & Oración',
@@ -151,7 +173,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
 
   const heroImage = data.heroImage || 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=85&fit=crop'
 
-  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '') => {
+  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '', extra = {}) => {
     if (editMode && onElementClick) {
       e.preventDefault()
       e.stopPropagation()
@@ -164,20 +186,33 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         type: fieldType,
         value: currentVal || '',
         x: r.left || e.clientX,
-        y: (r.bottom ? r.bottom + 8 : e.clientY)
+        y: (r.bottom ? r.bottom + 8 : e.clientY),
+        ...extra
       })
     }
   }
 
-  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentText) => {
+  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentText, extra = {}) => {
     if (editMode && onElementClick) {
       e.preventDefault()
-      handleEdit(e, fieldKey, fieldLabel, 'text', currentText)
-    } else if (targetHash) {
-      e.preventDefault()
-      const targetEl = document.querySelector(targetHash)
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth' })
+      e.stopPropagation()
+      handleEdit(e, fieldKey, fieldLabel, 'text', currentText, extra)
+      return
+    }
+    if (targetHash) {
+      if (targetHash.startsWith('http://') || targetHash.startsWith('https://') || targetHash.startsWith('mailto:') || targetHash.startsWith('tel:')) {
+        return
+      }
+      if (targetHash.startsWith('#')) {
+        e.preventDefault()
+        try {
+          const targetEl = document.querySelector(targetHash)
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth' })
+          }
+        } catch (err) {
+          console.warn('Navigation selector error:', err)
+        }
       }
     }
   }
@@ -185,6 +220,55 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
   const activeFont = data.font || 'Syne'
   const primaryBg = data.primaryColor || '#090B10'
   const accentYellow = data.accentColor || '#FACC15'
+
+  const DEFAULT_AFICHE_ORDER = [
+    'hero',
+    'nucleusColumns',
+    'ministries',
+    'planAVisit',
+    'welcome',
+    'values',
+    'nextSteps',
+    'sermons',
+    'events',
+    'prayerRequest',
+    'about',
+    'donation',
+    'contact'
+  ]
+  const activeOrder = (Array.isArray(data.sectionOrder) && data.sectionOrder.length > 0) ? data.sectionOrder : DEFAULT_AFICHE_ORDER
+  const visibility = data.sectionsVisibility || {}
+  const welcome = data.welcome || {}
+  const layouts = data.sectionLayouts || {}
+
+  const handleMoveUp = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx > 0) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx - 1]
+      newOrder[curIdx - 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleMoveDown = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx >= 0 && curIdx < activeOrder.length - 1) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx + 1]
+      newOrder[curIdx + 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleDeleteSection = (key) => {
+    if (onSectionChange) onSectionChange(`sectionsVisibility.${key}`, false)
+    else if (onQuickUpdate) onQuickUpdate(`sectionsVisibility.${key}`, false)
+  }
 
   return (
     <div className={rootClassName} style={{
@@ -476,9 +560,67 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         })()}
       </header>
 
-      {/* HERO AFICHE COMPLETO PANTALLA TOTALMENTE CINEMÁTICO OSCURO CON FOTO DE FONDO */}
-      {data.sectionsVisibility?.hero !== false && (
-      <section id="wp-afiche-hero" style={{
+      {/* ── DYNAMIC SECTIONS LOOP ── */}
+      {activeOrder.map((sectionKey, sIdx) => {
+        if (visibility[sectionKey] === false) return null
+        const canUp = sIdx > 0
+        const canDown = sIdx < activeOrder.length - 1
+
+        const wrap = (secContent, label) => (
+          <SectionControlBar
+            key={sectionKey}
+            sectionKey={sectionKey}
+            label={label}
+            canMoveUp={canUp}
+            canMoveDown={canDown}
+            onMoveUp={() => handleMoveUp(sectionKey)}
+            onMoveDown={() => handleMoveDown(sectionKey)}
+            onDelete={() => handleDeleteSection(sectionKey)}
+            editMode={editMode}
+            accentColor={data.accentColor || '#FACC15'}
+            primaryColor="#090B10"
+          >
+            {secContent}
+          </SectionControlBar>
+        )
+
+        switch (sectionKey) {
+          case 'hero':
+            if (layouts.hero === 'visual') {
+              return wrap(
+                <HeroVisualLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentYellow}
+                  font={activeFont}
+                />,
+                'Hero Portada (Visual)'
+              )
+            }
+            if (layouts.hero === 'split') {
+              return wrap(
+                <HeroSplitLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Hero Portada (Split)'
+              )
+            }
+            return wrap(
+              <section id="wp-afiche-hero" style={{
         position: 'relative',
         minHeight: '100vh',
         display: 'flex',
@@ -491,16 +633,29 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
       }}>
         {/* Background image full bleed & editable */}
         <div
+          data-field="heroImage"
+          data-ovkey="heroImage"
           className="editable-element"
           onClick={(e) => handleEdit(e, 'heroImage', 'Imagen de Portada (Hero)', 'image', heroImage)}
-          style={{ position: 'absolute', inset: 0, zIndex: 0, cursor: editMode ? 'pointer' : 'default' }}
+          style={{ ...ost('heroImage'), position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, maxWidth: 'none', maxHeight: 'none', zIndex: 0, cursor: editMode ? 'pointer' : 'default' }}
         >
-          <img
-            src={heroImage}
-            alt={businessName}
-            onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=85&fit=crop' }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-          />
+          {data.heroVideo || isVideoUrl(heroImage) ? (
+            <video
+              src={data.heroVideo || heroImage}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+            />
+          ) : (
+            <img
+              src={heroImage}
+              alt={businessName}
+              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=85&fit=crop' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+            />
+          )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(9,11,16,0.6) 0%, rgba(9,11,16,0.85) 75%, #090B10 100%)', pointerEvents: 'none' }} />
           {editMode && (
             <div style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(250,204,21,0.95)', color: '#090B10', fontSize: '0.75rem', fontWeight: 900, padding: '6px 16px', borderRadius: 999, backdropFilter: 'blur(8px)', boxShadow: '0 4px 14px rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 2 }}>
@@ -628,12 +783,13 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             </a>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* MOSAICO AFICHES VISUALES EN FONDO CINEMÁTICO OSCURO */}
-      {data.sectionsVisibility?.nucleusColumns !== false && (
-      <section id="wp-afiche-gallery" style={{ padding: '100px 6%', background: '#0D0F17' }}>
+      </section>,
+              'Hero Afiche'
+            )
+          case 'nucleusColumns':
+          case 'gallery':
+            return wrap(
+              <section id="wp-afiche-gallery" style={{ padding: '100px 6%', background: '#0D0F17' }}>
         <div style={{ textAlign: 'center', marginBottom: 60 }}>
           <span
             data-field="symbolicHeader.script"
@@ -683,14 +839,25 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                   ...ost(`symbolicSections.${idx}.image`)
                 }}
               >
-                <img
-                  src={cardImg}
-                  alt={item.title || 'Foto de tarjeta'}
-                  onError={(e) => {
-                    e.currentTarget.src = fallbackImg
-                  }}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                {isVideoUrl(cardImg) ? (
+                  <video
+                    src={cardImg}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <img
+                    src={cardImg}
+                    alt={item.title || 'Foto de tarjeta'}
+                    onError={(e) => {
+                      e.currentTarget.src = fallbackImg
+                    }}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                )}
               <div style={{
                 position: 'absolute',
                 inset: 0,
@@ -756,12 +923,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           )
         })}
         </div>
-      </section>
-      )}
-
-      {/* MINISTERIOS & COMUNIDADES */}
-      {data.sectionsVisibility?.ministries !== false && (
-      <section id="wp-ministerios" style={{ padding: '120px 6%', background: '#090B10' }}>
+      </section>,
+              'Galería de Afiches'
+            )
+          case 'ministries':
+            if (layouts.ministries === 'visual') {
+              return wrap(
+                <MinistriesVisualLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Ministerios (Solo Imágenes)'
+              )
+            }
+            if (layouts.ministries === 'grid') {
+              return wrap(
+                <MinistriesGridLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Ministerios (Mosaico)'
+              )
+            }
+            return wrap(
+              <section id="wp-ministerios" style={{ padding: '120px 6%', background: '#090B10' }}>
         <div style={{ textAlign: 'center', marginBottom: 60 }}>
           <span
             data-field="ministriesHeader.script"
@@ -793,11 +992,22 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                 onClick={(e) => handleEdit(e, `ministries.${idx}.image`, `Foto Ministerio: ${min.title}`, 'image', min.image)}
                 style={{ height: 280, position: 'relative', overflow: 'hidden', marginBottom: 20, cursor: editMode ? 'pointer' : 'default', ...ost(`ministries.${idx}.image`) }}
               >
-                <img
-                  src={min.image}
-                  alt={min.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                {isVideoUrl(min.image) ? (
+                  <video
+                    src={min.image}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <img
+                    src={min.image}
+                    alt={min.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                )}
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 40%, #090B10 100%)', pointerEvents: 'none' }} />
               </div>
               <div>
@@ -835,12 +1045,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             </div>
           ))}
         </div>
-      </section>
-      )}
-
-      {/* HORARIOS & PLANIFICA TU VISITA (SECCIÓN DE LA CAPTURA DEL USUARIO) */}
-      {data.sectionsVisibility?.planAVisit !== false && (
-      <section id="wp-plan-visit" style={{
+      </section>,
+              'Ministerios & Grupos'
+            )
+          case 'planAVisit':
+            if (layouts.visit === 'visual') {
+              return wrap(
+                <VisitVisualLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Visítanos (Solo Fotos)'
+              )
+            }
+            if (layouts.visit === 'cards') {
+              return wrap(
+                <VisitCardsLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Visítanos (Horarios Card)'
+              )
+            }
+            return wrap(
+              <section id="wp-plan-visit" style={{
         padding: '120px 6%',
         background: 'linear-gradient(135deg, #11131E 0%, #090B10 100%)'
       }}>
@@ -913,35 +1155,42 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
               <span>{planAVisit.address}</span>
             </div>
 
-            <a
-              data-field="planAVisit.ctaText"
-              data-ovkey="planAVisit.ctaText"
-              href="https://wa.me/?text=Hola,%20quisiera%20planificar%20mi%20visita"
-              target="_blank"
-              rel="noreferrer"
-              className="afiche-glow-btn editable-element"
-              onClick={(e) => handleEdit(e, 'planAVisit.ctaText', 'Texto Botón Visítanos', 'text', planAVisit.ctaText)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '16px 36px',
-                borderRadius: 999,
-                fontSize: '0.85rem',
-                textDecoration: 'none',
-                ...ost('planAVisit.ctaText')
-              }}
-            >
-              {planAVisit.ctaText}
-              <ArrowUpRight size={18} />
-            </a>
+            {(() => {
+              const waNum = (data.contact?.whatsapp || data.whatsapp || '').replace(/[^0-9]/g, '')
+              const btnText = (planAVisit.ctaText && planAVisit.ctaText !== 'Planificar por WhatsApp') ? planAVisit.ctaText : 'Planifica tu Visita'
+              const href = waNum ? `https://wa.me/${waNum}?text=Hola,%20quisiera%20planificar%20mi%20visita` : '#wp-contact'
+              return (
+                <a
+                  data-field="planAVisit.ctaText"
+                  data-ovkey="planAVisit.ctaText"
+                  href={href}
+                  target={waNum ? '_blank' : undefined}
+                  rel="noreferrer"
+                  className="afiche-glow-btn editable-element"
+                  onClick={(e) => handleEdit(e, 'planAVisit.ctaText', 'Texto Botón Visítanos', 'text', btnText)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '16px 36px',
+                    borderRadius: 999,
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
+                    ...ost('planAVisit.ctaText')
+                  }}
+                >
+                  {btnText}
+                  <ArrowUpRight size={18} />
+                </a>
+              )
+            })()}
           </div>
 
           <div
             data-field="planAVisit.image"
             data-ovkey="planAVisit.image"
             className="editable-element"
-            onClick={(e) => handleEdit(e, 'planAVisit.image', 'Foto Sección Visítanos', 'image', 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop')}
+            onClick={(e) => handleEdit(e, 'planAVisit.image', 'Foto Sección Visítanos', 'image', planAVisit.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop')}
             style={{
               position: 'relative',
               height: 480,
@@ -951,19 +1200,62 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
               ...ost('planAVisit.image')
             }}
           >
-            <img
-              src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop"
-              alt="Adoración"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+            {isVideoUrl(planAVisit.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop') ? (
+              <video
+                src={planAVisit.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop'}
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <img
+                src={planAVisit.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1000&q=85&fit=crop'}
+                alt="Adoración"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            )}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── BIENVENIDA A CASA (SECCIÓN DE LA CAPTURA DEL USUARIO) ── */}
-      {data.sectionsVisibility?.welcome !== false && (
-      <section id="wp-welcome" style={{ padding: '100px 6%', background: '#090B10', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      </section>,
+              'Planifica tu Visita'
+            )
+          case 'welcome':
+            if (layouts.welcome === 'visual') {
+              return wrap(
+                <WelcomeVisualLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Solo Fotos)'
+              )
+            }
+            if (layouts.welcome === 'split') {
+              return wrap(
+                <WelcomeSplitLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Split Tarjeta)'
+              )
+            }
+            return wrap(
+              <section id="wp-welcome" style={{ padding: '100px 6%', background: '#090B10', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div
             data-field="welcome.script"
@@ -981,12 +1273,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             {data.welcome?.text || 'Aquí hay un lugar para ti y tu familia.'}
           </p>
         </div>
-      </section>
-      )}
-
-      {/* ── VALORES & FUNDAMENTOS (SECCIÓN DE LA CAPTURA DEL USUARIO) ── */}
-      {data.sectionsVisibility?.values !== false && (
-      <section id="wp-values" style={{ padding: '100px 6%', background: '#0D0F17' }}>
+      </section>,
+              'Bienvenida'
+            )
+          case 'values':
+            if (layouts.values === 'visual') {
+              return wrap(
+                <ValuesVisualLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Valores (Solo Imágenes)'
+              )
+            }
+            if (layouts.values === 'minimal') {
+              return wrap(
+                <ValuesMinimalLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Valores (Minimalista)'
+              )
+            }
+            return wrap(
+              <section id="wp-values" style={{ padding: '100px 6%', background: '#0D0F17' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <span
@@ -1027,12 +1351,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             ))}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── PRÓXIMOS PASOS ── */}
-      {data.sectionsVisibility?.nextSteps !== false && (
-      <section id="wp-next-steps" style={{ padding: '100px 6%', background: '#090B10' }}>
+      </section>,
+              'Valores & Creencias'
+            )
+          case 'nextSteps':
+            if (layouts.nextSteps === 'visual') {
+              return wrap(
+                <NextStepsVisualLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (Solo Fotos)'
+              )
+            }
+            if (layouts.nextSteps === 'steps') {
+              return wrap(
+                <NextStepsNumberedLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (3 Pasos)'
+              )
+            }
+            return wrap(
+              <section id="wp-next-steps" style={{ padding: '100px 6%', background: '#090B10' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <h2 className="afiche-title-font" data-field="nextSteps.title" data-ovkey="nextSteps.title" onClick={(e) => handleEdit(e, 'nextSteps.title', 'Título Próximos Pasos', 'text', data.nextSteps?.title || 'PRÓXIMOS PASOS EN LA FE')} style={{ fontSize: '3.2rem', color: '#FFFFFF', margin: 0, ...ost('nextSteps.title') }}>
@@ -1056,12 +1412,46 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             ))}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── SERMONES ── */}
-      {data.sectionsVisibility?.sermons !== false && (
-      <section id="wp-sermons" style={{ padding: '100px 6%', background: '#0D0F17' }}>
+      </section>,
+              'Próximos Pasos'
+            )
+          case 'sermons':
+            if (layouts.sermons === 'visual') {
+              return wrap(
+                <SermonsVisualLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Sermones (Solo Portadas)'
+              )
+            }
+            if (layouts.sermons === 'cards') {
+              return wrap(
+                <SermonsCardsLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  title={data.sermonsTitle}
+                  subtitle={data.sermonsSubtitle}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Sermones (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-sermons" style={{ padding: '100px 6%', background: '#0D0F17' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <h2 className="afiche-title-font" data-field="sermonsTitle" data-ovkey="sermonsTitle" onClick={(e) => handleEdit(e, 'sermonsTitle', 'Título Prédicas', 'text', data.sermonsTitle || 'MENSAJES RECIENTES')} style={{ fontSize: '3.2rem', color: '#FFFFFF', margin: 0, ...ost('sermonsTitle') }}>
@@ -1074,7 +1464,11 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             ]).map((sermon, idx) => (
               <div key={idx} style={{ background: '#090B10', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(250,204,21,0.2)' }}>
                 <div data-field={`sermons.${idx}.image`} data-ovkey={`sermons.${idx}.image`} className="editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.image`, `Foto Prédica ${idx+1}`, 'image', sermon.image)} style={{ height: 200, position: 'relative', overflow: 'hidden', ...ost(`sermons.${idx}.image`) }}>
-                  <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {isVideoUrl(sermon.image) ? (
+                    <video src={sermon.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <img src={sermon.image || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop'} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
                 </div>
                 <div style={{ padding: 24 }}>
                   <h3 data-field={`sermons.${idx}.title`} data-ovkey={`sermons.${idx}.title`} className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, `sermons.${idx}.title`, `Título Prédica ${idx+1}`, 'text', sermon.title)} style={{ fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 10px', ...ost(`sermons.${idx}.title`) }}>
@@ -1085,11 +1479,44 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             ))}
           </div>
         </div>
-      </section>
-      )}
-      {/* ── EVENTOS ── */}
-      {data.sectionsVisibility?.events !== false && (
-      <section id="wp-events" style={{ padding: '100px 6%', background: 'linear-gradient(135deg, #090B10 0%, #0D0F18 100%)' }}>
+      </section>,
+              'Prédicas & Mensajes'
+            )
+          case 'events':
+            if (layouts.events === 'visual') {
+              return wrap(
+                <EventsVisualLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Eventos (Solo Afiches)'
+              )
+            }
+            if (layouts.events === 'cards') {
+              return wrap(
+                <EventsCardsLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={primaryBg}
+                  font={activeFont}
+                />,
+                'Eventos (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-events" style={{ padding: '100px 6%', background: 'linear-gradient(135deg, #090B10 0%, #0D0F18 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 52, flexWrap: 'wrap', gap: 20 }}>
             <div>
@@ -1140,7 +1567,11 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
                     onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
                     style={{ position: 'relative', height: 200, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {isVideoUrl(ev.image) ? (
+                      <video src={ev.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    )}
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 35%, rgba(9,11,16,0.95) 100%)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', top: 16, left: 16, background: accentColor, color: '#06070A', padding: '8px 12px', borderRadius: 8, textAlign: 'center', minWidth: 48, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                       <div
@@ -1211,12 +1642,12 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             })()}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── PETICIÓN DE ORACIÓN ── */}
-      {data.sectionsVisibility?.prayerRequest !== false && (
-      <section id="wp-prayer" style={{ padding: '100px 6%', background: '#0D0F17' }}>
+      </section>,
+              'Eventos & Calendario'
+            )
+          case 'prayerRequest':
+            return wrap(
+              <section id="wp-prayer" style={{ padding: '100px 6%', background: '#0D0F17' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
           <h2 className="afiche-title-font" data-field="prayerRequest.title" data-ovkey="prayerRequest.title" onClick={(e) => handleEdit(e, 'prayerRequest.title', 'Título Oración', 'text', data.prayerRequest?.title || '¿PODEMOS ORAR POR TI?')} style={{ fontSize: '3rem', color: '#FFFFFF', margin: '0 0 16px', ...ost('prayerRequest.title') }}>
             {data.prayerRequest?.title || '¿PODEMOS ORAR POR TI?'}
@@ -1235,43 +1666,59 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             </button>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── SOBRE NOSOTROS ── */}
-      {data.about && data.sectionsVisibility?.about !== false && (
-        <section id="wp-about" style={{ padding: '100px 6%', background: '#090B10' }}>
+      </section>,
+              'Petición de Oración'
+            )
+          case 'about':
+            if (layouts.about === 'visual') {
+              return wrap(
+                <AboutVisualLayout
+                  data={data}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Muro de Fotos)'
+              )
+            }
+            if (layouts.about === 'split') {
+              return wrap(
+                <AboutSplitLayout
+                  data={data}
+                  about={data.about || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentYellow}
+                  primaryBg={'#090B10'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Split Comunidad)'
+              )
+            }
+            return wrap(
+              <section id="wp-about" style={{ padding: '100px 6%', background: '#090B10' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
             <div>
-              <h2 className="afiche-title-font" data-field="about.title" data-ovkey="about.title" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about.title || 'NUESTRA HISTORIA')} style={{ fontSize: '3rem', color: '#FFFFFF', margin: '0 0 20px', ...ost('about.title') }}>
-                {data.about.title || 'NUESTRA HISTORIA'}
+              <h2 className="afiche-title-font" data-field="about.title" data-ovkey="about.title" onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', data.about?.title || 'NUESTRA HISTORIA')} style={{ fontSize: '3rem', color: '#FFFFFF', margin: '0 0 20px', ...ost('about.title') }}>
+                {data.about?.title || 'NUESTRA HISTORIA'}
               </h2>
-              <p data-field="about.text" data-ovkey="about.text" className="editable-element" onClick={(e) => handleEdit(e, 'about.text', 'Texto Sobre Nosotros', 'textarea', data.about.text)} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.05rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0, ...ost('about.text') }}>
-                {data.about.text}
+              <p data-field="about.text" data-ovkey="about.text" className="editable-element" onClick={(e) => handleEdit(e, 'about.text', 'Texto Sobre Nosotros', 'textarea', data.about?.text || '')} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.05rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, margin: 0, ...ost('about.text') }}>
+                {data.about?.text || 'Somos una iglesia comprometida con compartir el amor de Dios, servir a nuestra comunidad y acompañarte en cada paso de tu fe.'}
               </p>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* ── WIDGET FLOTANTE POP-UP ── */}
-      {Boolean(data.floatingWidget?.enabled) && data.sectionsVisibility?.floatingWidget !== false && (
-        <div id="wp-widget" style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 999, background: '#090B10', border: '2px solid #FACC15', borderRadius: 20, padding: '20px 24px', maxWidth: 320, boxShadow: '0 10px 40px rgba(0,0,0,0.8)', color: '#FFF' }}>
-          <div data-field="floatingWidget.title" data-ovkey="floatingWidget.title" className="afiche-title-font editable-element" onClick={(e) => handleEdit(e, 'floatingWidget.title', 'Título Pop-up Flotante', 'text', data.floatingWidget.title || 'Planifica tu Visita')} style={{ fontSize: '1.2rem', color: '#FACC15', marginBottom: 6, ...ost('floatingWidget.title') }}>
-            {data.floatingWidget.title || 'Planifica tu Visita'}
-          </div>
-          <div data-field="floatingWidget.subtitle" data-ovkey="floatingWidget.subtitle" className="editable-element" onClick={(e) => handleEdit(e, 'floatingWidget.subtitle', 'Mensaje Pop-up', 'text', data.floatingWidget.subtitle || 'Domingos 9:00 AM & 11:00 AM')} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginBottom: 14, ...ost('floatingWidget.subtitle') }}>
-            {data.floatingWidget.subtitle || 'Domingos 9:00 AM & 11:00 AM'}
-          </div>
-          <a data-field="floatingWidget.ctaText" data-ovkey="floatingWidget.ctaText" href={data.floatingWidget.ctaLink || '#wp-plan-visit'} onClick={(e) => handleNavClick(e, data.floatingWidget.ctaLink || '#wp-plan-visit', 'floatingWidget.ctaText', 'Texto Botón Pop-up', data.floatingWidget.ctaText || 'Planifica tu Visita')} className="afiche-glow-btn editable-element" style={{ display: 'block', textAlign: 'center', padding: '10px 18px', borderRadius: 999, textDecoration: 'none', fontSize: '0.8rem', ...ost('floatingWidget.ctaText') }}>
-            {data.floatingWidget.ctaText || 'Planifica tu Visita'}
-          </a>
-        </div>
-      )}
-
-      {/* DONACIONES */}
-      {data.sectionsVisibility?.donation !== false && (
-      <section id="wp-donations" style={{
+        </section>,
+              'Sobre Nosotros'
+            )
+          case 'donation':
+            return wrap(
+              <section id="wp-donations" style={{
         padding: '100px 6%',
         background: 'linear-gradient(135deg, #090B10 0%, #0D0F18 100%)'
       }}>
@@ -1308,8 +1755,16 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
           <a
             data-field="donation.ctaText" data-ovkey="donation.ctaText"
             href={data.donation?.ctaLink || '#wp-contact'}
+            target={(data.donation?.ctaLink || '').startsWith('http') ? '_blank' : undefined}
+            rel={(data.donation?.ctaLink || '').startsWith('http') ? 'noopener noreferrer' : undefined}
             className="afiche-glow-btn editable-element"
-            onClick={(e) => handleEdit(e, 'donation.ctaText', 'Botón Donaciones', 'text', data.donation?.ctaText || 'Ofrendar en Línea')}
+            onClick={(e) => {
+              const btnLabel = (data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')
+              handleNavClick(e, data.donation?.ctaLink || '#wp-contact', 'donation.ctaText', 'Botón Donaciones', btnLabel, {
+                linkField: 'donation.ctaLink',
+                linkValue: data.donation?.ctaLink || '#wp-contact'
+              })
+            }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 10,
               padding: '16px 40px', borderRadius: 999,
@@ -1323,7 +1778,7 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            {data.donation?.ctaText || 'Ofrendar en Línea'}
+            {(data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')}
           </a>
           {data.donation?.note && (
             <div
@@ -1336,12 +1791,12 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
             </div>
           )}
         </div>
-      </section>
-      )}
-
-      {/* FOOTER */}
-      {data.sectionsVisibility?.contact !== false && (
-      <footer id="wp-contact" style={{
+      </section>,
+              'Ofrendas / Donaciones'
+            )
+          case 'contact':
+            return wrap(
+              <footer id="wp-contact" style={{
         padding: '60px 6%',
         background: '#06070A',
         textAlign: 'center',
@@ -1382,8 +1837,14 @@ export default function ChurchTemplateAfiche({ data = {}, editMode = false, acti
         }}>
           © {new Date().getFullYear()} {businessName}. Todos los derechos reservados.
         </p>
-      </footer>
-      )}
+      </footer>,
+              'Contacto & Redes'
+            )
+          default:
+            return null
+        }
+      })}
+
     </div>
   )
 }

@@ -86,7 +86,7 @@ export const PRESET_TEMPLATES = [
       donation: {
         title: 'Tu Generosidad Transforma Vidas',
         subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
-        ctaText: 'Ofrendar en Línea',
+        ctaText: 'Ofrendar',
         ctaLink: 'https://paypal.com'
       },
       events: {
@@ -547,7 +547,7 @@ export const PRESET_TEMPLATES = [
       donation: {
         title: 'Tu Generosidad Transforma Vidas',
         subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
-        ctaText: 'Ofrendar en Línea',
+        ctaText: 'Ofrendar',
         ctaLink: 'https://paypal.com'
       },
       events: {
@@ -642,7 +642,7 @@ export const PRESET_TEMPLATES = [
       donation: {
         title: 'Tu Generosidad Transforma Vidas',
         subtitle: 'Cada ofrenda nos permite seguir extendiendo el mensaje de esperanza en nuestra ciudad y más allá. Gracias por tu generosidad.',
-        ctaText: 'Ofrendar en Línea',
+        ctaText: 'Ofrendar',
         ctaLink: 'https://paypal.com'
       },
       events: {

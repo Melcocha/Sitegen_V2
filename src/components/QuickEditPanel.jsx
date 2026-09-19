@@ -6,6 +6,46 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
+function compressImageFile(file, maxWidth = 1600, quality = 0.82) {
+  return new Promise((resolve) => {
+    if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+      resolve(file)
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width)
+          width = maxWidth
+        }
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(blob)
+            } else {
+              resolve(file)
+            }
+          },
+          'image/jpeg',
+          quality
+        )
+      }
+      img.onerror = () => resolve(file)
+      img.src = e.target.result
+    }
+    reader.onerror = () => resolve(file)
+    reader.readAsDataURL(file)
+  })
+}
+
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -297,6 +337,7 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
   const [loadingAssets, setLoadingAssets] = useState(false)
   const [imgMode, setImgMode] = useState('presets') // 'presets' | 'upload' | 'video' | 'url' | 'library'
   const [videoUrlInput, setVideoUrlInput] = useState('')
+  const [linkVal, setLinkVal] = useState('')
 
   // Configure position and initial values on target or elementStyles change
   useEffect(() => {
@@ -306,7 +347,9 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
     const top = Math.min(Math.max(target.y || 40, 12), window.innerHeight - 580)
     setPos({ left, top })
 
-    setTextVal(target.value || '')
+    const rawVal = target.value || ''
+    setTextVal(rawVal === 'Ofrendar con Stripe' ? 'Ofrendar' : rawVal)
+    setLinkVal(target.linkValue || '')
     setApplyGlobal(target.applyGlobalDefault === true)
     setCurTC(target.textColor || '')
     setCurBG(target.bgColor || '')
@@ -452,21 +495,34 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
   // Value update actions
   const onText = (v) => {
     setTextVal(v)
-    onUpdate(field, v)
+    if (field === 'contact.whatsapp' || field === 'whatsapp' || field === 'whatsappNumber') {
+      onUpdateBatch([['contact.whatsapp', v], ['whatsapp', v], ['whatsappNumber', v]])
+    } else {
+      onUpdate(field, v)
+    }
+  }
+
+  const onLink = (v) => {
+    setLinkVal(v)
+    const linkFieldKey = target.linkField || (field.endsWith('Text') ? field.replace(/Text$/, 'Link') : (field.endsWith('.text') ? field.replace(/\.text$/, '.link') : `${field}Link`))
+    if (onUpdate) {
+      onUpdate(linkFieldKey, v)
+    }
   }
 
   const pickImage = (url) => {
     setTextVal(url)
-    if (field === 'heroImage') {
-      onUpdateBatch([['heroVideo', null], ['heroImage', url]])
+    if (field === 'heroImage' || field === 'hero_bg' || field === 'hero.bgImage') {
+      onUpdateBatch([['heroVideo', null], ['heroImage', url], ['hero.bgImage', url]])
     } else {
       onText(url)
     }
   }
 
   const pickVideo = (vUrl) => {
-    if (field === 'heroImage') {
-      onUpdateBatch([['heroVideo', vUrl]])
+    setTextVal(vUrl)
+    if (field === 'heroImage' || field === 'hero_bg' || field === 'hero.bgImage') {
+      onUpdateBatch([['heroVideo', vUrl], ['heroImage', vUrl], ['hero.bgImage', vUrl]])
     } else {
       onText(vUrl)
     }
@@ -624,17 +680,18 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
   }
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const isVideo = file.type.startsWith('video/')
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
+    const isVideo = rawFile.type.startsWith('video/')
+    const file = isVideo ? rawFile : await compressImageFile(rawFile)
 
     try {
       setIsUploading(true)
       let url = null
 
       try {
-        const fileExt = file.name.split('.').pop()
-        const fileName = `${Math.random()}.${fileExt}`
+        const fileExt = file.name ? file.name.split('.').pop() : 'jpg'
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`
         const filePath = `uploads/${fileName}`
         const { error: uploadError } = await supabase.storage.from('web_assets').upload(filePath, file)
         if (uploadError) throw uploadError
@@ -647,10 +704,10 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
         url = await fileToDataUrl(file)
       }
 
-      if (field === 'heroImage' && isVideo) {
-        onUpdateBatch([['heroVideo', url]])
-      } else if (field === 'heroImage') {
-        onUpdateBatch([['heroVideo', null], ['heroImage', url]])
+      if ((field === 'heroImage' || field === 'hero_bg' || field === 'hero.bgImage') && isVideo) {
+        onUpdateBatch([['heroVideo', url], ['heroImage', url], ['hero.bgImage', url]])
+      } else if (field === 'heroImage' || field === 'hero_bg' || field === 'hero.bgImage') {
+        onUpdateBatch([['heroVideo', null], ['heroImage', url], ['hero.bgImage', url]])
       } else {
         onText(url)
       }
@@ -1044,7 +1101,10 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
                           }}
                         />
                         <button
-                          onClick={() => videoUrlInput && pickVideo(videoUrlInput)}
+                          onClick={() => {
+                            const val = (videoUrlInput || value || '').trim()
+                            if (val) pickVideo(val)
+                          }}
                           style={{
                             padding: '8px 14px',
                             background: '#6366F1',
@@ -1180,6 +1240,16 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
                   </div>
                 ) : (
                   <div>
+                    {(field === 'contact.whatsapp' || field === 'whatsapp' || field === 'whatsappNumber') && (
+                      <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '8px 10px', marginBottom: 10 }}>
+                        <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#166534' }}>
+                          🟢 Redirección a WhatsApp
+                        </div>
+                        <div style={{ fontSize: '0.67rem', color: '#15803D' }}>
+                          Ingresa el número con código de país (ej: +503 7700-1122). Redirigirá el botón flotante permanente al chat.
+                        </div>
+                      </div>
+                    )}
                     <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Texto del elemento
                     </label>
@@ -1203,6 +1273,121 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
                       onFocus={e => (e.target.style.borderColor = '#6366F1')}
                       onBlur={e => (e.target.style.borderColor = '#CBD5E1')}
                     />
+
+                    {/* Link / URL / Stripe Destination */}
+                    {(target.linkField || field.includes('cta') || field.includes('donation') || field.includes('btn') || field.includes('button')) && (
+                      <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #E2E8F0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <label style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                              🔗 Enlace de Destino (Stripe / URL)
+                            </label>
+                            {linkVal?.includes('stripe') && (
+                              <span style={{ background: '#6366F1', color: '#fff', padding: '1px 5px', borderRadius: 4, fontSize: '0.62rem', fontWeight: 800 }}>
+                                Stripe
+                              </span>
+                            )}
+                          </div>
+                          {linkVal && (
+                            <button
+                              type="button"
+                              onClick={() => window.open(linkVal, '_blank', 'noopener,noreferrer')}
+                              style={{
+                                border: 'none', background: 'transparent', color: '#6366F1',
+                                fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3
+                              }}
+                            >
+                              Probar ↗
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Quick Presets */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onLink('https://buy.stripe.com/')
+                              if (!textVal || textVal === 'Ofrendar con Stripe' || textVal === 'Ofrendar en Línea' || textVal === 'Ofrendar / Donar en Línea') {
+                                onText('Ofrendar')
+                              }
+                            }}
+                            style={{
+                              padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0',
+                              background: linkVal?.includes('stripe') ? '#EEF2FF' : '#F8FAFC',
+                              color: linkVal?.includes('stripe') ? '#4F46E5' : '#475569',
+                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                            }}
+                          >
+                            <span>💳</span> Stripe
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onLink('https://paypal.me/')
+                              if (!textVal || textVal === 'Ofrendar en Línea') onText('Donar con PayPal')
+                            }}
+                            style={{
+                              padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0',
+                              background: linkVal?.includes('paypal') ? '#EFF6FF' : '#F8FAFC',
+                              color: linkVal?.includes('paypal') ? '#2563EB' : '#475569',
+                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                            }}
+                          >
+                            <span>🅿️</span> PayPal
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onLink('#wp-contact')}
+                            style={{
+                              padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0',
+                              background: linkVal === '#wp-contact' ? '#ECFDF5' : '#F8FAFC',
+                              color: linkVal === '#wp-contact' ? '#065F46' : '#475569',
+                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                            }}
+                          >
+                            <span>📍</span> Info / Contacto
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onLink('https://wa.me/')
+                              if (!textVal || textVal === 'Ofrendar en Línea') onText('Ofrendar por WhatsApp')
+                            }}
+                            style={{
+                              padding: '4px 8px', borderRadius: 6, border: '1px solid #E2E8F0',
+                              background: linkVal?.includes('wa.me') ? '#F0FDF4' : '#F8FAFC',
+                              color: linkVal?.includes('wa.me') ? '#166534' : '#475569',
+                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                            }}
+                          >
+                            <span>💬</span> WhatsApp
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          value={linkVal}
+                          onChange={e => onLink(e.target.value)}
+                          placeholder="https://buy.stripe.com/... o #wp-contact"
+                          style={{
+                            width: '100%',
+                            padding: '8px 11px',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: '0.8rem',
+                            fontFamily: 'inherit',
+                            color: '#0F172A',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            background: '#FFFFFF',
+                          }}
+                        />
+                        <div style={{ fontSize: '0.66rem', color: '#94A3B8', marginTop: 4 }}>
+                          Pega tu enlace de Stripe Payment Links (`buy.stripe.com`), PayPal o ruta de destino.
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1830,6 +2015,21 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
         {/* ── TAB 3: POSICIÓN Y TAMAÑO (LAYOUT & MOBILITY) ── */}
         {activeTab === 'layout' && (
           <div>
+            {(field === 'heroImage' || field === 'hero_bg' || field === 'hero.bgImage' || (field && String(field).toLowerCase().includes('bgimage')) || (field && String(field).toLowerCase().includes('background'))) ? (
+              <div style={{ background: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 14, padding: '22px 18px', textAlign: 'center' }}>
+                <div style={{ fontSize: '1.6rem', marginBottom: 10 }}>🔒</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', marginBottom: 6 }}>
+                  Fondo de Cobertura Completa Fijo
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', lineHeight: 1.6, marginBottom: 12 }}>
+                  Esta imagen funciona como fondo principal de la sección (100% de ancho y alto). Su posición se mantiene fija y anclada para asegurar que los títulos, párrafos y botones nunca se muevan de lugar al cambiar la foto.
+                </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EFF6FF', color: '#2563EB', padding: '6px 14px', borderRadius: 999, fontSize: '0.72rem', fontWeight: 800 }}>
+                  ✨ Posición 100% protegida
+                </div>
+              </div>
+            ) : (
+              <>
             {/* TAMAÑO Y ESCALA DE LOGO / IMAGEN */}
             {type === 'image' && (
               <div style={{ marginBottom: 16, background: '#EEF2FF', border: '1.5px solid #C7D2FE', borderRadius: 12, padding: 12 }}>
@@ -1972,6 +2172,8 @@ export default function QuickEditPanel({ target, elementStyles, onUpdate, onUpda
             >
               🔄 Restablecer Posición y Tamaño Original
             </button>
+            </>
+            )}
           </div>
         )}
       </div>

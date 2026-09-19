@@ -1,7 +1,28 @@
 import React from 'react'
 import TemplateDragHandles from './TemplateDragHandles'
+import SectionControlBar from './SectionControlBar'
+import {
+  HeroVisualLayout,
+  HeroSplitLayout,
+  WelcomeVisualLayout,
+  WelcomeSplitLayout,
+  VisitVisualLayout,
+  VisitCardsLayout,
+  ValuesVisualLayout,
+  ValuesMinimalLayout,
+  MinistriesVisualLayout,
+  MinistriesGridLayout,
+  NextStepsVisualLayout,
+  NextStepsNumberedLayout,
+  SermonsVisualLayout,
+  SermonsCardsLayout,
+  EventsVisualLayout,
+  EventsCardsLayout,
+  AboutVisualLayout,
+  AboutSplitLayout
+} from './ChurchSectionLayouts'
 
-export default function ChurchTemplatePoster({ data = {}, editMode = false, activeField, onElementClick, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
+export default function ChurchTemplatePoster({ data = {}, editMode = false, activeField, onElementClick, onSectionChange, onQuickUpdate, onQuickUpdateBatch, device = 'desktop' }) {
   const isMobileDevice = device === 'mobile'
   const isTabletDevice = device === 'tablet'
   const rootClassName = `poster-template-root ${isMobileDevice ? 'is-mobile-device' : ''} ${isTabletDevice ? 'is-tablet-device' : ''}`.trim()
@@ -23,6 +44,10 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
     return (cur && typeof cur === 'object') ? cur : {}
   }
   const isActive = (k) => editMode && activeField && activeField === k
+  const isVideoUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    return /\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(url) || url.startsWith('data:video/')
+  }
   const ost = (k) => ({
     ...(ov(k).textColor ? { color: ov(k).textColor } : {}),
     ...(ov(k).bgColor ? { background: ov(k).bgColor } : {}),
@@ -42,9 +67,6 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
     ...(ov(k).borderRadius ? { borderRadius: ov(k).borderRadius } : {}),
     ...(ov(k).objectFit ? { objectFit: ov(k).objectFit } : {}),
     ...(ov(k).filter ? { filter: ov(k).filter } : {}),
-    ...(isActive(k) ? {
-      position: 'relative',
-    } : {}),
   })
 
   const rdh = (k) => isActive(k) && (
@@ -133,7 +155,36 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           'Reunión de Oración: Jueves 7:00 p.m.'
         ]
 
-  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '') => {
+  const welcome = data.welcome || {
+    label: 'BIENVENIDO A CASA',
+    title: 'Una comunidad apasionada por Jesús',
+    text: 'En nuestra casa creemos que hay un lugar para ti: para encontrarte con Dios, conectar con personas reales y vivir con propósito eterno.',
+    ctaText: 'CONOCE NUESTRA VISIÓN',
+    ctaSecondaryText: 'PIDE ORACIÓN'
+  }
+
+  const values = (Array.isArray(data.values) && data.values.length > 0) ? data.values : [
+    { title: 'Amor Incondicional', text: 'Recibimos a cada persona con gracia y calidez.' },
+    { title: 'Comunidad Auténtica', text: 'Crecemos juntos a través de grupos de amistad.' },
+    { title: 'Verdad Bíblica', text: 'Enseñanza práctica basada en la Palabra de Dios.' },
+    { title: 'Impacto y Misión', text: 'Servimos con generosidad a nuestra ciudad.' }
+  ]
+
+  const ministriesList = (Array.isArray(data.ministries) && data.ministries.length > 0) ? data.ministries : [
+    { name: 'KidZone (Niños)', title: 'KidZone Infantil', description: 'Espacio seguro y divertido para los más pequeños.', desc: 'Espacio seguro y divertido para los más pequeños.', image: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=85&fit=crop' },
+    { name: 'Jóvenes', title: 'Comunidad de Jóvenes', description: 'Reuniones semanales, música en vivo y amistad real.', desc: 'Reuniones semanales, música en vivo y amistad real.', image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=85&fit=crop' }
+  ]
+
+  const sermonsList = (Array.isArray(data.sermons) && data.sermons.length > 0) ? data.sermons : [
+    { title: 'Caminando por Fe en Tiempos de Cambio', series: 'Serie: Imparables', speaker: 'Pastor Principal', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=85&fit=crop' }
+  ]
+
+  const about = data.about || {
+    title: 'NUESTRA HISTORIA & VISIÓN',
+    text: 'Somos una comunidad de creyentes dedicados a extender el amor transformador de Cristo a cada persona y familia en nuestra ciudad.'
+  }
+
+  const handleEdit = (e, fieldKey, fieldLabel, fieldType = 'text', currentVal = '', extra = {}) => {
     if (editMode && onElementClick) {
       e.preventDefault()
       e.stopPropagation()
@@ -146,29 +197,71 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
         type: fieldType,
         value: currentVal || '',
         x: r.left || e.clientX,
-        y: (r.bottom ? r.bottom + 8 : e.clientY)
+        y: (r.bottom ? r.bottom + 8 : e.clientY),
+        ...extra
       })
     }
   }
 
-  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentVal) => {
+  const handleNavClick = (e, targetHash, fieldKey, fieldLabel, currentVal, extra = {}) => {
     if (editMode) {
       e.preventDefault()
       e.stopPropagation()
-      handleEdit(e, fieldKey, fieldLabel, 'text', currentVal)
+      handleEdit(e, fieldKey, fieldLabel, 'text', currentVal, extra)
+      return
+    }
+    if (targetHash && (targetHash.startsWith('http://') || targetHash.startsWith('https://') || targetHash.startsWith('mailto:') || targetHash.startsWith('tel:'))) {
       return
     }
     if (targetHash && targetHash.startsWith('#')) {
-      const el = document.querySelector(targetHash)
-      if (el) {
-        e.preventDefault()
-        el.scrollIntoView({ behavior: 'smooth' })
+      try {
+        const el = document.querySelector(targetHash)
+        if (el) {
+          e.preventDefault()
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      } catch (err) {
+        console.warn('Navigation selector error:', err)
       }
     }
   }
 
   const activeFont = data.font || 'Outfit'
   const accentIndigo = data.accentColor || '#000000'
+
+  const DEFAULT_POSTER_ORDER = ['hero', 'welcome', 'planAVisit', 'values', 'nucleusColumns', 'ministries', 'nextSteps', 'missionBlock', 'sermons', 'events', 'donation', 'prayerRequest', 'about', 'contact']
+  const activeOrder = (Array.isArray(data.sectionOrder) && data.sectionOrder.length > 0) ? data.sectionOrder : DEFAULT_POSTER_ORDER
+  const visibility = data.sectionsVisibility || {}
+  const layouts = data.sectionLayouts || {}
+
+  const handleMoveUp = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx > 0) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx - 1]
+      newOrder[curIdx - 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleMoveDown = (key) => {
+    const curIdx = activeOrder.indexOf(key)
+    if (curIdx >= 0 && curIdx < activeOrder.length - 1) {
+      const newOrder = [...activeOrder]
+      const temp = newOrder[curIdx]
+      newOrder[curIdx] = newOrder[curIdx + 1]
+      newOrder[curIdx + 1] = temp
+      if (onSectionChange) onSectionChange('sectionOrder', newOrder)
+      else if (onQuickUpdate) onQuickUpdate('sectionOrder', newOrder)
+    }
+  }
+
+  const handleDeleteSection = (key) => {
+    if (onSectionChange) onSectionChange(`sectionsVisibility.${key}`, false)
+    else if (onQuickUpdate) onQuickUpdate(`sectionsVisibility.${key}`, false)
+  }
 
   return (
     <div className={rootClassName} style={{ position: 'relative', containerType: 'inline-size', fontFamily: `'${activeFont}', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`, color: '#000000', background: '#FFFFFF', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
@@ -600,24 +693,93 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
         </div>
       </header>
 
-      {/* ── 2. HERO PRINCIPAL CON FOTO Y TEXTO SOBREIMPRESO ── */}
-      {data.sectionsVisibility?.hero !== false && (
-      <section id="wp-hero" style={{ position: 'relative', width: '100%', minHeight: '82vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: '#000000' }}>
+      {/* ── DYNAMIC SECTIONS LOOP (DRIVEN BY data.sectionOrder & sectionsVisibility) ── */}
+      {activeOrder.map((sectionKey, sIdx) => {
+        if (visibility[sectionKey] === false) return null
+        const canUp = sIdx > 0
+        const canDown = sIdx < activeOrder.length - 1
+
+        const wrap = (secContent, label) => (
+          <SectionControlBar
+            key={sectionKey}
+            sectionKey={sectionKey}
+            label={label}
+            canMoveUp={canUp}
+            canMoveDown={canDown}
+            onMoveUp={() => handleMoveUp(sectionKey)}
+            onMoveDown={() => handleMoveDown(sectionKey)}
+            onDelete={() => handleDeleteSection(sectionKey)}
+            editMode={editMode}
+            accentColor={data.accentColor || '#C4A35A'}
+            primaryColor="#000000"
+          >
+            {secContent}
+          </SectionControlBar>
+        )
+
+        switch (sectionKey) {
+          case 'hero':
+            if (layouts.hero === 'visual') {
+              return wrap(
+                <HeroVisualLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentIndigo}
+                  font={activeFont}
+                />,
+                'Hero Portada (Visual)'
+              )
+            }
+            if (layouts.hero === 'split') {
+              return wrap(
+                <HeroSplitLayout
+                  data={data}
+                  hero={hero}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  rdh={rdh}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Hero Portada (Split)'
+              )
+            }
+            return wrap(
+              <section id="wp-hero" style={{ position: 'relative', width: '100%', minHeight: '82vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: '#000000' }}>
         <div
           data-field="heroImage"
           data-ovkey="heroImage"
           className="editable-element"
           onClick={(e) => handleEdit(e, 'heroImage', 'Imagen de Portada (Hero)', 'image', hero.bgImage)}
-          style={{ position: 'absolute', inset: 0, zIndex: 1, cursor: editMode ? 'pointer' : 'default', ...ost('heroImage') }}
+          style={{ ...ost('heroImage'), position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, maxWidth: 'none', maxHeight: 'none', zIndex: 1, cursor: editMode ? 'pointer' : 'default' }}
         >
-          <img
-            src={hero.bgImage || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1800&q=85&fit=crop'}
-            alt={businessName}
-            onError={(e) => {
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1800&q=85&fit=crop'
-            }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-          />
+          {data.heroVideo || isVideoUrl(hero.bgImage) ? (
+            <video
+              src={data.heroVideo || hero.bgImage}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+            />
+          ) : (
+            <img
+              src={hero.bgImage || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1800&q=85&fit=crop'}
+              alt={businessName}
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1800&q=85&fit=crop'
+              }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+            />
+          )}
           {editMode && (
             <div style={{ position: 'absolute', top: 16, right: 16, background: '#000000', color: '#fff', fontSize: '0.75rem', fontWeight: 800, padding: '6px 16px', borderRadius: 6, pointerEvents: 'none', zIndex: 3 }}>
               📷 Clic para cambiar foto de portada
@@ -682,12 +844,44 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             </a>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 3. SECCIÓN SPLIT 50/50: PLAN YOUR VISIT (INSPIRADO EN LA IMAGEN RECOMENDADA) ── */}
-      {data.sectionsVisibility?.planAVisit !== false && (
-      <section id="wp-plan-visit" style={{ width: '100%', background: '#FFFFFF', padding: 0 }}>
+      </section>,
+              'Hero Portada'
+            )
+          case 'planAVisit':
+            if (layouts.visit === 'visual') {
+              return wrap(
+                <VisitVisualLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Visítanos (Solo Fotos)'
+              )
+            }
+            if (layouts.visit === 'cards') {
+              return wrap(
+                <VisitCardsLayout
+                  data={data}
+                  planAVisit={data.planAVisit || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#FFFFFF'}
+                  font={activeFont}
+                />,
+                'Visítanos (Horarios Card)'
+              )
+            }
+            return wrap(
+              <section id="wp-plan-visit" style={{ width: '100%', background: '#FFFFFF', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', width: '100%', minHeight: 640 }}>
           
           {/* Left Column: Full Cover Edge-to-Edge Image */}
@@ -698,14 +892,22 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             onClick={(e) => handleEdit(e, 'planAVisit.image', 'Foto Sección Visítanos', 'image', planAVisit.image)}
             style={{ width: '100%', height: '100%', minHeight: 520, position: 'relative', overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('planAVisit.image') }}
           >
-            <img
-              src={planAVisit.image}
-              alt="Plan Your Visit"
-              onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&q=85&fit=crop'
-              }}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
+            {isVideoUrl(planAVisit.image) ? (
+              <video
+                src={planAVisit.image}
+                autoPlay loop muted playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              <img
+                src={planAVisit.image}
+                alt="Plan Your Visit"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=1200&q=85&fit=crop'
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
           </div>
 
           {/* Right Column: Clean White High-Contrast Typography & Spacing */}
@@ -753,12 +955,334 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           </div>
 
         </div>
-      </section>
-      )}
+      </section>,
+              'Planifica tu Visita'
+            )
 
-      {/* ── 4. SECCIÓN 2 COLUMNAS (LÍDERES & CALENDARIO) EN FONDO NEGRO AMPIO (INSPIRADO EN LA SEGUNDA IMAGEN RECOMENDADA) ── */}
-      {data.sectionsVisibility?.nucleusColumns !== false && (
-      <section id="wp-columns" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box' }}>
+          case 'welcome':
+            if (layouts.welcome === 'visual') {
+              return wrap(
+                <WelcomeVisualLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Solo Fotos)'
+              )
+            }
+            if (layouts.welcome === 'split') {
+              return wrap(
+                <WelcomeSplitLayout
+                  data={data}
+                  welcome={data.welcome || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Bienvenida a Casa (Split Tarjeta)'
+              )
+            }
+            return wrap(
+              <section id="wp-welcome" style={{ width: '100%', background: '#0A0A0A', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box', textAlign: 'center', borderTop: '1px solid #1F1F23' }}>
+                <div style={{ maxWidth: 880, margin: '0 auto' }}>
+                  <div
+                    data-field="welcome.label" data-ovkey="welcome.label"
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, 'welcome.label', 'Etiqueta Bienvenida', 'text', welcome.label)}
+                    style={{ fontSize: '0.8rem', fontWeight: 900, color: '#A1A1AA', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16, ...ost('welcome.label') }}
+                  >
+                    {welcome.label}
+                  </div>
+                  <h2
+                    data-field="welcome.title" data-ovkey="welcome.title"
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, 'welcome.title', 'Título Bienvenida', 'text', welcome.title)}
+                    style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 24px', letterSpacing: '-0.03em', lineHeight: 1.1, fontFamily: 'Georgia, serif', ...ost('welcome.title') }}
+                  >
+                    {welcome.title}
+                  </h2>
+                  <p
+                    data-field="welcome.text" data-ovkey="welcome.text"
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, 'welcome.text', 'Mensaje Pastoral', 'textarea', welcome.text)}
+                    style={{ fontSize: '1.1rem', color: '#A1A1AA', lineHeight: 1.8, margin: '0 0 36px', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto', fontFamily: 'Georgia, serif', ...ost('welcome.text') }}
+                  >
+                    {welcome.text}
+                  </p>
+                  <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <a
+                      data-field="welcome.ctaText" data-ovkey="welcome.ctaText"
+                      href="#wp-plan-visit"
+                      className="poster-btn-primary editable-element"
+                      onClick={(e) => handleNavClick(e, '#wp-plan-visit', 'welcome.ctaText', 'Botón Bienvenida', welcome.ctaText)}
+                      style={{ padding: '14px 32px', borderRadius: 8, textDecoration: 'none', fontSize: '0.82rem', fontWeight: 900, ...ost('welcome.ctaText') }}
+                    >
+                      {welcome.ctaText}
+                    </a>
+                  </div>
+                </div>
+              </section>,
+              'Bienvenida a Casa'
+            )
+
+          case 'values':
+            if (layouts.values === 'visual') {
+              return wrap(
+                <ValuesVisualLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Valores (Solo Imágenes)'
+              )
+            }
+            if (layouts.values === 'minimal') {
+              return wrap(
+                <ValuesMinimalLayout
+                  data={data}
+                  values={data.values || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Valores (Minimalista)'
+              )
+            }
+            return wrap(
+              <section id="wp-values" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box', borderTop: '1px solid #1F1F23' }}>
+                <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+                  <div style={{ textAlign: 'center', marginBottom: 60 }}>
+                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#FFFFFF', margin: 0, fontFamily: 'Georgia, serif', letterSpacing: '-0.03em' }}>
+                      Nuestros Valores & Fundamentos
+                    </h2>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 32 }}>
+                    {values.map((val, idx) => (
+                      <div key={idx} style={{ background: '#0D0D0E', border: '1px solid #27272A', borderRadius: 12, padding: 32 }}>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF', marginBottom: 12, fontFamily: 'Georgia, serif' }}>
+                          {val.title}
+                        </div>
+                        <div style={{ fontSize: '0.95rem', color: '#A1A1AA', lineHeight: 1.7, fontFamily: 'Georgia, serif' }}>
+                          {val.text}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>,
+              'Valores & Fundamentos'
+            )
+
+          case 'ministries':
+            if (layouts.ministries === 'visual') {
+              return wrap(
+                <MinistriesVisualLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Ministerios (Solo Imágenes)'
+              )
+            }
+            if (layouts.ministries === 'grid') {
+              return wrap(
+                <MinistriesGridLayout
+                  data={data}
+                  ministries={data.ministries || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Ministerios (Mosaico)'
+              )
+            }
+            return wrap(
+              <section id="wp-ministerios" style={{ width: '100%', background: '#0A0A0A', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box', borderTop: '1px solid #1F1F23' }}>
+                <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+                  <div style={{ textAlign: 'center', marginBottom: 60 }}>
+                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#FFFFFF', margin: 0, fontFamily: 'Georgia, serif', letterSpacing: '-0.03em' }}>
+                      {data.ministriesTitle || 'Ministerios & Comunidades'}
+                    </h2>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 40 }}>
+                    {ministriesList.map((min, idx) => (
+                      <div key={idx} style={{ background: '#000000', border: '1px solid #27272A', borderRadius: 12, overflow: 'hidden' }}>
+                        {min.image && (
+                          <div style={{ height: 220, overflow: 'hidden' }}>
+                            <img src={min.image} alt={min.name || min.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        )}
+                        <div style={{ padding: 28 }}>
+                          <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 10px', fontFamily: 'Georgia, serif' }}>
+                            {min.name || min.title}
+                          </h3>
+                          <p style={{ fontSize: '0.92rem', color: '#A1A1AA', lineHeight: 1.6, margin: 0, fontFamily: 'Georgia, serif' }}>
+                            {min.description || min.desc}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>,
+              'Ministerios & Familias'
+            )
+
+          case 'sermons':
+            if (layouts.sermons === 'visual') {
+              return wrap(
+                <SermonsVisualLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Sermones (Solo Portadas)'
+              )
+            }
+            if (layouts.sermons === 'cards') {
+              return wrap(
+                <SermonsCardsLayout
+                  data={data}
+                  sermons={data.sermons || []}
+                  title={data.sermonsTitle}
+                  subtitle={data.sermonsSubtitle}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Sermones (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-sermons" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box', borderTop: '1px solid #1F1F23' }}>
+                <div style={{ maxWidth: 1300, margin: '0 auto' }}>
+                  <div style={{ textAlign: 'center', marginBottom: 60 }}>
+                    <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#FFFFFF', margin: 0, fontFamily: 'Georgia, serif', letterSpacing: '-0.03em' }}>
+                      {data.sermonsTitle || 'Mensajes & Prédicas Recientes'}
+                    </h2>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 36 }}>
+                    {sermonsList.map((sermon, idx) => (
+                      <div key={idx} style={{ background: '#0D0D0E', border: '1px solid #27272A', borderRadius: 12, overflow: 'hidden' }}>
+                        {sermon.image && (
+                          <div style={{ height: 200, overflow: 'hidden' }}>
+                            <img src={sermon.image} alt={sermon.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        )}
+                        <div style={{ padding: 24 }}>
+                          <div style={{ fontSize: '0.75rem', color: '#71717A', fontWeight: 800, textTransform: 'uppercase', marginBottom: 6 }}>
+                            {sermon.series || 'Mensaje Dominical'}
+                          </div>
+                          <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 8px', fontFamily: 'Georgia, serif' }}>
+                            {sermon.title}
+                          </h3>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>,
+              'Sermones & Mensajes'
+            )
+
+          case 'about':
+            if (layouts.about === 'visual') {
+              return wrap(
+                <AboutVisualLayout
+                  data={data}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Muro de Fotos)'
+              )
+            }
+            if (layouts.about === 'split') {
+              return wrap(
+                <AboutSplitLayout
+                  data={data}
+                  about={data.about || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#0A0A0A'}
+                  font={activeFont}
+                />,
+                'Sobre Nosotros (Split Comunidad)'
+              )
+            }
+            return wrap(
+              <section id="wp-about" style={{ width: '100%', background: '#0A0A0A', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box', borderTop: '1px solid #1F1F23' }}>
+                <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+                  <h2
+                    data-field="about.title" data-ovkey="about.title"
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, 'about.title', 'Título Sobre Nosotros', 'text', about.title)}
+                    style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#FFFFFF', margin: '0 0 24px', letterSpacing: '-0.03em', fontFamily: 'Georgia, serif', ...ost('about.title') }}
+                  >
+                    {about.title}
+                  </h2>
+                  <p
+                    data-field="about.text" data-ovkey="about.text"
+                    className="editable-element"
+                    onClick={(e) => handleEdit(e, 'about.text', 'Texto Sobre Nosotros', 'textarea', about.text)}
+                    style={{ fontSize: '1.1rem', color: '#A1A1AA', lineHeight: 1.8, margin: 0, fontFamily: 'Georgia, serif', ...ost('about.text') }}
+                  >
+                    {about.text}
+                  </p>
+                </div>
+              </section>,
+              'Sobre Nosotros'
+            )
+          case 'nucleusColumns':
+            return wrap(
+              <section id="wp-columns" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 5%', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 48 }}>
           
           {/* Column 1: Leaders & Staff */}
@@ -770,6 +1294,13 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
               onClick={(e) => handleEdit(e, 'nucleusColumns.col1.image', 'Foto Columna 1', 'image', nucleusColumns.col1.image)}
               style={{ height: 380, width: '100%', position: 'relative', overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('nucleusColumns.col1.image') }}
             >
+              {isVideoUrl(nucleusColumns.col1.image) ? (
+              <video
+                src={nucleusColumns.col1.image}
+                autoPlay loop muted playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
               <img
                 src={nucleusColumns.col1.image || 'https://images.unsplash.com/photo-1477281765962-ef34e8bb0967?w=1000&q=85&fit=crop'}
                 alt="Columna 1"
@@ -778,6 +1309,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                 }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
+            )}
             </div>
             <div style={{ paddingTop: 36, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
@@ -821,14 +1353,22 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
               onClick={(e) => handleEdit(e, 'nucleusColumns.col2.image', 'Foto Columna 2', 'image', nucleusColumns.col2.image)}
               style={{ height: 380, width: '100%', position: 'relative', overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('nucleusColumns.col2.image') }}
             >
-              <img
-                src={nucleusColumns.col2.image}
-                alt={nucleusColumns.col2.title}
-                onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1000&q=85&fit=crop'
-                }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              {isVideoUrl(nucleusColumns.col2.image) ? (
+                <video
+                  src={nucleusColumns.col2.image}
+                  autoPlay loop muted playsInline
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <img
+                  src={nucleusColumns.col2.image}
+                  alt={nucleusColumns.col2.title}
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1000&q=85&fit=crop'
+                  }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              )}
             </div>
             <div style={{ paddingTop: 36, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
@@ -864,12 +1404,44 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           </div>
 
         </div>
-      </section>
-      )}
-
-      {/* ── 5. SECCIÓN SPLIT INVERTIDA: NEXT STEPS (INSPIRADO EN LA TERCERA IMAGEN RECOMENDADA) ── */}
-      {data.sectionsVisibility?.nextSteps !== false && (
-      <section id="wp-next-steps-split" style={{ width: '100%', background: '#FFFFFF', padding: 0 }}>
+      </section>,
+              'Líderes & Calendario'
+            )
+          case 'nextSteps':
+            if (layouts.nextSteps === 'visual') {
+              return wrap(
+                <NextStepsVisualLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#FFFFFF'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (Solo Fotos)'
+              )
+            }
+            if (layouts.nextSteps === 'steps') {
+              return wrap(
+                <NextStepsNumberedLayout
+                  data={data}
+                  nextSteps={data.nextSteps || {}}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#FFFFFF'}
+                  font={activeFont}
+                />,
+                'Próximos Pasos (3 Pasos)'
+              )
+            }
+            return wrap(
+              <section id="wp-next-steps-split" style={{ width: '100%', background: '#FFFFFF', padding: 0 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', width: '100%', minHeight: 640 }}>
           
           {/* Left Column: Clean White High-Contrast Typography */}
@@ -924,23 +1496,32 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             onClick={(e) => handleEdit(e, 'nextSteps.image', 'Foto Sección Próximos Pasos', 'image', data.nextSteps?.image || 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=1200&q=85&fit=crop')}
             style={{ width: '100%', height: '100%', minHeight: 520, position: 'relative', overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost('nextSteps.image') }}
           >
-            <img
-              src={data.nextSteps?.image || 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=1200&q=85&fit=crop'}
-              alt="Next Steps Worship"
-              onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=1200&q=85&fit=crop'
-              }}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
+            {isVideoUrl(data.nextSteps?.image) ? (
+              <video
+                src={data.nextSteps?.image}
+                autoPlay loop muted playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              <img
+                src={data.nextSteps?.image || 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=1200&q=85&fit=crop'}
+                alt="Next Steps Worship"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=1200&q=85&fit=crop'
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
           </div>
 
         </div>
-      </section>
-      )}
-
-      {/* ── 6. SECCIÓN DE MISIÓN Y VALORES EN ESPACIO ABIERTO ── */}
-      {data.sectionsVisibility?.missionBlock !== false && (
-      <section id="wp-mission" style={{ width: '100%', background: '#FAFAFA', padding: '120px 8%', boxSizing: 'border-box', borderTop: '1px solid #E5E5E5' }}>
+      </section>,
+              'Próximos Pasos'
+            )
+          case 'missionBlock':
+          case 'mission':
+            return wrap(
+              <section id="wp-mission" style={{ width: '100%', background: '#FAFAFA', padding: '120px 8%', boxSizing: 'border-box', borderTop: '1px solid #E5E5E5' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
           <h2
             data-field="missionBlock.title"
@@ -984,12 +1565,44 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             {missionBlock.ctaText || 'SOBRE NOSOTROS'}
           </a>
         </div>
-      </section>
-      )}
-
-      {/* ── EVENTOS ── */}
-      {data.sectionsVisibility?.events !== false && (
-      <section id="wp-events" style={{ width: '100%', background: '#000000', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #111' }}>
+      </section>,
+              'Nuestra Misión'
+            )
+          case 'events':
+            if (layouts.events === 'visual') {
+              return wrap(
+                <EventsVisualLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Eventos (Solo Afiches)'
+              )
+            }
+            if (layouts.events === 'cards') {
+              return wrap(
+                <EventsCardsLayout
+                  data={data}
+                  events={data.events || []}
+                  editMode={editMode}
+                  handleEdit={handleEdit}
+                  handleNavClick={handleNavClick}
+                  ost={ost}
+                  accentColor={accentIndigo}
+                  primaryBg={'#000000'}
+                  font={activeFont}
+                />,
+                'Eventos (Tarjetas)'
+              )
+            }
+            return wrap(
+              <section id="wp-events" style={{ width: '100%', background: '#000000', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #111' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 56, flexWrap: 'wrap', gap: 20 }}>
             <div>
@@ -1040,7 +1653,11 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
                     onClick={(e) => handleEdit(e, `${evPrefix}.${idx}.image`, `Foto Evento ${idx + 1}`, 'image', ev.image)}
                     style={{ position: 'relative', height: 220, overflow: 'hidden', cursor: editMode ? 'pointer' : 'default', ...ost(`${evPrefix}.${idx}.image`) }}
                   >
-                    <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                    {isVideoUrl(ev.image) ? (
+                      <video src={ev.image} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                    ) : (
+                      <img src={ev.image || 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=85&fit=crop'} alt={ev.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }} />
+                    )}
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.95) 100%)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', top: 20, left: 20, background: '#FFFFFF', color: '#000000', padding: '10px 14px', textAlign: 'center', minWidth: 52 }}>
                       <div
@@ -1113,12 +1730,12 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             })()}
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 6.5. DONACIONES ── */}
-      {data.sectionsVisibility?.donation !== false && (
-      <section id="wp-donations" style={{ width: '100%', background: '#000000', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #1A1A1A' }}>
+      </section>,
+              'Eventos & Calendario'
+            )
+          case 'donation':
+            return wrap(
+              <section id="wp-donations" style={{ width: '100%', background: '#000000', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #1A1A1A' }}>
         <div style={{
           maxWidth: 860, margin: '0 auto', textAlign: 'center',
           background: '#0A0A0A',
@@ -1152,8 +1769,16 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
           <a
             data-field="donation.ctaText" data-ovkey="donation.ctaText"
             href={data.donation?.ctaLink || '#wp-contact'}
+            target={(data.donation?.ctaLink || '').startsWith('http') ? '_blank' : undefined}
+            rel={(data.donation?.ctaLink || '').startsWith('http') ? 'noopener noreferrer' : undefined}
             className="editable-element"
-            onClick={(e) => handleEdit(e, 'donation.ctaText', 'Botón Donaciones', 'text', data.donation?.ctaText || 'Ofrendar en Línea')}
+            onClick={(e) => {
+              const btnLabel = (data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')
+              handleNavClick(e, data.donation?.ctaLink || '#wp-contact', 'donation.ctaText', 'Botón Donaciones', btnLabel, {
+                linkField: 'donation.ctaLink',
+                linkValue: data.donation?.ctaLink || '#wp-contact'
+              })
+            }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 10,
               padding: '16px 40px', borderRadius: 999,
@@ -1166,7 +1791,7 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            {data.donation?.ctaText || 'Ofrendar en Línea'}
+            {(data.donation?.ctaText === 'Ofrendar con Stripe' || data.donation?.ctaText === 'Donar con Stripe') ? 'Ofrendar' : (data.donation?.ctaText || 'Ofrendar')}
           </a>
           {data.donation?.note && (
             <div
@@ -1179,12 +1804,12 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             </div>
           )}
         </div>
-      </section>
-      )}
-
-      {/* ── 6.8. PETICIÓN DE ORACIÓN ── */}
-      {data.sectionsVisibility?.prayerRequest !== false && (
-      <section id="wp-prayer" style={{ width: '100%', background: '#050505', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #1A1A1A' }}>
+      </section>,
+              'Ofrendas / Donaciones'
+            )
+          case 'prayerRequest':
+            return wrap(
+              <section id="wp-prayer" style={{ width: '100%', background: '#050505', padding: '100px 8%', boxSizing: 'border-box', borderTop: '1px solid #1A1A1A' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
           <div
             data-field="prayerRequest.eyebrow" data-ovkey="prayerRequest.eyebrow"
@@ -1229,12 +1854,12 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             </button>
           </div>
         </div>
-      </section>
-      )}
-
-      {/* ── 7. FOOTER MINIMALISTA ELEGANTE ── */}
-      {data.sectionsVisibility?.contact !== false && (
-      <footer id="wp-contact" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 8% 60px', boxSizing: 'border-box' }}>
+      </section>,
+              'Petición de Oración'
+            )
+          case 'contact':
+            return wrap(
+              <footer id="wp-contact" style={{ width: '100%', background: '#000000', color: '#FFFFFF', padding: '100px 8% 60px', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 64, marginBottom: 80 }}>
           
           {/* Left Column */}
@@ -1356,8 +1981,13 @@ export default function ChurchTemplatePoster({ data = {}, editMode = false, acti
             © {new Date().getFullYear()} {businessName}. Todos los Derechos Reservados.
           </div>
         </div>
-      </footer>
-      )}
+      </footer>,
+              'Contacto & Horarios'
+            )
+          default:
+            return null
+        }
+      })}
 
     </div>
   )
